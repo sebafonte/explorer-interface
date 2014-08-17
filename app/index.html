@@ -7,6 +7,7 @@
 	<script src="glMatrix-0.9.5.min.js"></script>
 	<script src="webgl-utils.js"></script>
 	<script src="webgl-entities.js"></script>
+	<script src="jquery-1.11.1.min.js"></script>
 	
 	<script id="shader-fs" type="x-shader/x-fragment">
 		precision mediump float;
@@ -37,63 +38,161 @@
 			zpos = clamp(aVertexPosition.z,0.0,1.0);
 		}
 	</script>
-	
-	<script>
-		var startupDraw = function () {
-			/*
-			var htmlCode = "";
-			for (var i=0; i< 8; i++) {
-				var canvasId = "parent" + i.toString();
-				htmlCode += "<canvas id=\"" + canvasId + ""\"width=\"150\" height=\"150\"></canvas>";
-			}
-			
-			document.getElementById("parents-div").innerHtml = htmlCode;
-			*/
-			
-			for (var i=0; i< 4; i++) {
-				var canvasId = "parent" + i.toString();
-				initWebGL(canvasId, "cos(x) * cos(y)");
-			}	
-			
-			for (var i=0; i< 16; i++) {
-				var canvasId = "child" + i.toString();
-				initWebGL(canvasId, "cos(x) * cos(y)");
-			}	
-		};
-	</script>
 </head>
 
 <body onload="startupDraw()">
-	<p>Test WebGL shaders</p>
-	
+	<h1>Test interface</h1>
+
 	<div>
-		<div id="parents-div" class="view-container">
-			<canvas id="parent0" width="150" height="150"></canvas>
-			<canvas id="parent1" width="150" height="150"></canvas>
-			<canvas id="parent2" width="150" height="150"></canvas>
-			<canvas id="parent3" width="150" height="150"></canvas>
-		</div>
-		<HR>
-		<div id="children-div" class="view-container">
-			<canvas id="child0" width="150" height="150"></canvas>
-			<canvas id="child1" width="150" height="150"></canvas>
-			<canvas id="child2" width="150" height="150"></canvas>
-			<canvas id="child3" width="150" height="150"></canvas>
-			<canvas id="child4" width="150" height="150"></canvas>
-			<canvas id="child5" width="150" height="150"></canvas>
-			<canvas id="child6" width="150" height="150"></canvas>
-			<canvas id="child7" width="150" height="150"></canvas>		
-		</div>
-		
-		<div id="comments-div" class="view-container">
-			<form>
-				Name: <input type="text" name="name"><br>
-				Comment: <input type="text" name="comment">
-			</form>
+		<div style="max-width: 613px; border: 1px solid black">
+			<div id="parents-div" class="view-container">
+				<canvas id="parent0" width="150" height="150"></canvas>
+				<canvas id="parent1" width="150" height="150"></canvas>
+				<canvas id="parent2" width="150" height="150"></canvas>
+				<canvas id="parent3" width="150" height="150"></canvas>
+			</div>
+			<hr>
+			<div id="children-div" class="view-container">
+				<canvas id="child0" width="150" height="150"></canvas>
+				<canvas id="child1" width="150" height="150"></canvas>
+				<canvas id="child2" width="150" height="150"></canvas>
+				<canvas id="child3" width="150" height="150"></canvas>
+				<canvas id="child4" width="150" height="150"></canvas>
+				<canvas id="child5" width="150" height="150"></canvas>
+				<canvas id="child6" width="150" height="150"></canvas>
+				<canvas id="child7" width="150" height="150"></canvas>		
+				<canvas id="child8" width="150" height="150"></canvas>
+				<canvas id="child9" width="150" height="150"></canvas>				
+				<canvas id="child10" width="150" height="150"></canvas>
+				<canvas id="child11" width="150" height="150"></canvas>		
+			</div>
+			<hr>
+			<div id="comments-div" class="view-container">
+				<form>
+					<div>
+						<div>					
+							<div>
+								Object
+								<select>
+									<option value="Function x">Function x</option>
+									<option value="Function xy">Function xy</option>
+									<option value="RGB color">RGB color</option>
+									<option value="Texture">Texture</option>
+									<option value="Shader">Shader</option>
+								</select>
+							</div>
+							<div>
+								Objective
+								<select id="languages-select">
+									<option value="Function x">Colorfull</option>
+									<option value="Function xy">None</option>
+								</select>
+							</div>	
+							<div>
+								Max time
+								<input type="text" value="1"/>
+							</div>
+							<div>
+								Max size
+								<input type="text" value="20"/>
+							</div>
+						</div>
+						<hr>
+						<div>
+							
+						</div>
+						<hr>					
+						<div>
+							Name: <input type="text" name="name"><br>
+							Comment: <input type="text" name="comment">
+						</div>
+						<hr>
+						<div>
+							<input type="submit" value="Load"/>
+							<input type="submit" value="Save"/>
+						</div>
+					</div>
+				</form>
+			</div>
+			<hr>
 		</div>
 	</div>
 </body>
 
+	<script>
+		var startupDraw = function () {
+		/*	var htmlCode = "";
+			for (var i=0; i< 8; i++) {
+				var canvasId = "parent" + i.toString();
+				htmlCode += "<canvas id=\"" + canvasId + "\"width=\"150\" height=\"150\"></canvas>";
+			}
+			document.getElementById("parents-div").innerHtml = htmlCode; */
+			
+			for (var i=0; i< 4; i++) {
+				var canvasId = "parent" + i.toString();
+				//initWebGL(canvasId, "cos(x) * cos(y)");
+			}	
+			
+			for (var i=0; i< 12; i++) {
+				var canvasId = "child" + i.toString();
+				initWebGL(canvasId, "cos(x) * cos(y)");
+			}	
+		};
+		
+		function createFunctionCall(name) {
+			$.ajax({
+					type : 'GET',
+					url : "/messageCreateRandom",
+					data : { language: "lisp-math-function-x", maxSize: "20" },
+					dataType : "text",
+					success : function(data) {
+						console.log('Call create function succeed');
+						initWebGL(name, data);
+					},
+					error : function(data) {
+						console.log('Call failed');
+					}
+				});
+				return false;
+		}
+		
+		function addCallBack(name) {
+			$("#" + name).click(function(evt) {
+				createFunctionCall(name);
+			});
+		};
+		
+		function initializeLanguages() {
+			$.ajax({
+				type : 'GET',
+				url : "/messageLanguages",
+				dataType : "text",
+				success : function(data) {
+					console.log('Call languages select succeded');
+					alert(data);
+					var htmlCode = "";
+					var values = data.split(" ");
+					
+					for (var i=0; i< values.length; i++) {	
+						htmlCode += "<option value=\"" + values[i] + "\">" + values[i] + "</option>";
+					}
+					
+					document.getElementById("languages-select").innerHtml = htmlCode;;
+				},
+				error : function(data) {
+					console.log('Call failed');
+				}
+			});
+			return false;
+		};
+		
+		initializeLanguages(); 
+		addCallBack("parent0");
+		addCallBack("parent1");
+		addCallBack("parent2");
+		addCallBack("parent3");
+	</script>
 </html>
+
 
 

@@ -1,7 +1,3 @@
-// Global default vars
-var sampleEntity = "cos(x) * cos(y)";
-var sampleEntityType = "entity-bw";
-
 
 // Draw functions
 function drawEntity(entity, entityType, canvas) {

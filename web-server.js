@@ -83,8 +83,6 @@ function createRandom(res, language, maxSize) {
 	var socket = net.createConnection("20000", "127.0.0.1");
 	var returnData = "default";
 	
-	console.log('Socket created.');
-	
 	socket
 	.on('data', function(data) {
 	  returnData = data;
@@ -92,19 +90,17 @@ function createRandom(res, language, maxSize) {
 	.on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-random) :content (list (quote " + language + ") " + maxSize.toString() + "))\n");
 	}).on('end', function() {
-	  console.log('DONE');
+	  //console.log('DONE');
 	}).on('close', function(data) {
-	  console.log('CLOSED: ' + socket.remoteAddress +' '+ socket.remotePort);
+	  //console.log('CLOSED: ' + socket.remoteAddress +' '+ socket.remotePort);
     });
-					
+
 	function log_console() {
-	  console.log("D");
-	  console.log("RETURN DATA 1: " + returnData);
+	  //console.log("RETURN DATA: " + returnData);
 	  socket.destroy();
 	  res.end(returnData);
 	}
 	
-	console.log("T");
 	setTimeout(log_console,	2000);
 }
 
@@ -119,11 +115,11 @@ function possibleLanguages(res) {
 	.on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-languages))\n");
 	}).on('end', function() {
-	  console.log('DONE');
+	  //console.log('DONE');
 	}).on('close', function(data) {
-	  console.log('CLOSED: ' + socket.remoteAddress +' '+ socket.remotePort);
+	  //console.log('CLOSED: ' + socket.remoteAddress +' '+ socket.remotePort);
     });
-					
+
 	function log_console() {
 	  socket.destroy();
 	  res.end(returnData);
@@ -132,39 +128,38 @@ function possibleLanguages(res) {
 	setTimeout(log_console,	2000);
 }
 
-function mutateImage(res, language, object, maxSize) {
+/*
+function mutateFunctions(res, language, object, maxSize) {
 	var socket = net.createConnection("20000", "127.0.0.1");
 	var data = "";
 	
 	console.log('Socket created.');
 	
 	socket.on('data', function(data) {
-	  console.log('RESPONSE: ' + data);
+	  //console.log('RESPONSE: ' + data);
 	}).on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate) :content (list (quote " + language + ") " + object + maxSize.toString() + "))\n");
 	}).on('end', function() {
-	  console.log('DONE');
+	  //console.log('DONE');
 	}).on('close', function(data) {
-	  console.log('CLOSED: ' + socket.remoteAddress +' '+ socket.remotePort);
+	  //console.log('CLOSED: ' + socket.remoteAddress +' '+ socket.remotePort);
     });
 	
 	function log_console() {
-	  console.log(foo.stdout);
-	  res.end(foo.stdout);
+	  socket.destroy();
+	  res.end(returnData);
 	}
-				
+
 	console.log("T");
 	setTimeout(log_console,	250);
 	socket.destroy();
 	res.write(data);
 	console.log("exiting..");
 };
+*/
 
 //a helper function to handle HTTP requests
-function requestHandler(req, res) {
-    console.log("BASE REQUEST: " + req.url);
-	console.log("BASE REQUEST HEADERS: " + req.headers);
-	
+function requestHandler(req, res) {	
 	if (url.parse(req.url).pathname == "/messageLanguages")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
@@ -178,8 +173,13 @@ function requestHandler(req, res) {
 	else if (url.parse(req.url).pathname == "/messageMutate")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
-		createImage(res, arguments.language, arguments.object, arguments.maxSize);
+		mutateFunctions(res, arguments.language, arguments.object, arguments.maxSize);
 	}		
+	else if (url.parse(req.url).pathname == "/messageCrossover")	
+	{
+		var arguments = querystring.parse(url.parse(req.url).query);
+		crossoverFunctions(res, arguments.language, arguments.object, arguments.maxSize);
+	}
 	else if (url.parse(req.url).pathname == "/messageCommand")		
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);

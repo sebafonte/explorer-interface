@@ -9,6 +9,7 @@
 	<script src="webgl-entities.js"></script>
 	<script src="jquery-1.11.1.min.js"></script>
 	
+	<!--
 	<script id="shader-fs" type="x-shader/x-fragment">
 		precision mediump float;
 		varying vec4 vColor;
@@ -17,6 +18,9 @@
 		varying float zpos;
 		
 		void main(void) {
+			float x = xpos;
+			float y = ypos;
+			float value = 333.0;
 			gl_FragColor = vec4 (xpos, ypos, zpos, 1.0);
 		}
 	</script>
@@ -37,7 +41,7 @@
 			ypos = clamp(aVertexPosition.y,0.0,1.0);
 			zpos = clamp(aVertexPosition.z,0.0,1.0);
 		}
-	</script>
+	</script>-->
 </head>
 
 <body onload="startupDraw()">
@@ -168,8 +172,6 @@
 				url : "/messageLanguages",
 				dataType : "text",
 				success : function(data) {
-					console.log('Call languages select succeded');
-					alert(data);
 					var htmlCode = "";
 					var values = data.split(" ");
 					
@@ -177,7 +179,7 @@
 						htmlCode += "<option value=\"" + values[i] + "\">" + values[i] + "</option>";
 					}
 					
-					document.getElementById("languages-select").innerHtml = htmlCode;;
+					document.getElementById("languages-select").innerHtml = htmlCode;
 				},
 				error : function(data) {
 					console.log('Call failed');

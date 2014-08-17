@@ -7,6 +7,8 @@ net = require('net'),
 url = require('url'),
 querystring = require('querystring');
 
+var lispImageTCPTimeout = 0;
+
 // SYB init
 
 /*
@@ -53,9 +55,7 @@ function getFile(filePath,res,page404){
 				  res.end(foo.stdout);
 				}
 				
-				setTimeout(
-				  log_console,
-				250);
+				setTimeout(log_console,	lispImageTCPTimeout);
 		}
 		else if (exists){
             fs.readFile(filePath,function(err,contents){
@@ -96,12 +96,12 @@ function createRandom(res, language, maxSize) {
     });
 
 	function log_console() {
-	  //console.log("RETURN DATA: " + returnData);
+	//console.log("RETURN DATA: " + returnData);
 	  socket.destroy();
 	  res.end(returnData);
 	}
 	
-	setTimeout(log_console,	2000);
+	setTimeout(log_console,	lispImageTCPTimeout);
 }
 
 function possibleLanguages(res) {
@@ -125,20 +125,17 @@ function possibleLanguages(res) {
 	  res.end(returnData);
 	}
 	
-	setTimeout(log_console,	2000);
+	setTimeout(log_console,	lispImageTCPTimeout);
 }
 
-/*
-function mutateFunctions(res, language, object, maxSize) {
+function mutateFunctions(res, language, objectData, maxSize) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	var data = "";
-	
-	console.log('Socket created.');
+	var returnData = "default";
 	
 	socket.on('data', function(data) {
-	  //console.log('RESPONSE: ' + data);
+		returnData = data;
 	}).on('connect', function() {
-	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate) :content (list (quote " + language + ") " + object + maxSize.toString() + "))\n");
+	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate) :content (list (quote " + language + ") (quote " + objectData + ") " + maxSize.toString() + "))\n");
 	}).on('end', function() {
 	  //console.log('DONE');
 	}).on('close', function(data) {
@@ -150,15 +147,10 @@ function mutateFunctions(res, language, object, maxSize) {
 	  res.end(returnData);
 	}
 
-	console.log("T");
-	setTimeout(log_console,	250);
-	socket.destroy();
-	res.write(data);
-	console.log("exiting..");
+	setTimeout(log_console,	lispImageTCPTimeout);
 };
-*/
 
-//a helper function to handle HTTP requests
+// Helper for HTTP requests
 function requestHandler(req, res) {	
 	if (url.parse(req.url).pathname == "/messageLanguages")	
 	{
@@ -173,12 +165,12 @@ function requestHandler(req, res) {
 	else if (url.parse(req.url).pathname == "/messageMutate")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
-		mutateFunctions(res, arguments.language, arguments.object, arguments.maxSize);
+		mutateFunctions(res, arguments.language, arguments.objectData, arguments.maxSize);
 	}		
 	else if (url.parse(req.url).pathname == "/messageCrossover")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
-		crossoverFunctions(res, arguments.language, arguments.object, arguments.maxSize);
+		crossoverFunctions(res, arguments.language, arguments.objectDataA, arguments.objectDataB, arguments.maxSize);
 	}
 	else if (url.parse(req.url).pathname == "/messageCommand")		
 	{

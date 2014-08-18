@@ -1,0 +1,222 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+	<title>Genetic explorer test example</title>
+	<script src="glMatrix-0.9.5.min.js"></script>
+	<script src="webgl-utils.js"></script>
+	<script src="webgl-entities.js"></script>
+	<script src="jquery-1.11.1.min.js"></script>
+	<link href="bootstrap.min.css" rel="stylesheet">
+  </head>
+
+	<body data-spy="scroll" data-target=".navbar-example" onload="startupDraw()">
+		<div class="navbar-example navbar-inverse navbar-fixed-top">
+			<div class="nav nav-tabs btn-primary" role="tablist">
+				<a href="/index.html" class="btn btn-default btn-lg" role="button">Home</a>
+				<a href="/example-tree-languages.html" class="btn btn-default btn-lg" role="button">Mono images</a>
+				<a href="/example-tree-languages.html" class="btn btn-default btn-lg" disabled="disabled" role="button">RGB color images</a>
+				<a href="/example-vrp.html" class="btn btn-default btn-lg" disabled="disabled" role="button">VRP</a>
+				<a href="/about.html" class="btn btn-default btn-lg" role="button">About</a>
+				<a href="/contact.html" class="btn btn-default btn-lg" role="button">Contact</a>
+			</div>
+		</div>
+	   
+		<div class="container" style="padding-top: 60px">
+			<div>
+				<div style="max-width: 613px; border: 1px solid black">
+					<div id="parents-div" class="view-container">
+						<canvas id="parent0" width="150" height="150"></canvas>
+						<canvas id="parent1" width="150" height="150"></canvas>
+						<canvas id="parent2" width="150" height="150"></canvas>
+						<canvas id="parent3" width="150" height="150"></canvas>
+					</div>
+					<div id="children-div" class="view-container" style="margin-top: 20px">
+						<canvas id="child0" width="150" height="150"></canvas>
+						<canvas id="child1" width="150" height="150"></canvas>
+						<canvas id="child2" width="150" height="150"></canvas>
+						<canvas id="child3" width="150" height="150"></canvas>
+						<canvas id="child4" width="150" height="150"></canvas>
+						<canvas id="child5" width="150" height="150"></canvas>
+						<canvas id="child6" width="150" height="150"></canvas>
+						<canvas id="child7" width="150" height="150"></canvas>		
+						<canvas id="child8" width="150" height="150"></canvas>
+						<canvas id="child9" width="150" height="150"></canvas>				
+						<canvas id="child10" width="150" height="150"></canvas>
+						<canvas id="child11" width="150" height="150"></canvas>		
+					</div>
+					<div id="comments-div" class="view-container">
+						<form>
+							<div>
+								<div style="margin-top: 20px; padding-left: 15px">
+									<div style="display: flex">
+										<div>
+											Object
+											<select id="languages-select" onchange="changeLanguageClass()" value="lisp-math-function-xy">
+												<option value="lisp-math-function-xy">lisp-math-function-xy</option>
+												<option value="lisp-math-function-x">lisp-math-function-x</option>
+												<option value="rgb-color-images">rgb-color-images</option>
+											</select>
+										</div>
+										<div style="padding-left: 10px">
+											Objective
+											<select id="fitness-select" >
+												<option value="Function x">Colorfull</option>
+												<option value="Function xy">None</option>
+											</select>
+										</div>
+									</div>							
+									<div>
+										Max time
+										<input type="text" value="1"/>
+									</div>
+									<div>
+										Max size
+										<input type="text" value="20"/>
+									</div>
+									<div style="margin-top: 10px">
+										Name: <input type="text" name="name"><br>
+										Comment: <input type="text" name="comment">
+									</div>
+									<div style="margin-top: 10px">
+										<input type="submit" value="Load"/>
+										<input type="submit" value="Save"/>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+	<script>	
+		var defaultLanguage;
+		var entitiesDictionary = {};
+		var childCount = 12, parentCount = 4;
+		var currentLanguage = document.getElementById("languages-select").value;
+		
+		var changeLanguageClass = function () {
+			currentLanguage = document.getElementById("languages-select").value;
+		}
+		
+		var startupDraw = function () {
+			var htmlCode = "";
+		/*	for (var i=0; i< parentCount; i++) {
+				var canvasId = "parent" + i.toString();
+				htmlCode += "<canvas id=\"" + canvasId + "\"width=\"150\" height=\"150\"></canvas>";
+			}
+			document.getElementById("parents-div").innerHtml = "<select id=\"languages-select\" >" + htmlCode + "</select>";  */
+			
+			for (var i=0; i< parentCount; i++) {
+				var canvasId = "parent" + i.toString();
+				createFunctionCallCreateDefault(canvasId);
+			}	
+		};
+		
+		function createFunctionCallCreateDefault(name) {
+			$.ajax({
+					type : 'GET',
+					url : "/messageCreateDefault",
+					data : { language: currentLanguage },
+					dataType : "text",
+					success : function(data) {
+						var result = data.split("|");
+						entitiesDictionary[name] = result[0];
+						if (result[0]=="default") alert("Default error");
+						initWebGL(name, result[1]);
+					},
+					error : function(data) {
+						console.log('Call failed');
+					}
+				});
+				return false;
+		}
+		
+		function createFunctionCallCreateRandom(name) {
+			$.ajax({
+					type : 'GET',
+					url : "/messageCreateRandom",
+					data : { language: currentLanguage, maxSize: "30" },
+					dataType : "text",
+					success : function(data) {
+						var result = data.split("|");
+						entitiesDictionary[name] = result[0];
+						if (result[0]=="default") alert("Default error");
+						initWebGL(name, result[1]);
+					},
+					error : function(data) {
+						console.log('Call failed');
+					}
+				});
+				return false;
+		}
+		
+		function createFunctionCallMutateOn(name, canvasId) {
+			$.ajax({
+					type : 'GET',
+					url : "/messageMutate",
+					data : { language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name] },
+					dataType : "text",
+					success : function(data) {
+						var result = data.split("|");
+						entitiesDictionary[canvasId] = result[0];
+						if (result[0]=="default") alert("Default error");
+						initWebGL(canvasId, result[1]);
+					},
+					error : function(data) {
+						console.log('Call failed');
+					}
+				});
+			
+			return false;
+		}
+		
+		function addCallBack(name) {
+			$("#" + name)
+				.click(function(evt) {
+					for (var i=0; i< childCount; i++) {
+						var canvasId = "child" + i.toString();
+						createFunctionCallMutateOn(name, canvasId);
+					}
+				})
+			/*	.dblclick(function(evt) {
+					createFunctionCallCreateRandom(name);
+				}) */;
+		};
+		
+		function initializeLanguages() {
+			defaultLanguage = "lisp-math-function-xy";
+			
+			$.ajax({
+				type : 'GET',
+				url : "/messageLanguages",
+				dataType : "text",
+				success : function(data) {
+					var htmlCode = "";
+					var values = data.split(" ");
+					
+					for (var i=0; i< values.length; i++) {	
+						htmlCode += "<option value=\"" + values[i] + "\">" + values[i] + "</option>";
+					}
+					
+					document.getElementById("languages-select").innerHtml = htmlCode;
+				},
+				error : function(data) {
+					console.log('Call failed');
+				}
+			});
+			return false;
+		};
+		
+		initializeLanguages(); 
+		addCallBack("parent0");
+		addCallBack("parent1");
+		addCallBack("parent2");
+		addCallBack("parent3");
+	</script>
+</html>

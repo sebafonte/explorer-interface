@@ -5,144 +5,140 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-	<title>Genetic explorer interface test</title>
+	<title>Genetic explorer test example</title>
 	<script src="glMatrix-0.9.5.min.js"></script>
 	<script src="webgl-utils.js"></script>
 	<script src="webgl-entities.js"></script>
 	<script src="jquery-1.11.1.min.js"></script>
-	
 	<link href="bootstrap.min.css" rel="stylesheet">
-    <link href="jumbotron.css" rel="stylesheet"><script src="bootstrap.min.js"></script>
-
   </head>
 
-  <body onload="startupDraw()">
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="#">Project name</a>
-        </div>
-        <div class="navbar-collapse collapse">
-          <form class="navbar-form navbar-right" role="form">
-            <div class="form-group">
-              <input type="text" placeholder="Email" class="form-control">
-            </div>
-            <div class="form-group">
-              <input type="password" placeholder="Password" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-success">Sign in</button>
-          </form>
-        </div>
-      </div>
-    </div>
-
-    <div class="container">
-	<div>
-		<div style="max-width: 613px; border: 1px solid black">
-			<div id="parents-div" class="view-container">
-				<canvas id="parent0" width="150" height="150"></canvas>
-				<canvas id="parent1" width="150" height="150"></canvas>
-				<canvas id="parent2" width="150" height="150"></canvas>
-				<canvas id="parent3" width="150" height="150"></canvas>
-			</div>
-			<div id="children-div" class="view-container" style="margin-top: 20px">
-				<canvas id="child0" width="150" height="150"></canvas>
-				<canvas id="child1" width="150" height="150"></canvas>
-				<canvas id="child2" width="150" height="150"></canvas>
-				<canvas id="child3" width="150" height="150"></canvas>
-				<canvas id="child4" width="150" height="150"></canvas>
-				<canvas id="child5" width="150" height="150"></canvas>
-				<canvas id="child6" width="150" height="150"></canvas>
-				<canvas id="child7" width="150" height="150"></canvas>
-				<canvas id="child8" width="150" height="150"></canvas>
-				<canvas id="child9" width="150" height="150"></canvas>
-				<canvas id="child10" width="150" height="150"></canvas>
-				<canvas id="child11" width="150" height="150"></canvas>	
-			</div>
-			<div id="comments-div" class="view-container">
-				<form>
-					<div>
-						<div style="margin-top: 20px; padding-left: 15px">
-							<div style="display: flex">
-								<div>
-									Object
-									<select>
-										<option value="Function x">Function x</option>
-										<option value="Function xy">Function xy</option>
-										<option value="RGB color">RGB color</option>
-										<option value="Texture">Texture</option>
-										<option value="Shader">Shader</option>
-									</select>
-								</div>
-								<div style="padding-left: 10px">
-									Objective
-									<select id="languages-select" >
-										<option value="Function x">Colorfull</option>
-										<option value="Function xy">None</option>
-									</select>
-								</div>
-							</div>
-							<div>
-								Max time
-								<input type="text" value="1"/>
-							</div>
-							<div>
-								Max size
-								<input type="text" value="20"/>
-							</div>
-							<div style="margin-top: 10px">
-								Name: <input type="text" name="name"><br>
-								Comment: <input type="text" name="comment">
-							</div>
-							<div style="margin-top: 10px">
-								<input type="submit" value="Load"/>
-								<input type="submit" value="Save"/>
-							</div>
-						</div>
+	<body onload="startupDraw()">
+		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+			<div class="container">
+				<div class="navbar-header">
+				  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				  </button>
+				  <a class="navbar-brand" href="#">Project name</a>
+				</div>
+				<div class="navbar-collapse collapse">
+				  <form class="navbar-form navbar-right" role="form">
+					<div class="form-group">
+					  <input type="text" placeholder="Email" class="form-control">
 					</div>
-				</form>
+					<div class="form-group">
+					  <input type="password" placeholder="Password" class="form-control">
+					</div>
+					<button type="submit" class="btn btn-success">Sign in</button>
+				  </form>
+				</div>
 			</div>
 		</div>
-	</div>
-    </div>
-</body>
 
-<script>	
+		<div class="container" style="padding-top: 60px">
+			<div>
+				<div style="max-width: 613px; border: 1px solid black">
+					<div id="parents-div" class="view-container">
+						<canvas id="parent0" width="150" height="150"></canvas>
+						<canvas id="parent1" width="150" height="150"></canvas>
+						<canvas id="parent2" width="150" height="150"></canvas>
+						<canvas id="parent3" width="150" height="150"></canvas>
+					</div>
+					<div id="children-div" class="view-container" style="margin-top: 20px">
+						<canvas id="child0" width="150" height="150"></canvas>
+						<canvas id="child1" width="150" height="150"></canvas>
+						<canvas id="child2" width="150" height="150"></canvas>
+						<canvas id="child3" width="150" height="150"></canvas>
+						<canvas id="child4" width="150" height="150"></canvas>
+						<canvas id="child5" width="150" height="150"></canvas>
+						<canvas id="child6" width="150" height="150"></canvas>
+						<canvas id="child7" width="150" height="150"></canvas>
+						<canvas id="child8" width="150" height="150"></canvas>
+						<canvas id="child9" width="150" height="150"></canvas>
+						<canvas id="child10" width="150" height="150"></canvas>
+						<canvas id="child11" width="150" height="150"></canvas>	
+					</div>
+					<div id="comments-div" class="view-container">
+						<form>
+							<div>
+								<div style="margin-top: 20px; padding-left: 15px">
+									<div style="display: flex">
+										<div>
+											Object
+											<select>
+												<option value="Function x">Function x</option>
+												<option value="Function xy">Function xy</option>
+												<option value="RGB color">RGB color</option>
+												<option value="Texture">Texture</option>
+												<option value="Shader">Shader</option>
+											</select>
+										</div>
+										<div style="padding-left: 10px">
+											Objective
+											<select id="languages-select" >
+												<option value="Function x">Colorfull</option>
+												<option value="Function xy">None</option>
+											</select>
+										</div>
+									</div>							
+									<div>
+										Max time
+										<input type="text" value="1"/>
+									</div>
+									<div>
+										Max size
+										<input type="text" value="20"/>
+									</div>
+									<div style="margin-top: 10px">
+										Name: <input type="text" name="name"><br>
+										Comment: <input type="text" name="comment">
+									</div>
+									<div style="margin-top: 10px">
+										<input type="submit" value="Load"/>
+										<input type="submit" value="Save"/>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+	<script>
 		var defaultLanguage;
-		
+		var entitiesDictionary = {};
+		var childCount = 12, parentCount = 4;
+
 		var startupDraw = function () {
 		/*	var htmlCode = "";
-			for (var i=0; i< 8; i++) {
+			for (var i=0; i< parentCount; i++) {
 				var canvasId = "parent" + i.toString();
 				htmlCode += "<canvas id=\"" + canvasId + "\"width=\"150\" height=\"150\"></canvas>";
 			}
 			document.getElementById("parents-div").innerHtml = htmlCode; */
 			
-			for (var i=0; i< 4; i++) {
+			for (var i=0; i< parentCount; i++) {
 				var canvasId = "parent" + i.toString();
-				createFunctionCallCreate(canvasId);
+				createFunctionCallCreateDefault(canvasId);
 			}	
-			
-		/*	for (var i=0; i< 12; i++) {
-				var canvasId = "child" + i.toString();
-			}	*/
 		};
-		
-		function createFunctionCallCreate(name) {
+
+		function createFunctionCallCreateDefault(name) {
 			$.ajax({
 					type : 'GET',
-					url : "/messageCreateRandom",
-					data : { language: "lisp-math-function-xy", maxSize: "30" },
+					url : "/messageCreateDefault",
+					data : { language: "lisp-math-function-xy" },
 					dataType : "text",
 					success : function(data) {
 						var result = data.split("|");
 						entitiesDictionary[name] = result[0];
+						if (result[0]=="default") alert("Default error");
 						initWebGL(name, result[1]);
 					},
 					error : function(data) {
@@ -152,7 +148,26 @@
 				return false;
 		}
 		
-		function createFunctionCallMutate(name, canvasId) {
+		function createFunctionCallCreateRandom(name) {
+			$.ajax({
+					type : 'GET',
+					url : "/messageCreateRandom",
+					data : { language: "lisp-math-function-xy", maxSize: "30" },
+					dataType : "text",
+					success : function(data) {
+						var result = data.split("|");
+						entitiesDictionary[name] = result[0];
+						if (result[0]=="default") alert("Default error");
+						initWebGL(name, result[1]);
+					},
+					error : function(data) {
+						console.log('Call failed');
+					}
+				});
+				return false;
+		}
+
+		function createFunctionCallMutateOn(name, canvasId) {
 			$.ajax({
 					type : 'GET',
 					url : "/messageMutate",
@@ -161,6 +176,7 @@
 					success : function(data) {
 						var result = data.split("|");
 						entitiesDictionary[canvasId] = result[0];
+						if (result[0]=="default") alert("Default error");
 						initWebGL(canvasId, result[1]);
 					},
 					error : function(data) {
@@ -170,20 +186,20 @@
 			
 			return false;
 		}
-		
+
 		function addCallBack(name) {
 			$("#" + name)
 				.click(function(evt) {
-					for (var i=0; i< 12; i++) {
+					for (var i=0; i< childCount; i++) {
 						var canvasId = "child" + i.toString();
-						createFunctionCallMutate(name, canvasId);
+						createFunctionCallMutateOn(name, canvasId);
 					}
 				})
 			/*	.dblclick(function(evt) {
-					createFunctionCallCreate(name);
+					createFunctionCallCreateRandom(name);
 				}) */;
 		};
-		
+
 		function initializeLanguages() {
 			defaultLanguage = "lisp-math-function-xy";
 			
@@ -207,11 +223,11 @@
 			});
 			return false;
 		};
-		
+
 		initializeLanguages(); 
 		addCallBack("parent0");
 		addCallBack("parent1");
 		addCallBack("parent2");
 		addCallBack("parent3");
 	</script>
-	</html>
+</html>

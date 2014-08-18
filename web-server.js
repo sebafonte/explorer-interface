@@ -7,7 +7,7 @@ net = require('net'),
 url = require('url'),
 querystring = require('querystring');
 
-var lispImageTCPTimeout = 0;
+var lispImageTCPTimeout = 100;
 
 // SYB init
 
@@ -104,6 +104,31 @@ function createRandom(res, language, maxSize) {
 	setTimeout(log_console,	lispImageTCPTimeout);
 }
 
+function createDefault(res, language) {
+	var socket = net.createConnection("20000", "127.0.0.1");
+	var returnData = "default";
+	
+	socket
+	.on('data', function(data) {
+	  returnData = data;
+	})
+	.on('connect', function() {
+	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-default) :content (list (quote " + language + ")))\n");
+	}).on('end', function() {
+	  //console.log('DONE');
+	}).on('close', function(data) {
+	  //console.log('CLOSED: ' + socket.remoteAddress +' '+ socket.remotePort);
+    });
+
+	function log_console() {
+	  //console.log("RETURN DATA: " + returnData);
+	  socket.destroy();
+	  res.end(returnData);
+	}
+	
+	setTimeout(log_console,	lispImageTCPTimeout);
+}
+
 function possibleLanguages(res) {
 	var socket = net.createConnection("20000", "127.0.0.1");
 	var returnData = "default";
@@ -157,6 +182,11 @@ function requestHandler(req, res) {
 		var arguments = querystring.parse(url.parse(req.url).query);
 		possibleLanguages(res);
 	}
+	else if (url.parse(req.url).pathname == "/messageCreateDefault")	
+	{
+		var arguments = querystring.parse(url.parse(req.url).query);
+		createDefault(res, arguments.language);
+	}	
 	else if (url.parse(req.url).pathname == "/messageCreateRandom")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);

@@ -1,13 +1,10 @@
 // Global default vars
-var sampleEntity = "cos(x) * cos(y)";
-var sampleEntityType = "entity-bw";
 var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
-var shaderProgram;
-var triangleVertexPositionBuffer;
 var squareVertexPositionBuffer;
+var shaderProgram;
 var gl;
-
+		
 // Init functions
 function initWebGL(canvas, entity) {
     var canvas = document.getElementById(canvas);
@@ -24,7 +21,8 @@ function initGL(canvas) {
 		gl = canvas.getContext("experimental-webgl");
 		gl.viewportWidth = canvas.width;
 		gl.viewportHeight = canvas.height;
-	} catch (e) {
+	} 
+	catch (e) {
 	}
 	if (!gl) {
 		alert("Could not initialise WebGL");
@@ -32,17 +30,6 @@ function initGL(canvas) {
 }
 
 function initBuffers() {
-    triangleVertexPositionBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
-	var vertices = [
-		 0.0,  1.0,  0.0,
-		-1.0, -1.0,  0.0,
-		 1.0, -1.0,  0.0
-	];
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-	triangleVertexPositionBuffer.itemSize = 3;
-	triangleVertexPositionBuffer.numItems = 3;
-
 	squareVertexPositionBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
 	vertices = [
@@ -50,45 +37,39 @@ function initBuffers() {
 		-1.0,  1.0,  0.0,
 		 1.0, -1.0,  0.0,
 		-1.0, -1.0,  0.0
-	];
+	];	
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	squareVertexPositionBuffer.itemSize = 3;
 	squareVertexPositionBuffer.numItems = 4;
 }
 
-var myVertexShaderSrc =
+var myVertexShaderSrc =         
 	"attribute vec3 aVertexPosition; " +
 	"uniform mat4 uMVMatrix; " + 
 	"uniform mat4 uPMatrix; " + 
-	"varying float xpos; " + 
-	"varying float ypos; " + 
-	"varying float zpos; " +
+	"varying float x; " + 
+	"varying float y; " + 
 	" " + 
 	"void main(void) { " + 
 	"	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 2.0); " + 
-	"	float scale = 20.0; " + 
-	"	float value = abs(sin(aVertexPosition.x * scale) * cos(aVertexPosition.y * scale)); " + 
-	"	xpos = clamp(aVertexPosition.x,0.0,1.0); " + 
-	"	ypos = clamp(aVertexPosition.y,0.0,1.0); " + 
-	"	zpos = clamp(aVertexPosition.z,0.0,1.0); " + 
+	"	x = clamp(aVertexPosition.x,0.0,1.0); " + 
+	"	y = clamp(aVertexPosition.y,0.0,1.0); " + 
 	"}";
 
 var myFragmentShaderSrc =         
 	"precision mediump float; " + 
 	"varying vec4 vColor; " + 
-	"varying float xpos; " + 
-	"varying float ypos; " + 
-	"varying float zpos; " + 
+	"varying float x; " + 
+	"varying float y; " + 
 	"" + 
-	"float divideprotected(in float a, in float b) { return a / b; }" + 
+	"float divideprotected(in float a, in float b) { if (b != 0.0) return a / b; else return 0.0; } " + 
+	"float sqr(in float a) { return pow(a, 2.0); } " + 
 	"" + 
 	"void main(void) { " + 
-	"	float x = xpos; " + 
-	"	float y = ypos; " + 
-	"	float value = VALUE; " + 
-	"	gl_FragColor = vec4(xpos, ypos, zpos, 1.0); " + 
+	"	float v = VALUE; " +
+	"	gl_FragColor = vec4(v, v, v, 1.0); " + 
 	"}";
-
+		
 function initShaders(entity) {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderSrc);
@@ -104,7 +85,7 @@ function initShaders(entity) {
 	gl.linkProgram(shaderProgram);
 
 	if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-		alert("Could not initialise shaders");
+		alert("Could not initialise shaders for " + entity);
 	}
 
 	gl.useProgram(shaderProgram);
@@ -117,39 +98,4 @@ function initShaders(entity) {
 function setMatrixUniforms() {
 	gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
 	gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
-}
-
-function getShader(gl, id) {
-	var shaderScript = document.getElementById(id);
-	if (!shaderScript) {
-		return null;
-	}
-
-	var str = "";
-	var k = shaderScript.firstChild;
-	while (k) {
-		if (k.nodeType == 3) {
-			str += k.textContent;
-		}
-		k = k.nextSibling;
-	}
-
-	var shader;
-	if (shaderScript.type == "x-shader/x-fragment") {
-		shader = gl.createShader(gl.FRAGMENT_SHADER);
-	} else if (shaderScript.type == "x-shader/x-vertex") {
-		shader = gl.createShader(gl.VERTEX_SHADER);
-	} else {
-		return null;
-	}
-
-	gl.shaderSource(shader, str);
-	gl.compileShader(shader);
-
-	if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-		alert(gl.getShaderInfoLog(shader));
-		return null;
-	}
-
-	return shader;
 }

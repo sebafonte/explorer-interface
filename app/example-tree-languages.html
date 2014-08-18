@@ -24,29 +24,30 @@
 				<a href="/contact.html" class="btn btn-default btn-lg" role="button">Contact</a>
 			</div>
 		</div>
-	   
+		
 		<div class="container" style="padding-top: 60px">
 			<div>
-				<div style="max-width: 613px; border: 1px solid black">
-					<div id="parents-div" class="view-container">
-						<canvas id="parent0" width="150" height="150"></canvas>
-						<canvas id="parent1" width="150" height="150"></canvas>
-						<canvas id="parent2" width="150" height="150"></canvas>
-						<canvas id="parent3" width="150" height="150"></canvas>
+				<div id="main-div" style="max-width: 613px; border: 1px solid black">
+					<div id="parents-div" class="view-container" style="margin-bottom: 5px">
+						<canvas id="parent0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="parent1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="parent2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="parent3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 					</div>
-					<div id="children-div" class="view-container" style="margin-top: 20px">
-						<canvas id="child0" width="150" height="150"></canvas>
-						<canvas id="child1" width="150" height="150"></canvas>
-						<canvas id="child2" width="150" height="150"></canvas>
-						<canvas id="child3" width="150" height="150"></canvas>
-						<canvas id="child4" width="150" height="150"></canvas>
-						<canvas id="child5" width="150" height="150"></canvas>
-						<canvas id="child6" width="150" height="150"></canvas>
-						<canvas id="child7" width="150" height="150"></canvas>		
-						<canvas id="child8" width="150" height="150"></canvas>
-						<canvas id="child9" width="150" height="150"></canvas>				
-						<canvas id="child10" width="150" height="150"></canvas>
-						<canvas id="child11" width="150" height="150"></canvas>		
+					<input type="submit" value="Operate" onclick="operate()" style="width: 100%"/>
+					<div id="children-div" class="view-container" style="margin-top: 10px">
+						<canvas id="child0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child4" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child5" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child6" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child7" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
+						<canvas id="child8" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child9" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>				
+						<canvas id="child10" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child11" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
 					</div>
 					<div id="comments-div" class="view-container">
 						<form>
@@ -68,7 +69,7 @@
 												<option value="Function xy">None</option>
 											</select>
 										</div>
-									</div>							
+									</div>
 									<div>
 										Max time
 										<input type="text" value="1"/>
@@ -94,14 +95,53 @@
 		</div>
 	</body>
 
-	<script>	
+	<script>		
 		var defaultLanguage;
 		var entitiesDictionary = {};
 		var childCount = 12, parentCount = 4;
 		var currentLanguage = document.getElementById("languages-select").value;
 		
+		function operate()
+		{
+			for (var i=0; i< childCount; i++) {
+				var canvasId = "child" + i.toString();
+				
+				if (Math.floor(Math.random() * 10) < 5)
+					createFunctionCallMutateOn( 
+						"parent" + Math.floor(Math.random() * parentCount).toString(),
+						canvasId);
+				else
+					createFunctionCallCrossoverOn(
+						"parent" + Math.floor((Math.random() * parentCount)).toString(), 
+						"parent" + Math.floor((Math.random() * parentCount)).toString(),
+						canvasId);
+			}
+		}
+						
 		var changeLanguageClass = function () {
 			currentLanguage = document.getElementById("languages-select").value;
+		}
+
+		function allowDrop(ev) {
+			ev.preventDefault();
+		}
+
+		function drag(ev) {
+			ev.dataTransfer.setData("Text", ev.target.id);
+		}
+
+		function drop(ev) {
+			ev.preventDefault();
+
+			var value = ev.dataTransfer.getData("Text");
+			var result = entitiesDictionary[value];
+			entitiesDictionary[ev.target.id] = result;
+			if (result=="default") alert("Default error");
+			initWebGL(ev.target.id, result[1]);
+		}
+		
+		function defaultError () {
+			//alert("Default error");
 		}
 		
 		var startupDraw = function () {
@@ -126,9 +166,11 @@
 					dataType : "text",
 					success : function(data) {
 						var result = data.split("|");
-						entitiesDictionary[name] = result[0];
-						if (result[0]=="default") alert("Default error");
-						initWebGL(name, result[1]);
+						entitiesDictionary[name] = result;
+						if (result[0]=="default") 
+							defaultError();
+						else
+							initWebGL(name, result[1]);
 					},
 					error : function(data) {
 						console.log('Call failed');
@@ -136,7 +178,7 @@
 				});
 				return false;
 		}
-		
+
 		function createFunctionCallCreateRandom(name) {
 			$.ajax({
 					type : 'GET',
@@ -145,8 +187,11 @@
 					dataType : "text",
 					success : function(data) {
 						var result = data.split("|");
-						entitiesDictionary[name] = result[0];
-						if (result[0]=="default") alert("Default error");
+						entitiesDictionary[name] = result;
+						if (result[0]=="default") 
+							defaultError();
+						else
+							initWebGL(name, result[1]);
 						initWebGL(name, result[1]);
 					},
 					error : function(data) {
@@ -155,17 +200,43 @@
 				});
 				return false;
 		}
-		
+
 		function createFunctionCallMutateOn(name, canvasId) {
 			$.ajax({
 					type : 'GET',
 					url : "/messageMutate",
-					data : { language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name] },
+					data : { language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name][0] },
 					dataType : "text",
 					success : function(data) {
 						var result = data.split("|");
-						entitiesDictionary[canvasId] = result[0];
-						if (result[0]=="default") alert("Default error");
+						entitiesDictionary[canvasId] = result;
+						if (result[0]=="default") 
+							defaultError();
+						else
+							initWebGL(canvasId, result[1]);
+						initWebGL(canvasId, result[1]);
+					},
+					error : function(data) {
+						console.log('Call failed');
+					}
+				});
+			
+			return false;
+		}
+
+		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
+			$.ajax({
+					type : 'GET',
+					url : "/messageCrossover",
+					data : { language: currentLanguage, maxSize: "50", objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
+					dataType : "text",
+					success : function(data) {
+						var result = data.split("|");
+						entitiesDictionary[canvasId] = result;
+						if (result[0]=="default") 
+							defaultError();
+						else
+							initWebGL(canvasId, result[1]);
 						initWebGL(canvasId, result[1]);
 					},
 					error : function(data) {
@@ -176,17 +247,14 @@
 			return false;
 		}
 		
-		function addCallBack(name) {
+		function addParentCallBack(name) {
 			$("#" + name)
 				.click(function(evt) {
 					for (var i=0; i< childCount; i++) {
 						var canvasId = "child" + i.toString();
 						createFunctionCallMutateOn(name, canvasId);
 					}
-				})
-			/*	.dblclick(function(evt) {
-					createFunctionCallCreateRandom(name);
-				}) */;
+				});
 		};
 		
 		function initializeLanguages() {
@@ -214,9 +282,9 @@
 		};
 		
 		initializeLanguages(); 
-		addCallBack("parent0");
-		addCallBack("parent1");
-		addCallBack("parent2");
-		addCallBack("parent3");
+		addParentCallBack("parent0");
+		addParentCallBack("parent1");
+		addParentCallBack("parent2");
+		addParentCallBack("parent3");
 	</script>
 </html>

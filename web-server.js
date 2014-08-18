@@ -7,7 +7,7 @@ net = require('net'),
 url = require('url'),
 querystring = require('querystring');
 
-var lispImageTCPTimeout = 100;
+var lispImageTCPTimeout = 200;
 
 // SYB init
 
@@ -32,7 +32,7 @@ function getFile(filePath,res,page404){
     //does the requested file exist?
     fs.exists(filePath,function(exists){
         //if it does...
-        console.log("PATH: " + filePath);
+        //console.log("PATH: " + filePath);
 		
 		if  ("D:\\nodejs\\explorer-interface/app/dir" == filePath)
 		{
@@ -51,7 +51,7 @@ function getFile(filePath,res,page404){
 				);
 				
 				function log_console() {
-				  console.log(foo.stdout);
+				  //console.log(foo.stdout);
 				  res.end(foo.stdout);
 				}
 				
@@ -161,6 +161,28 @@ function mutateFunctions(res, language, objectData, maxSize) {
 		returnData = data;
 	}).on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate) :content (list (quote " + language + ") (quote " + objectData + ") " + maxSize.toString() + "))\n");
+	}).on('end', function() {
+	  //console.log('DONE');
+	}).on('close', function(data) {
+	  //console.log('CLOSED: ' + socket.remoteAddress +' '+ socket.remotePort);
+    });
+	
+	function log_console() {
+	  socket.destroy();
+	  res.end(returnData);
+	}
+
+	setTimeout(log_console,	lispImageTCPTimeout);
+};
+
+function crossoverFunctions(res, language, objectDataA, objectDataB, maxSize) {
+	var socket = net.createConnection("20000", "127.0.0.1");
+	var returnData = "default";
+	
+	socket.on('data', function(data) {
+		returnData = data;
+	}).on('connect', function() {
+		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-crossover) :content (list (quote " + language + ") (quote " + objectDataA + ") (quote " + objectDataB + ") " + maxSize.toString() + "))\n");
 	}).on('end', function() {
 	  //console.log('DONE');
 	}).on('close', function(data) {

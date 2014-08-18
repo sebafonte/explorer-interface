@@ -56,7 +56,7 @@ var myVertexShaderSrc =
 	"	yy = clamp(aVertexPosition.y,0.0,1.0); " + 
 	"}";
 
-var myFragmentShaderSrc =
+var myFragmentShaderSrc = 
 	"precision mediump float; " + 
 	"varying vec4 vColor; " + 
 	"varying float xx; " + 
@@ -85,7 +85,7 @@ var myFragmentShaderRGBSrc =
 	"	float v = VALUE; " +
 	"	gl_FragColor = vec4(v, v, v, 1.0); " + 
 	"}";
-
+	
 function initShaders(entity) {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderSrc);

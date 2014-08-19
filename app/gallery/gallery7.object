@@ -1,0 +1,1 @@
+lisp-math-function-xy | (- (ABS (+ 1 8)) (+ -0.653 (/- 0.139 (* 0.78907234 (* (COS X) (COS Y))))))  |  (ABS((1.0000+8.0000))-(-0.6530+DIVIDEPROTECTED(0.1390,(0.7891*(COS(X)*COS(Y))))))

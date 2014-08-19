@@ -1,0 +1,1 @@
+lisp-math-function-xy | (- (SIN (* X Y)) (+ -0.653 Y))  |  (SIN((X*Y))-(-0.6530+Y))

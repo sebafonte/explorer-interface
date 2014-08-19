@@ -4,7 +4,7 @@ var pMatrix = mat4.create();
 var squareVertexPositionBuffer;
 var shaderProgram;
 var gl;
-
+		
 // Init functions
 function initWebGL(canvas, entity) {
     var canvas = document.getElementById(canvas);
@@ -43,7 +43,7 @@ function initBuffers() {
 	squareVertexPositionBuffer.numItems = 4;
 }
 
-var myVertexShaderSrc = 
+var myVertexShaderSrc =         
 	"attribute vec3 aVertexPosition; " +
 	"uniform mat4 uMVMatrix; " + 
 	"uniform mat4 uPMatrix; " + 
@@ -56,7 +56,7 @@ var myVertexShaderSrc =
 	"	yy = clamp(aVertexPosition.y,0.0,1.0); " + 
 	"}";
 
-var myFragmentShaderSrc = 
+var myFragmentShaderSrc =         
 	"precision mediump float; " + 
 	"varying vec4 vColor; " + 
 	"varying float xx; " + 
@@ -71,7 +71,7 @@ var myFragmentShaderSrc =
 	"	gl_FragColor = vec4(v, v, v, 1.0); " + 
 	"}";
 
-var myFragmentShaderRGBSrc = 
+var myFragmentShaderRGBSrc =         
 	"precision mediump float; " + 
 	"varying vec4 vColor; " + 
 	"varying float xx; " + 
@@ -80,12 +80,29 @@ var myFragmentShaderRGBSrc =
 	"float divideprotected(in float a, in float b) { if (b != 0.0) return a / b; else return 0.0; } " + 
 	"float sqr(in float a) { return pow(a, 2.0); } " + 
 	"" + 
+	"float vecAbs(in float a) { return pow(a, 2.0); } " + 
+	"float vecAbs(in vec3 a) { return 2.0; } " + 
+	"" + 
 	"void main(void) { " + 
-	"	float x = xx * 10.0, y = yy * 10.0; " + 
+	"	float x = xx * 10.0, y = yy * 10.0; " + 	
 	"	float v = VALUE; " +
 	"	gl_FragColor = vec4(v, v, v, 1.0); " + 
 	"}";
-	
+/*
+	vecColorMapA(
+	vecCrop(
+	vecAbs
+	vecSin
+	vecCos
+	vecTan
+	vecLog
+	vecExp
+	vecAdd
+	vecMultiply
+	vecDiv
+	vecSubtract
+*/
+
 function initShaders(entity) {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderSrc);

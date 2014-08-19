@@ -9,32 +9,42 @@
 	<script src="glMatrix-0.9.5.min.js"></script>
 	<script src="webgl-utils.js"></script>
 	<script src="webgl-entities.js"></script>
-	<script src="jquery-1.11.1.min.js"></script>
 	<link href="bootstrap.min.css" rel="stylesheet">
   </head>
 
-	<body data-spy="scroll" data-target=".navbar-example" onload="startupDraw()">
-		<div class="navbar-example navbar-inverse navbar-fixed-top">
-			<div class="nav nav-tabs btn-primary" role="tablist">
-				<a href="/index.html" class="btn btn-default btn-lg" role="button">Home</a>
-				<a href="/example-tree-languages.html" class="btn btn-default btn-lg" role="button">Mono images</a>
-				<a href="/example-tree-languages.html" class="btn btn-default btn-lg" disabled="disabled" role="button">RGB color images</a>
-				<a href="/example-vrp.html" class="btn btn-default btn-lg" disabled="disabled" role="button">VRP</a>
-				<a href="/about.html" class="btn btn-default btn-lg" role="button">About</a>
-				<a href="/contact.html" class="btn btn-default btn-lg" role="button">Contact</a>
+	<body onload="startupDraw()">
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+		  <div class="container">
+			<div class="navbar-collapse">
+			  <ul class="nav navbar-nav">
+				<li><a href="/index.html">Home</a></li>
+				<li><a href="/about.html">About</a></li>
+				<li><a href="/blog.html">Blog</a></li>								
+				<li><a href="/contact.html">Contact</a></li>
+				<li class="dropdown">              
+				  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
+				  <ul class="dropdown-menu active" role="menu">
+					<li><a href="/example-tree-languages.html">Mono images</a></li>
+					<li><a href="/example-tree-languages.html" disabled="disabled">RGB color images</a></li>
+					<li><a href="/example-vrp.html" disabled="disabled">VRP</a></li>
+					<li><a href="/gallery.html" disabled="disabled">Gallery</a></li>
+				  </ul>
+				</li>
+			  </ul>
 			</div>
+		  </div>
 		</div>
-		
+			
 		<div class="container" style="padding-top: 60px">
 			<div>
-				<div id="main-div" style="max-width: 613px; border: 1px solid black">
+				<div id="main-div" style="max-width: 613px; border: 1px solid lightgray">
 					<div id="parents-div" class="view-container" style="margin-bottom: 5px">
 						<canvas id="parent0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						<canvas id="parent1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						<canvas id="parent2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						<canvas id="parent3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 					</div>
-					<input type="submit" value="Operate" onclick="operate()" style="width: 100%"/>
+					<input type="submit" value="Operate" onclick="operate()" style="width: 100%; background-color: #5cb85c"/>
 					<div id="children-div" class="view-container" style="margin-top: 10px">
 						<canvas id="child0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						<canvas id="child1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
@@ -64,27 +74,29 @@
 										</div>
 										<div style="padding-left: 10px">
 											Objective
-											<select id="fitness-select" >
-												<option value="Function x">Colorfull</option>
+											<select id="fitness-select" disabled>
 												<option value="Function xy">None</option>
+												<option value="Function x">Colorfull</option>
 											</select>
 										</div>
-									</div>
-									<div>
-										Max time
-										<input type="text" value="1"/>
-									</div>
-									<div>
-										Max size
-										<input type="text" value="20"/>
-									</div>
-									<div style="margin-top: 10px">
-										Name: <input type="text" name="name"><br>
-										Comment: <input type="text" name="comment">
+									</div>			
+									<div style="display: flex">									
+										<div style="margin-left: 5px">
+											Max time
+											<input type="text" value="1" disabled/>
+										</div>
+										<div style="margin-left: 20px">
+											Max size
+											<input type="text" value="20" disabled/>
+										</div>
 									</div>
 									<div style="margin-top: 10px">
-										<input type="submit" value="Load"/>
-										<input type="submit" value="Save"/>
+										Name: <input type="text" name="name" style="width: 500px; margin-left: 23px" disabled/><br>
+										Comment: <textarea class="form-control" rows="2" style="width: 500px" disabled></textarea>
+									</div>
+									<div style="margin-top: 10px">
+										<input type="button" value="Load"/>
+										<input type="button" value="Save" onclick="saveDefaultGallery()"/>
 									</div>
 								</div>
 							</div>
@@ -95,11 +107,31 @@
 		</div>
 	</body>
 
+	<script src="jquery-1.11.1.min.js"></script>	
+	<script src="bootstrap.min.js"></script>	
+		
 	<script>		
 		var defaultLanguage;
 		var entitiesDictionary = {};
 		var childCount = 12, parentCount = 4;
 		var currentLanguage = document.getElementById("languages-select").value;
+		
+		var saveDefaultGallery = function saveDefaultGallery () {
+			var qname       = 'a_queue';
+			var concurrent_calls = 2;
+	
+			for (var i=0; i< parentCount; i++) {
+				createFunctionCallSetGalleryElement(qname, "parent" + i.toString(), i);
+			}
+			
+			for (var i=0; i< childCount; i++) {
+				createFunctionCallSetGalleryElement(qname, "child" + i.toString(), i);
+			}
+			
+			for (i=0;i<concurrent_calls;i++) {
+				$(document).dequeue(qname);
+			}
+		}
 		
 		function operate()
 		{
@@ -120,7 +152,7 @@
 						
 		var changeLanguageClass = function () {
 			currentLanguage = document.getElementById("languages-select").value;
-		}
+		};
 
 		function allowDrop(ev) {
 			ev.preventDefault();
@@ -132,7 +164,6 @@
 
 		function drop(ev) {
 			ev.preventDefault();
-
 			var value = ev.dataTransfer.getData("Text");
 			var result = entitiesDictionary[value];
 			entitiesDictionary[ev.target.id] = result;
@@ -141,7 +172,7 @@
 		}
 		
 		function defaultError () {
-			//alert("Default error");
+			alert("Default error");
 		}
 		
 		var startupDraw = function () {
@@ -159,76 +190,47 @@
 		};
 		
 		function createFunctionCallCreateDefault(name) {
-			$.ajax({
-					type : 'GET',
-					url : "/messageCreateDefault",
-					data : { language: currentLanguage },
-					dataType : "text",
-					success : function(data) {
-						var result = data.split("|");
-						entitiesDictionary[name] = result;
-						if (result[0]=="default") 
-							defaultError();
-						else
-							initWebGL(name, result[1]);
-					},
-					error : function(data) {
-						console.log('Call failed');
-					}
-				});
-				return false;
+			createFunctionGeneric(name, { language: currentLanguage }, "/messageCreateDefault");
 		}
-
+		
 		function createFunctionCallCreateRandom(name) {
-			$.ajax({
-					type : 'GET',
-					url : "/messageCreateRandom",
-					data : { language: currentLanguage, maxSize: "30" },
-					dataType : "text",
-					success : function(data) {
-						var result = data.split("|");
-						entitiesDictionary[name] = result;
-						if (result[0]=="default") 
-							defaultError();
-						else
-							initWebGL(name, result[1]);
-						initWebGL(name, result[1]);
-					},
-					error : function(data) {
-						console.log('Call failed');
-					}
-				});
-				return false;
+			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: "30" }, "/messageCreateRandom");
 		}
-
+		
 		function createFunctionCallMutateOn(name, canvasId) {
-			$.ajax({
-					type : 'GET',
-					url : "/messageMutate",
-					data : { language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name][0] },
-					dataType : "text",
-					success : function(data) {
-						var result = data.split("|");
-						entitiesDictionary[canvasId] = result;
-						if (result[0]=="default") 
-							defaultError();
-						else
-							initWebGL(canvasId, result[1]);
-						initWebGL(canvasId, result[1]);
-					},
-					error : function(data) {
-						console.log('Call failed');
-					}
-				});
-			
-			return false;
+			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name][0] }, "/messageMutate");
 		}
-
+		
 		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
+			createFunctionGeneric(
+				canvasId,
+				{ language: currentLanguage, maxSize: "50", objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
+				"/messageCrossover");
+		}
+		
+		function createFunctionCallSetGalleryElement(qname, name, index) {
+			// #TODO: Modificar por un POST
+			$(document).queue(qname, function() {
+				$.ajax({
+						type : 'GET',
+						url : "/messageGallerySetElement",
+						data : { index: index.toString(), language: currentLanguage, objectDataA: entitiesDictionary[name][0], objectDataB: entitiesDictionary[name][1] },
+						dataType : "text",
+						success : function(data) { 
+							 $(document).dequeue(qname);
+						},
+						error : function(data) {
+							console.log('Call failed');
+					}
+				});
+			};
+		}
+		
+		function createFunctionGeneric(canvasId, arguments, message) {
 			$.ajax({
 					type : 'GET',
-					url : "/messageCrossover",
-					data : { language: currentLanguage, maxSize: "50", objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
+					url : message,
+					data : arguments,
 					dataType : "text",
 					success : function(data) {
 						var result = data.split("|");
@@ -237,15 +239,13 @@
 							defaultError();
 						else
 							initWebGL(canvasId, result[1]);
-						initWebGL(canvasId, result[1]);
 					},
 					error : function(data) {
 						console.log('Call failed');
-					}
-				});
-			
-			return false;
+				}
+			});
 		}
+		
 		
 		function addParentCallBack(name) {
 			$("#" + name)
@@ -255,7 +255,7 @@
 						createFunctionCallMutateOn(name, canvasId);
 					}
 				});
-		};
+		}
 		
 		function initializeLanguages() {
 			defaultLanguage = "lisp-math-function-xy";
@@ -278,7 +278,6 @@
 					console.log('Call failed');
 				}
 			});
-			return false;
 		};
 		
 		initializeLanguages(); 
@@ -286,5 +285,5 @@
 		addParentCallBack("parent1");
 		addParentCallBack("parent2");
 		addParentCallBack("parent3");
-	</script>
+	</script>		
 </html>

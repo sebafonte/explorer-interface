@@ -7,7 +7,8 @@ net = require('net'),
 url = require('url'),
 querystring = require('querystring');
 
-var lispImageTCPTimeout = 200;
+var lispImageTCPTimeout = 100;
+http.globalAgent.maxSockets = 3;
 
 // SYB init
 
@@ -27,37 +28,31 @@ function run_cmd(cmd, args, cb) {
 	});
 }
 
-//helper function handles file verification
-function getFile(filePath,res,page404){
-    //does the requested file exist?
-    fs.exists(filePath,function(exists){
-        //if it does...
-        //console.log("PATH: " + filePath);
-		
-		if  ("D:\\nodejs\\explorer-interface/app/dir" == filePath)
-		{
-				function run_cmd(cmd, args, cb, end) {
-					var spawn = require('child_process').spawn,
-						child = spawn(cmd, args),
-						me = this;
-					child.stdout.on('data', function (buffer) { cb(me, buffer) });
-					child.stdout.on('end', end);
-				}
+function messageCommand (command, arguments) {
+	function run_cmd(cmd, args, cb, end) {
+		var spawn = require('child_process').spawn,
+			child = spawn(cmd, args),
+			me = this;
+		child.stdout.on('data', function (buffer) { cb(me, buffer) });
+		child.stdout.on('end', end);
+	}
 
-				var foo = new run_cmd(
-					'netstat.exe', ['-an'],
-					function (me, buffer) { me.stdout += buffer.toString() },
-					function () { console.log(foo.stdout) }
-				);
-				
-				function log_console() {
-				  //console.log(foo.stdout);
-				  res.end(foo.stdout);
-				}
-				
-				setTimeout(log_console,	lispImageTCPTimeout);
-		}
-		else if (exists){
+	var foo = new run_cmd(
+		command, arguments.split(" ").toArray(),
+		function (me, buffer) { me.stdout += buffer.toString() },
+		function () { console.log(foo.stdout) }
+	);
+	
+	function log_console() {
+	  res.end(foo.stdout);
+	}
+	
+	setTimeout(log_console,	lispImageTCPTimeout);
+}
+
+function getFile(filePath, res, page404){
+    fs.exists(filePath,function(exists) {
+		if (exists){
             fs.readFile(filePath,function(err,contents){
                 if(!err){
                     res.end(contents);
@@ -77,6 +72,16 @@ function getFile(filePath,res,page404){
             });
         };
     });
+}
+
+function setFile(filePath, data) {
+	fs.writeFile(filePath, data, function(err){
+		if (err)
+			throw err;
+		else {
+			console.log("Saved file " + filePath);
+		};
+	});
 }
 
 function createRandom(res, language, maxSize) {
@@ -197,6 +202,33 @@ function crossoverFunctions(res, language, objectDataA, objectDataB, maxSize) {
 	setTimeout(log_console,	lispImageTCPTimeout);
 };
 
+function gallerGetAll(res, maxSize) {
+	var result = [];
+	
+	for (var i=0; i< 16; i++)
+	{
+		var fileName = path.basename(req.url) || 'gallery' + index.toString() + ".object",
+			localFolder = __dirname + '/app/gallery',
+			page404 = localFolder + "\\" + '404.html';
+			
+		getFile((localFolder + fileName), res, page404);
+	}
+};
+
+function galleryGetElement(res, req, index) {
+	var fileName = 'gallery' + index.toString() + ".object",
+		localFolder = __dirname + '/app/gallery',
+		page404 = localFolder + '\\404.html';
+	getFile((localFolder + "/" + fileName), res, page404);
+};
+
+function gallerySetElement(req, index, language, objectDataA, objectDataB) {
+	console.log(index);
+	var fileName = 'gallery' + index.toString() + ".object",
+		localFolder = __dirname + '/app/gallery';
+	setFile(localFolder + "/" + fileName, language + " | " + objectDataA + " | " + objectDataB);
+};
+
 // Helper for HTTP requests
 function requestHandler(req, res) {	
 	if (url.parse(req.url).pathname == "/messageLanguages")	
@@ -204,6 +236,21 @@ function requestHandler(req, res) {
 		var arguments = querystring.parse(url.parse(req.url).query);
 		possibleLanguages(res);
 	}
+	else if (url.parse(req.url).pathname == "/messageGallerySetElement")	
+	{
+		var arguments = querystring.parse(url.parse(req.url).query);
+		gallerySetElement(req, arguments.index, arguments.language, arguments.objectDataA, arguments.objectDataB);
+	}
+	else if (url.parse(req.url).pathname == "/messageGalleryGetElement")	
+	{
+		var arguments = querystring.parse(url.parse(req.url).query);
+		galleryGetElement(res, req, arguments.index);
+	}
+	else if (url.parse(req.url).pathname == "/messageGalleryGetAll")	
+	{
+		var arguments = querystring.parse(url.parse(req.url).query);
+		galleryGetAll(res, arguments.maxSize);
+	}	
 	else if (url.parse(req.url).pathname == "/messageCreateDefault")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);

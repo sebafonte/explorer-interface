@@ -1,0 +1,1 @@
+lisp-math-function-xy | (- (SIN (* X Y)) (+ (COS (+ 2 (SIN (/- (+ X (ABS (SQR 6))) (SIN (ABS X)))))) (/- 0.139 (* 0.78907234 (* (COS X) (COS Y))))))  |  (SIN((X*Y))-(COS((2.0000+SIN(DIVIDEPROTECTED((X+ABS(SQR(6.0000))),SIN(ABS(X))))))+DIVIDEPROTECTED(0.1390,(0.7891*(COS(X)*COS(Y))))))

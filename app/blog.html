@@ -1,0 +1,255 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+	<title>Genetic explorer test example</title>
+	<script src="jquery-1.11.1.min.js"></script>
+	<link href="bootstrap.min.css" rel="stylesheet">
+  </head>
+
+	<body>
+	<div class="container">
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: indigo">
+			<div class="container">
+				<div class="navbar-collapse">
+				  <ul class="nav navbar-nav">
+					<li><a style="text-shadow: none;" href="/index.html">Home</a></li>
+					<li><a style="text-shadow: none;" href="/about.html">About</a></li>
+					<li class="active"><a style="text-shadow: none;" href="/blog.html">Blog</a></li>								
+					<li><a style="text-shadow: none;" href="/contact.html">Contact</a></li>
+					<li class="dropdown">              
+					  <a style="text-shadow: none;" href="/example-tree-languages.html" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
+					  <ul class="dropdown-menu" role="menu">
+						<li><a style="text-shadow: none;" href="/example-tree-languages.html">Mono images</a></li>
+						<li><a style="text-shadow: none;" href="/gallery.html" disabled="disabled">Gallery</a></li>
+					  </ul>
+					</li>
+				  </ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="container" style="padding-top: 80px">
+			<div class="container"">
+				<h1>17/10/2011 report</h1>
+				<h2>OpenGL graphic panes fonts starting</h2>
+				<p>Been working to make OpenGL visualization acceptable. The time to put fonts has become and i hate this topic personally. Here i show how horrible fonts are at first  in this visualization mode. </p>
+				<p><a href="opengl-fonts-first-example.PNG"><img src="tn_opengl-fonts-first-example.PNG" width="220" height="103"></a></p>
+				<p>&nbsp;</p>
+				<p>&nbsp;</p>
+				</body>
+			<div/>
+			
+			
+			<div class="accordion" id="accordion2">
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+        Collapsible Group Item #1
+      </a>
+    </div>
+    <div id="collapseOne" class="accordion-body collapse in">
+      <div class="accordion-inner">
+        Anim pariatur cliche...
+      </div>
+    </div>
+  </div>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+        Collapsible Group Item #2
+      </a>
+    </div>
+    <div id="collapseTwo" class="accordion-body collapse">
+      <div class="accordion-inner">
+        Anim pariatur cliche...
+      </div>
+    </div>
+  </div>
+</div>
+			
+			
+			
+			
+			<div>
+<h1>17/08/2011 report</h1>
+<h2>Clark &amp; Wright savings algorithm prototype</h2>
+<p>Recently implemented an example of the Clark &amp; Wright savings algorithm (parallel and sequential version) prototype, been looking for some test examples, and just found <a href="http://www.hha.dk/~ath/MAN_SC_MODELS/note_cw_savings.pdf">this one</a>. I have to optimize a whole lot of things, but at least i know that parallel example works. </p>
+<p>This <a href="DVRP-CW-sequential-560-GW.rar">example</a> is a graphical representation of the parallel version for <a href="560-modificaiton.txt">a problem instance</a> taken from Golden &amp; Wasil 2005 instances for DVRP:</p>
+<p><a href="testing-clark-and-wright-generation.PNG"><img src="tn_testing-clark-and-wright-generation.PNG" width="180" height="144"></a></p>
+<p>These are the two mini monsters i created at the night, i expect to wake up to refactorize  and optimize this code:</p>
+<pre>
+(defun clark-and-wright-sequential (evaluator)
+ "Answer a new individual created using C-W savings heuristic.
+ Sequential version implementation (Route Extension)."
+ ;; Make initial solution
+ (let ((solution (make-initial-cw-savings-solution evaluator)))
+	 (while-do
+		 ;; Calculate first saving
+		 (let ((routes-count (length solution)))
+		 (block 1
+		 (dotimes (i routes-count)
+			 (dotimes (j routes-count)
+				 (if (not (= i j))
+					 (let ((saving (saving-when-merging evaluator solution i j)))
+						 (when (and (&gt; saving 0) (is-merge-feasible evaluator solution i j))
+							 ;; Add to feasible 
+							 (setf solution (merge-routes solution (list i j saving)))
+							 (return-from 1 t)))))))))
+	 ;; Answer merged solution
+	 solution))
+
+</pre>
+<pre>(defun clark-and-wright-parallel (evaluator)
+   "Answer a new individual created using C-W savings heuristic.
+   Parallel version implementation (Best Feasible Merge)."
+   ;; Make initial solution
+   (let ((solution (make-initial-cw-savings-solution evaluator)))
+	   (while-do
+		   (let* ((routes-count (length solution))
+			   (savings (make-array (sqr routes-count) :initial-element nil))
+			   (savings-counter 0))
+			   ;; Calculate savings
+			   (dotimes (i routes-count)
+				   (dotimes (j routes-count)
+					   (if (not (= i j))
+						   (let ((saving (saving-when-merging evaluator solution i j)))
+							   (when (and (&gt; saving 0) (is-merge-feasible evaluator solution i j))
+							   (let ((a (first (route-at solution i)))
+	  							     (b (first (last (route-at solution j)))))
+								   ;; Add to savings list 
+								   (setf (aref savings savings-counter) (list a b saving))
+								   (incf savings-counter)))))))
+			   ;; Merge routes with best savings when possible
+			   (sort savings (lambda (a b) (if (and a b) (&gt; (third a) (third b)) a)))
+			   (when (&gt; savings-counter 0)
+				   (dotimes (i savings-counter)
+					   (multiple-value-bind (result flag)
+						   (merge-when-possible evaluator solution (aref savings i))
+					   (when flag
+						   (setf solution result
+							   	 savings-counter 0))))
+				   (zerop savings-counter))))
+   ;; Answer merged solution
+   solution))</pre>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>   
+		</div>
+	
+		<div>
+			<h1>20/08/2011 report</h1>
+			<h2>Design note: integration between editor-pane and graphic-pane</h2>
+			<p>At the beggining of the weekend been working to make nicer panes for graphics. When i was looking for storys on my proyect tracking i saw accidentally:</p>
+			<p><img src="daily-story-50-img.PNG" width="831" height="95" hspace="50"></p>
+			<p>I decided it will be a composite relationship, editor-pane will set graphic-pane subject to it큦 selected object. By default the graphic will be just the representation, but it could be modified to display any possible graphic for the editor-pane selected object.</p>
+			<p>&nbsp;</p>
+			<h2>Design note: new graphic editors look</h2>
+			<p>I changed graphic editors look for OpenGL visualization mode. They are very simple, they consist of the graphic and a three button toolbar. These two examples correspond to a map of the population fitness of three algorithm situations:</p>
+			<p><img src="regression-tournament-001.PNG" alt="With tournament selection" width="253" height="241" hspace="20"> <img src="regression-random-selection-001.PNG" alt="With random selection" width="253" height="241">  <img src="graphic-editor-20-08-11.PNG" alt="Generational algorithm" width="253" height="241" hspace="20"></p>
+			<ul>
+			  <li><strong>a. </strong>Map of population of a steady state algorithm using tournament selection (less diversity).</li>
+			  <li><strong>b. </strong>Map of population of the same steady state algorithm, but switched to random selection (more diversity).</li>
+			  <li><strong>c. </strong>Map of a population with a perfectly matching solution for regression problem.</li>
+			</ul>
+			<h3>Toolbar description:</h3>
+			<ul>
+			  <li><img src="graphic-editor-20-08-11-tool-1.PNG" width="25" height="20">Graphic class specifier button.</li>
+			  <li> <img src="graphic-editor-20-08-11-tool-2.PNG" width="22" height="20"> Graphic properties editor button.</li>
+			  <li><img src="graphic-editor-20-08-11-tool-3.PNG" width="22" height="19"> Turn gaphic animation on / off.</li>
+			</ul>
+			<p>&nbsp;</p>
+			<h2>Documentation note: thinking about  examples</h2>
+			<p>I been playing with some simple regression example, and thought it was a very well candidate for default documentation examples. It큦 about searching for the function (+ (+ (* X X) (* 2 (* Y Y))) (/ Y 3)). In the next shot we can see different graphics for a run that found the desired solution in 56 seconds, and 2 executions later in 23 seconds:</p>
+			<p><a href="busqueda-exitosa-graficos.PNG"><img src="tn_busqueda-exitosa-graficos.PNG" width="400" height="320"></a></p>
+			<p>Example graphics for size and fitness, some population fitness map and the result found. I think a very good way to show experiments conclusions is using graphics, but still looking how can i show more things in fewer examples. </p>
+			<p>&nbsp;</p>
+			<p>&nbsp;</p>
+		</div>				
+	
+	<div>
+	<body>
+<h1>Subroutine extraction / compression</h1>
+<h2>Introduction</h2>
+<p>As a first approach to ADFs, implemented some compression operators (and some other objects to support them). Long time ago i wanted to implement something like a GLiB compression operators experiment i have seen <a href="../../Resources/Angeline+Pollack--1994--CoevolvingHigh-LevelRepresentations.pdf">here</a><a href="#"></a>. </p>
+<h3>Details</h3>
+<ul>
+  <li>A new <a href="#">compression-manager</a> manages subroutines, creates, registers and unregisters those as functions whithin other responsibilities.</li>
+  <li>Implemented <a href="#">compress-1</a> operator, which creates new programs by extracting a subtree as a subrutine.</li>
+  <li>Implemented <a href="#">expand-1</a> operator, which replaces all functions called on the tree (one level).</li>
+  <li>Implemented <a href="#">expand-all</a> operator, which replaces all functions called on the tree (until no more functions left).</li>
+  <li>Implemented <a href="#">depth-compress</a>, which accept the creation of subroutine arguments.</li>
+  <li>ADFs are still not supported, but now it큦 more clear where to implement them.</li>
+</ul>
+<h3>Example by images</h3>
+<p><a href="srt-1.png"><img src="tmb-srt-1.png" alt="" width="180" height="144" hspace="2" vspace="2"></a><a href="srt-2.png"><img src="tmb-srt-2.png" alt="" width="180" height="144" hspace="2" vspace="2"></a><a href="srt-3.png"><img src="tmb-srt-3.png" alt="" width="180" height="144" hspace="2" vspace="2"></a></p>
+<ol>
+  <li>Class diagram for complete set of compression objects, with: 
+    <ol>
+      <li>Scoring, Recursion and other strategies.</li>
+      <li>New <a href="#">compression-tree-language</a> class.</li>
+      <li>Associations with tasks.</li>
+    </ol>
+  </li>
+  <li>First compression example using <a href="#">compress-1</a>, <a href="#">expand-1</a>, <a href="#">expand-all</a> operators.</li>
+  <li>Second compression example, using <a href="#">compress-1</a>, <a href="#">depth-compress</a> and <a href="#">expand-1</a> operators.
+<ol>
+      <li>Orange circle: function with no arguments, created by <a href="#">compress-1</a>.</li>
+      <li>Red circle: function with arguments, created by <a href="#">depth-compress</a>.</li>
+    </ol>
+  </li>
+</ol>
+<h3>Testing</h3>
+<p>No seriously tested yet, just run for some time. Recursion it큦 still not controlled, i hope to get it working next weekend.</p>
+<h3>Performance</h3>
+<p>Slow for sure by the moment.</p>
+<h3>What's next?</h3>
+<ul>
+  <li>Continue implementing scoring, purgue and recursion strategies.</li>
+  <li>Optimize compression operators.</li>
+  <li>Test with symbolic regression.</li>
+  <li>Complete experiment with graphics, fine-tunning and some mini-report.</li>
+  <li>Implement standard ADFs.</li>
+</ul>
+<h3>Example</h3>
+<ul>
+  <li>Download <a href="sample-compression.rar">here</a> the test example. </li>
+</ul>
+<h3>References</h3>
+<ul>
+  <li><a href="../../Resources/Angeline+Pollack--1994--CoevolvingHigh-LevelRepresentations.pdf">Coevolving High-Level Representations</a> - Peter J. Angeline and Jordan B. Pollack</li>
+  <li><a href="../../Resources/10.1.1.15.5594.pdf">Genetic Programming and Emergent Intelligence</a> - Peter J. Angeline</li>
+</ul>
+	</div>
+	
+	<div>
+		<h1>Texture deformation application / example</h1>
+		<h2>Introduction</h2>
+		<p>Just decided to tanslate a simple fx i've got on some old C++ code, always liked to interpolate sets of these texture deformations.. </p>
+		<h3>Implementation stuff</h3>
+		<ul>
+		  <li>Expresions like (values x (tan y)) which represent a pair of x, y deformation values.</li>
+		  <li>List of rules added.</li>
+		  <li>Used default Cfg operators.</li>
+		  <li>Default image fitness evaluators can be used.</li>
+		  <li>Not supporting ADFs by the moment.</li>
+		</ul>
+		<h3>Samples</h3>
+		<p><a href="td-5.png"><img src="tmb-td-5.png" alt="" width="180" height="144" hspace="2" vspace="2"></a><a href="td-1.png"><img src="tmb-td-1.png" alt="" width="180" height="144" hspace="2" vspace="2"></a><a href="td-2.png"><img src="tmb-td-2.png" alt="" width="180" height="144" hspace="2" vspace="2"></a><a href="td-3.png"><img src="tmb-td-3.png" alt="" width="180" height="144" hspace="2" vspace="2"></a><a href="td-4.png"><img src="tmb-td-4.png" alt="" width="180" height="144" hspace="2" vspace="2"></a></p>
+		<h3>What's next?</h3>
+		<ul>
+		  <li>Extension of function set with conditionals and fractals.</li>
+		  <li>Include ADF operators.</li>
+		  <li>Use functions to filter or weight common behaviour on found images.</li>
+		  <li>Try to add support for seamless texture.</li>
+		  <li>Mapping sound input variables to object variables.</li>
+		</ul>
+	</div>
+	</body>
+	<!--
+	<script src="jquery-1.11.1.min.js"></script>
+	<script src="bootstrap.min.js"></script>		
+	<script src="bootstrap-collapse.js"></script> -->
+</html>

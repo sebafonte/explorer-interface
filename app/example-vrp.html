@@ -13,127 +13,120 @@
   </head>
 
 	<body onload="startupDraw()">
-		<div class="navbar navbar-default navbar-fixed-top" role="navigation">
-		  <div class="container">
-			<div class="navbar-collapse">
-			  <ul class="nav navbar-nav">
-				<li class="active"><a href="/index.html">Home</a></li>
-				<li><a href="/about.html">About</a></li>
-				<li><a href="/blog.html">Blog</a></li>								
-				<li><a href="/contact.html">Contact</a></li>
-				<li class="dropdown">              
-				  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
-				  <ul class="dropdown-menu" role="menu">
-					<li><a href="/example-tree-languages.html">Mono images</a></li>
-				<!--<li><a href="/example-tree-languages.html" disabled="disabled">RGB color images</a></li>
-					<li disabled="disabled"><a href="/example-vrp.html" disabled="disabled">VRP</a></li>-->
-					<li><a href="/gallery.html" disabled="disabled">Gallery</a></li>
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: indigo">
+			<div class="container">
+				<div class="navbar-collapse">
+				  <ul class="nav navbar-nav">
+					<li><a style="text-shadow: none;" href="/index.html">Home</a></li>
+					<li><a style="text-shadow: none;" href="/about.html">About</a></li>
+					<li><a style="text-shadow: none;" href="/blog.html">Blog</a></li>								
+					<li><a style="text-shadow: none;" href="/contact.html">Contact</a></li>
+					<li class="dropdown">              
+					  <a style="text-shadow: none;" href="/example-tree-languages.html" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
+					  <ul class="dropdown-menu" role="menu">
+						<li><a style="text-shadow: none;" href="/example-tree-languages.html">Mono images</a></li>
+						<li class="active"><a style="text-shadow: none;" href="/example-vrp.html">VRP</a></li>
+						<li><a style="text-shadow: none;" href="/gallery.html" disabled="disabled">Gallery</a></li>
+					  </ul>
+					</li>
 				  </ul>
-				</li>
-			  </ul>
+				</div>
 			</div>
-		  </div>
 		</div>
-		   
+			
 		<div class="container" style="padding-top: 60px">
 			<div>
 				<div id="main-div" style="max-width: 613px; border: 1px solid lightgray">
-					<div id="parents-div" class="view-container">
-						<canvas id="parent0" width="150" height="150"></canvas>
-						<canvas id="parent1" width="150" height="150"></canvas>
-						<canvas id="parent2" width="150" height="150"></canvas>
-						<canvas id="parent3" width="150" height="150"></canvas>
-					</div>
-					<div id="children-div" class="view-container" style="margin-top: 20px">
-						<canvas id="child0" width="150" height="150"></canvas>
-						<canvas id="child1" width="150" height="150"></canvas>
-						<canvas id="child2" width="150" height="150"></canvas>
-						<canvas id="child3" width="150" height="150"></canvas>
-						<canvas id="child4" width="150" height="150"></canvas>
-						<canvas id="child5" width="150" height="150"></canvas>
-						<canvas id="child6" width="150" height="150"></canvas>
-						<canvas id="child7" width="150" height="150"></canvas>		
-						<canvas id="child8" width="150" height="150"></canvas>
-						<canvas id="child9" width="150" height="150"></canvas>				
-						<canvas id="child10" width="150" height="150"></canvas>
-						<canvas id="child11" width="150" height="150"></canvas>		
-					</div>
-					<div id="comments-div" class="view-container">
-						<form>
+					<div>
+						<div style="display: flex; border: 1px solid black; ">
 							<div>
-								<div style="margin-top: 20px; padding-left: 15px">
-									<div style="display: flex">
+								<canvas style="border: 1px solid black;" id="parent0" width="256" height="256" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							</div>
+							<div id="configuration-1-div" class="view-container">
+								<form>
+									<div style="margin-top: 20px; padding-left: 15px">
+										<div style="display: block">
+											<div>
+												Algorithm
+												<select id="algorithm-select" value="lisp-math-function-xy">
+													<option value="clark">clark-and-wright-savings</option>
+													<option value="generational-random">generational-random</option>
+													<option value="steady-state-random">steady-state-random</option>
+													<option value="generational-clark">generational-clark</option>
+													<option value="steady-state-clark">steady-state-clark</option>
+												</select>
+											</div>
+											<div>
+												Objective
+												<select id="fitness-select" disabled>
+													<option value="Function xy">None</option>
+													<option value="Function x">Colorfull</option>
+												</select>
+											</div>
+										</div>			
+										<div style="display: flex">									
+											<div style="margin-left: 5px">
+												Max time
+												<input type="text" value="1" disabled/>
+											</div>
+										</div>
+										<div style="display: flex">									
+											<div style="margin-left: 5px">
+												Population size
+												<input type="text" value="1" disabled/>
+											</div>
+										</div>										
+										<div style="display: flex">									
+											<div style="margin-left: 5px">
+												Max generations
+												<input type="text" value="1" disabled/>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+						<div style="display: flex; border: 1px solid black; ">
+							<canvas id="parent1" style="border: 1px solid black;" width="256" height="256" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<div id="configuration-1-div" class="view-container">
+								<form>
+									<div style="display: block; margin-top: 20px; padding-left: 15px">
 										<div>
-											Object
-											<select id="languages-select" onchange="changeLanguageClass()" value="lisp-math-function-xy">
-												<option value="lisp-math-function-xy">lisp-math-function-xy</option>
-												<option value="lisp-math-function-x">lisp-math-function-x</option>
-												<option value="rgb-color-images">rgb-color-images</option>
+											Algorithm
+											<select id="algorithm-select" value="lisp-math-function-xy">
+												<option value="clark">clark-and-wright-savings</option>
+												<option value="generational-random">generational-random</option>
+												<option value="steady-state-random">steady-state-random</option>
+												<option value="generational-clark">generational-clark</option>
+												<option value="steady-state-clark">steady-state-clark</option>
 											</select>
 										</div>
-										<div style="padding-left: 10px">
+										<div>
 											Objective
-											<select id="fitness-select" >
-												<option value="Function xy">None</option>
+											<select id="fitness-select" disabled>
+												<option value="Default VRP">Default VRP</option>
 											</select>
 										</div>
-									</div>							
-									<div>
-										Max time
-										<input type="text" value="1"/>
-									</div>
-									<div>
-										Max size
-										<input type="text" value="20"/>
-									</div>
-									<div style="margin-top: 10px">
-										Name: <input type="text" name="name"><br>
-										Comment: <!--<input type="text" name="comment"> --><textarea class="form-control" rows="3"></textarea>
-									</div>
-									<div style="margin-top: 10px">
-										<input type="submit" value="Load"/>
-										<input type="submit" value="Save"/>
-									</div>
+										<div style="margin-left: 5px">
+											Max time
+											<input type="text" value="1" disabled/>
+										</div>									
+									</div>										
 								</div>
 							</div>
-						</form>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</body>
-	
-	<script src="jquery-1.11.1.min.js"></script>	
-	<script src="bootstrap.min.js"></script>
-	
-	<script>		
-		var defaultLanguage;
-		var entitiesDictionary = {};
-		var childCount = 12, parentCount = 4;
-		var currentLanguage = document.getElementById("languages-select").value;
-		
-		
-		function operate()
-		{
-			for (var i=0; i< childCount; i++) {
-				var canvasId = "child" + i.toString();
-				
-				if (Math.floor(Math.random() * 10) < 5)
-					createFunctionCallMutateOn( 
-						"parent" + Math.floor(Math.random() * parentCount).toString(),
-						canvasId);
-				else
-					createFunctionCallCrossoverOn(
-						"parent" + Math.floor((Math.random() * parentCount)).toString(), 
-						"parent" + Math.floor((Math.random() * parentCount)).toString(),
-						canvasId);
-			}
-		}
-						
-		var changeLanguageClass = function () {
-			currentLanguage = document.getElementById("languages-select").value;
-		}
 
+	<script src="jquery-1.11.1.min.js"></script>	
+	<script src="bootstrap.min.js"></script>	
+		
+	<script>
+		var entitiesDictionary = {};
+			
 		function allowDrop(ev) {
 			ev.preventDefault();
 		}
@@ -144,159 +137,43 @@
 
 		function drop(ev) {
 			ev.preventDefault();
-
 			var value = ev.dataTransfer.getData("Text");
 			var result = entitiesDictionary[value];
-			entitiesDictionary[ev.target.id] = result;
+			registerObject(ev.target.id, result);
 			if (result=="default") alert("Default error");
 			initWebGL(ev.target.id, result[1]);
 		}
 		
+		function registerObject(id, obj) {
+			entitiesDictionary[id] = obj;
+		}
+		
 		function defaultError () {
-			//alert("Default error");
+			alert("Default error");
 		}
 		
-		var startupDraw = function () {
-			var htmlCode = "";
-		/*	for (var i=0; i< parentCount; i++) {
-				var canvasId = "parent" + i.toString();
-				htmlCode += "<canvas id=\"" + canvasId + "\"width=\"150\" height=\"150\"></canvas>";
-			}
-			document.getElementById("parents-div").innerHtml = "<select id=\"languages-select\" >" + htmlCode + "</select>";  */
-			
-			for (var i=0; i< parentCount; i++) {
-				var canvasId = "parent" + i.toString();
-				createFunctionCallCreateDefault(canvasId);
-			}	
+		var startupDraw = function () {			
+			createFunctionCallCreateDefault("parent0");
+			createFunctionCallCreateDefault("parent1");
 		};
-		
+
 		function createFunctionCallCreateDefault(name) {
-			$.ajax({
-					type : 'GET',
-					url : "/messageCreateDefault",
-					data : { language: currentLanguage },
-					dataType : "text",
-					success : function(data) {
-						var result = data.split("|");
-						entitiesDictionary[name] = result;
-						if (result[0]=="default") 
-							defaultError();
-						else
-							initWebGL(name, result[1]);
-					},
-					error : function(data) {
-						console.log('Call failed');
-					}
-				});
-				return false;
+			createFunctionGeneric(name, { language: "vrp-list-language" }, "/messageCreateDefault");
 		}
 		
-		function createFunctionCallCreateRandom(name) {
-			$.ajax({
-					type : 'GET',
-					url : "/messageCreateRandom",
-					data : { language: currentLanguage, maxSize: "30" },
-					dataType : "text",
-					success : function(data) {
-						var result = data.split("|");
-						entitiesDictionary[name] = result;
-						if (result[0]=="default") 
-							defaultError();
-						else
-							initWebGL(name, result[1]);
-						initWebGL(name, result[1]);
-					},
-					error : function(data) {
-						console.log('Call failed');
-					}
-				});
-				return false;
-		}
-		
-		function createFunctionCallMutateOn(name, canvasId) {
-			$.ajax({
-					type : 'GET',
-					url : "/messageMutate",
-					data : { language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name][0] },
-					dataType : "text",
-					success : function(data) {
-						var result = data.split("|");
-						entitiesDictionary[canvasId] = result;
-						if (result[0]=="default") 
-							defaultError();
-						else
-							initWebGL(canvasId, result[1]);
-						initWebGL(canvasId, result[1]);
-					},
-					error : function(data) {
-						console.log('Call failed');
-					}
-				});
+		function initializeParameters(parentId) {
+			function createTaskParameters(parentId) {				
+				// Get default object with these properties (still hardcoded here, soon will be getted from server)
+				var properties = "((fitness-evaluator (cities-description demand-description back-to-depot max-capacity infeasible-penalty))" + 
+								 " (algorithm (population-size max-generations)))";
+				var result = defaultObjectGetCall({name: "default-vrp-task", properties: properties }});
+				registerObject(parentId, result);
+				createEditorForProperties(parentId, result);
+			}
 			
-			return false;
-		}
-		
-		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
-			$.ajax({
-					type : 'GET',
-					url : "/messageCrossover",
-					data : { language: currentLanguage, maxSize: "50", objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
-					dataType : "text",
-					success : function(data) {
-						var result = data.split("|");
-						entitiesDictionary[canvasId] = result;
-						if (result[0]=="default") 
-							defaultError();
-						else
-							initWebGL(canvasId, result[1]);
-						initWebGL(canvasId, result[1]);
-					},
-					error : function(data) {
-						console.log('Call failed');
-					}
-				});
-			
-			return false;
-		}
-		
-		function addParentCallBack(name) {
-			$("#" + name)
-				.click(function(evt) {
-					for (var i=0; i< childCount; i++) {
-						var canvasId = "child" + i.toString();
-						createFunctionCallMutateOn(name, canvasId);
-					}
-				});
+			createTaskParameters();
 		};
 		
-		function initializeLanguages() {
-			defaultLanguage = "lisp-math-function-xy";
-			
-			$.ajax({
-				type : 'GET',
-				url : "/messageLanguages",
-				dataType : "text",
-				success : function(data) {
-					var htmlCode = "";
-					var values = data.split(" ");
-					
-					for (var i=0; i< values.length; i++) {	
-						htmlCode += "<option value=\"" + values[i] + "\">" + values[i] + "</option>";
-					}
-					
-					document.getElementById("languages-select").innerHtml = htmlCode;
-				},
-				error : function(data) {
-					console.log('Call failed');
-				}
-			});
-			return false;
-		};
-		
-		initializeLanguages(); 
-		addParentCallBack("parent0");
-		addParentCallBack("parent1");
-		addParentCallBack("parent2");
-		addParentCallBack("parent3");
-	</script>
+		initializeParameters();
+	</script>		
 </html>

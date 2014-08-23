@@ -80,7 +80,7 @@
 											</select>
 										</div>
 									</div>			
-									<div style="display: flex">									
+									<div style="display: flex">
 										<div style="margin-left: 5px">
 											Max time
 											<input type="text" value="1" disabled/>
@@ -107,15 +107,16 @@
 		</div>
 	</body>
 
-	<script src="jquery-1.11.1.min.js"></script>	
-	<script src="bootstrap.min.js"></script>	
+	<script src="jquery-1.11.1.min.js"></script>
+	<script src="bootstrap.min.js"></script>
 		
-	<script>		
+	<script>
 		var defaultLanguage;
 		var entitiesDictionary = {};
 		var childCount = 12, parentCount = 4;
 		var currentLanguage = document.getElementById("languages-select").value;
 		
+	/*
 		var saveDefaultGallery = function saveDefaultGallery () {
 			var qname       = 'a_queue';
 			var concurrent_calls = 2;
@@ -132,7 +133,7 @@
 				$(document).dequeue(qname);
 			}
 		}
-		
+		*/
 		function operate()
 		{
 			for (var i=0; i< childCount; i++) {
@@ -149,7 +150,7 @@
 						canvasId);
 			}
 		}
-						
+
 		var changeLanguageClass = function () {
 			currentLanguage = document.getElementById("languages-select").value;
 		}
@@ -172,7 +173,7 @@
 		}
 		
 		function defaultError () {
-			//alert("Default error");
+			alert("Default error");
 		}
 		
 		var startupDraw = function () {
@@ -191,12 +192,10 @@
 		
 		function createFunctionCallCreateDefault(name) {
 			createFunctionGeneric(name, { language: currentLanguage }, "/messageCreateDefault");
-return false;
 		}
 		
 		function createFunctionCallCreateRandom(name) {
 			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: "30" }, "/messageCreateRandom");
-return false;
 		}
 		
 		function createFunctionCallMutateOn(name, canvasId) {
@@ -226,9 +225,8 @@ return false;
 					}
 				});
 			};
-return false;
 		}*/
-		
+
 		function createFunctionGeneric(canvasId, arguments, message) {
 			$.ajax({
 					type : 'GET',
@@ -247,7 +245,6 @@ return false;
 						console.log('Call failed');
 				}
 			});
-return false;
 		}
 		
 		
@@ -260,7 +257,7 @@ return false;
 					}
 				});
 		};
-		
+
 		function initializeLanguages() {
 			defaultLanguage = "lisp-math-function-xy";
 			
@@ -282,7 +279,6 @@ return false;
 					console.log('Call failed');
 				}
 			});
-return false;
 		};
 		
 		initializeLanguages(); 
@@ -290,5 +286,5 @@ return false;
 		addParentCallBack("parent1");
 		addParentCallBack("parent2");
 		addParentCallBack("parent3");
-	</script>		
+	</script>
 </html>

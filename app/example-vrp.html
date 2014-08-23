@@ -19,9 +19,9 @@
 				  <ul class="nav navbar-nav">
 					<li><a style="text-shadow: none;" href="/index.html">Home</a></li>
 					<li><a style="text-shadow: none;" href="/about.html">About</a></li>
-					<li><a style="text-shadow: none;" href="/blog.html">Blog</a></li>								
+					<li><a style="text-shadow: none;" href="/blog.html">Blog</a></li>
 					<li><a style="text-shadow: none;" href="/contact.html">Contact</a></li>
-					<li class="dropdown">              
+					<li class="dropdown">
 					  <a style="text-shadow: none;" href="/example-tree-languages.html" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
 					  <ul class="dropdown-menu" role="menu">
 						<li><a style="text-shadow: none;" href="/example-tree-languages.html">Mono images</a></li>
@@ -33,7 +33,7 @@
 				</div>
 			</div>
 		</div>
-			
+
 		<div class="container" style="padding-top: 60px">
 			<div>
 				<div id="main-div" style="max-width: 613px; border: 1px solid lightgray">
@@ -42,78 +42,31 @@
 							<div>
 								<canvas style="border: 1px solid black;" id="parent0" width="256" height="256" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 							</div>
-							<div id="configuration-1-div" class="view-container">
-								<form>
-									<div style="margin-top: 20px; padding-left: 15px">
-										<div style="display: block">
-											<div>
-												Algorithm
-												<select id="algorithm-select" value="lisp-math-function-xy">
-													<option value="clark">clark-and-wright-savings</option>
-													<option value="generational-random">generational-random</option>
-													<option value="steady-state-random">steady-state-random</option>
-													<option value="generational-clark">generational-clark</option>
-													<option value="steady-state-clark">steady-state-clark</option>
-												</select>
-											</div>
-											<div>
-												Objective
-												<select id="fitness-select" disabled>
-													<option value="Function xy">None</option>
-													<option value="Function x">Colorfull</option>
-												</select>
-											</div>
-										</div>			
-										<div style="display: flex">									
-											<div style="margin-left: 5px">
-												Max time
-												<input type="text" value="1" disabled/>
-											</div>
-										</div>
-										<div style="display: flex">									
-											<div style="margin-left: 5px">
-												Population size
-												<input type="text" value="1" disabled/>
-											</div>
-										</div>										
-										<div style="display: flex">									
-											<div style="margin-left: 5px">
-												Max generations
-												<input type="text" value="1" disabled/>
-											</div>
-										</div>
-									</div>
+
+							<div id="parent0-data" class="view-container">
+								<form id="parent0-form">
+									<!-- editors parent 0 -->
 								</form>
 							</div>
 						</div>
 						<div style="display: flex; border: 1px solid black; ">
-							<canvas id="parent1" style="border: 1px solid black;" width="256" height="256" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-							<div id="configuration-1-div" class="view-container">
-								<form>
-									<div style="display: block; margin-top: 20px; padding-left: 15px">
-										<div>
-											Algorithm
-											<select id="algorithm-select" value="lisp-math-function-xy">
-												<option value="clark">clark-and-wright-savings</option>
-												<option value="generational-random">generational-random</option>
-												<option value="steady-state-random">steady-state-random</option>
-												<option value="generational-clark">generational-clark</option>
-												<option value="steady-state-clark">steady-state-clark</option>
-											</select>
-										</div>
-										<div>
-											Objective
-											<select id="fitness-select" disabled>
-												<option value="Default VRP">Default VRP</option>
-											</select>
-										</div>
-										<div style="margin-left: 5px">
-											Max time
-											<input type="text" value="1" disabled/>
-										</div>									
-									</div>										
-								</div>
+							<div>
+								<canvas id="parent1" style="border: 1px solid black;" width="256" height="256" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 							</div>
+
+							<div id="parent1-data" class="view-container">
+								<form id="parent1-form">
+									<!-- editors parent 1 -->
+								</form>
+							</div>
+						</div>
+						<div>
+							<button type="button" >
+							  <span class="icon-bar">Play</span>
+							</button>
+							<button type="button">
+							  <span class="icon-bar">Stop</span>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -121,9 +74,15 @@
 		</div>
 	</body>
 
-	<script src="jquery-1.11.1.min.js"></script>	
-	<script src="bootstrap.min.js"></script>	
-		
+	<script src="jquery-1.11.1.min.js"></script>
+	<script src="bootstrap.min.js"></script>
+	<script src="server-interface.js"></script>
+	<script src="property-editors.js"></script>
+	
+	<style>
+		.editors-default-class {display: table-caption; margin-top: 20px; padding-left: 15px; }
+	</style>
+	
 	<script>
 		var entitiesDictionary = {};
 			
@@ -152,28 +111,43 @@
 			alert("Default error");
 		}
 		
-		var startupDraw = function () {			
-			createFunctionCallCreateDefault("parent0");
-			createFunctionCallCreateDefault("parent1");
+		var startupDraw = function () {	
+			initWebGL("parent0", "black");
+			initWebGL("parent1", "black");
 		};
 
-		function createFunctionCallCreateDefault(name) {
-			createFunctionGeneric(name, { language: "vrp-list-language" }, "/messageCreateDefault");
+		function refreshScene() {
+			drawEntity("parent0", entitiesDictionary["parent0"]);
+			drawEntity("parent1", entitiesDictionary["parent1"]);
 		}
-		
+
 		function initializeParameters(parentId) {
-			function createTaskParameters(parentId) {				
-				// Get default object with these properties (still hardcoded here, soon will be getted from server)
-				var properties = "((fitness-evaluator (cities-description demand-description back-to-depot max-capacity infeasible-penalty))" + 
-								 " (algorithm (population-size max-generations)))";
-				var result = defaultObjectGetCall({name: "default-vrp-task", properties: properties }});
-				registerObject(parentId, result);
-				createEditorForProperties(parentId, result);
-			}
-			
-			createTaskParameters();
+			// Get default object with these properties (still hardcoded here, soon will be getted from server)
+			var properties = "((fitness-evaluator (cities-description demand-description back-to-depot max-capacity infeasible-penalty))" + 
+							 " (algorithm (population-size max-generations)))";
+
+			// Get default object templte for vrp
+			createFunctionGeneric(
+				{ name: "default-vrp-task", properties: properties },
+				"/messageGetDefault",
+				function (data) {
+					// Register model values
+					registerObject(parentId, data);
+					// Create editors with values
+					var newdiv = document.createElement("div");
+					newdiv.id = parentId + "-editors";
+					newdiv.innerHTML = createEditorForProperties(parentId, data);
+					newdiv.className = "editors-default-class";
+					var container = document.getElementById(parentId + "-form");
+					container.appendChild(newdiv);
+					
+					// Draw
+					var canvas = document.getElementById(parentId);
+					drawEntity(data[1], "entity-vrp", canvas);
+				});
 		};
-		
-		initializeParameters();
-	</script>		
+
+		initializeParameters("parent0");
+		initializeParameters("parent1");
+	</script>
 </html>

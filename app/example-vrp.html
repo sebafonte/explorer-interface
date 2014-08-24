@@ -33,39 +33,39 @@
 				</div>
 			</div>
 		</div>
-
+			
 		<div class="container" style="padding-top: 60px">
 			<div>
 				<div id="main-div" style="max-width: 613px; border: 1px solid lightgray">
 					<div>
 						<div style="display: flex; border: 1px solid black; ">
 							<div>
-								<canvas style="border: 1px solid black;" id="parent0" width="256" height="256" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+								<canvas style="border: 1px solid black;" id="parent0" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 							</div>
 
 							<div id="parent0-data" class="view-container">
 								<form id="parent0-form">
-									<!-- editors parent 0 -->
+								<!-- editors parent 0 -->
 								</form>
 							</div>
 						</div>
 						<div style="display: flex; border: 1px solid black; ">
 							<div>
-								<canvas id="parent1" style="border: 1px solid black;" width="256" height="256" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+								<canvas id="parent1" style="border: 1px solid black;" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 							</div>
-
+							
 							<div id="parent1-data" class="view-container">
 								<form id="parent1-form">
-									<!-- editors parent 1 -->
+								<!-- editors parent 1 -->
 								</form>
 							</div>
 						</div>
 						<div>
-							<button type="button" >
-							  <span class="icon-bar">Play</span>
+							<button type="button" onclick="startSearch()">
+							  <span class="icon-bar" style="height: 18px"><i class="icon-play"></i></span>
 							</button>
-							<button type="button">
-							  <span class="icon-bar">Stop</span>
+							<button type="button" onclick="stopSearch()">
+							  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
 							</button>
 						</div>
 					</div>
@@ -78,76 +78,122 @@
 	<script src="bootstrap.min.js"></script>
 	<script src="server-interface.js"></script>
 	<script src="property-editors.js"></script>
-	
+	<script src="utils.js"></script>
+
 	<style>
 		.editors-default-class {display: table-caption; margin-top: 20px; padding-left: 15px; }
 	</style>
-	
+
 	<script>
-		var entitiesDictionary = {};
-			
-		function allowDrop(ev) {
-			ev.preventDefault();
-		}
+		var entities = {};
+		// Editable properties
+		var properties = "(fitness-evaluator cities-description)_" + 
+						 "(fitness-evaluator demand-description)_" + 
+						 "(fitness-evaluator back-to-depot)_" + 
+						 "(fitness-evaluator max-capacity)_" + 
+						 "(fitness-evaluator infeasible-penalty)_" + 
+						 "(algorithm population-size)_" + 
+						 "(algorithm max-generations)";
+		// Monitoring properties
+		var monitorProperties = "(evaluations_fitness_best-individual)";
 
-		function drag(ev) {
-			ev.dataTransfer.setData("Text", ev.target.id);
-		}
-
-		function drop(ev) {
-			ev.preventDefault();
-			var value = ev.dataTransfer.getData("Text");
-			var result = entitiesDictionary[value];
-			registerObject(ev.target.id, result);
-			if (result=="default") alert("Default error");
-			initWebGL(ev.target.id, result[1]);
-		}
-		
 		function registerObject(id, obj) {
-			entitiesDictionary[id] = obj;
+			entities[id] = obj;
 		}
-		
+
 		function defaultError () {
 			alert("Default error");
 		}
-		
+
 		var startupDraw = function () {	
 			initWebGL("parent0", "black");
 			initWebGL("parent1", "black");
 		};
 
 		function refreshScene() {
-			drawEntity("parent0", entitiesDictionary["parent0"]);
-			drawEntity("parent1", entitiesDictionary["parent1"]);
+			drawCanvas("parent0");
+			drawCanvas("parent1");
+		}
+
+		function drawCanvas(name) {
+			drawEntity(name, entities[name]);
 		}
 
 		function initializeParameters(parentId) {
-			// Get default object with these properties (still hardcoded here, soon will be getted from server)
-			var properties = "((fitness-evaluator (cities-description demand-description back-to-depot max-capacity infeasible-penalty))" + 
-							 " (algorithm (population-size max-generations)))";
-
 			// Get default object templte for vrp
 			createFunctionGeneric(
-				{ name: "default-vrp-task", properties: properties },
+				{ name: "default-vrp-task", properties: "(" + replaceAll("_", " ", properties) + ")" },
 				"/messageGetDefault",
 				function (data) {
 					// Register model values
-					registerObject(parentId, data);
+					registerObject(parentId + "default-properties", data);
 					// Create editors with values
 					var newdiv = document.createElement("div");
 					newdiv.id = parentId + "-editors";
-					newdiv.innerHTML = createEditorForProperties(parentId, data);
+					newdiv.innerHTML = createEditorForProperties(parentId, data, properties);
 					newdiv.className = "editors-default-class";
 					var container = document.getElementById(parentId + "-form");
 					container.appendChild(newdiv);
-					
 					// Draw
 					var canvas = document.getElementById(parentId);
 					drawEntity(data[1], "entity-vrp", canvas);
 				});
 		};
+		
+		function updateBestObject(parentId) {
+			createFunctionGeneric(
+				{ object: entities[parentId + "-task"], properties: "(" + replaceAll("_", " ", monitorProperties) + ")" },
+				"/messageGetPropertyValue",
+				function (data) {
+					updateEditorsValue(parentId, data);
+					drawCanvas(parentId);
+				});
+		}
 
-		initializeParameters("parent0");
-		initializeParameters("parent1");
+		function startSearchParent(parentId) {
+			// Crea las tareas y guarda el identificador del servidor de estas
+			createFunctionGeneric(
+				{ name: "default-vrp-task", properties: "(" + propertiesFromEditors(parentId, properties) + ")" },
+				"/messageCreateTask",
+				function (data) {
+					var split = data.split("|");
+					if (split[0]=="Task started")
+					{
+						// Register task identifier on server for configuration parentId
+						registerObject(parentId + "-task", split[1]);
+						// Setea un timer para refrescar su estalo localmente
+						var timer = setInterval(function() { updateBestObject(parentId); }, 2000);
+						registerObject(parentId + "-timer", timer);
+					}
+					else
+						alert("");
+				});
+		}
+
+		function stopSearchParent(parentId) {
+			// Delete task for parentId
+			createFunctionGeneric(
+				{ name: entities[parentId + "-task"] },
+				"/messageDeleteTask",
+				function (data) {});
+			clearInterval(entities[parentId + "-timer"]);
+		}
+
+		function startSearch() {
+			startSearchParent("parent0");
+			startSearchParent("parent1");
+		}
+
+		function stopSearch() {
+			stopSearchParent("parent0");
+			stopSearchParent("parent1");
+		}
+
+		function resetSearch() {
+			initializeParameters("parent0");
+			initializeParameters("parent1");
+		}
+
+		resetSearch();
 	</script>
 </html>

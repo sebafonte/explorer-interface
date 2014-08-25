@@ -25,6 +25,7 @@
 					  <a style="text-shadow: none;" href="/example-tree-languages.html" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
 					  <ul class="dropdown-menu" role="menu">
 						<li class="active"><a style="text-shadow: none;" href="/example-tree-languages.html">Mono images</a></li>
+						<li><a style="text-shadow: none;" href="/example-vrp.html">VRP</a></li>
 						<li><a style="text-shadow: none;" href="/gallery.html" disabled="disabled">Gallery</a></li>
 					  </ul>
 					</li>
@@ -80,7 +81,7 @@
 											</select>
 										</div>
 									</div>			
-									<div style="display: flex">
+									<div style="display: flex">									
 										<div style="margin-left: 5px">
 											Max time
 											<input type="text" value="1" disabled/>
@@ -107,8 +108,8 @@
 		</div>
 	</body>
 
-	<script src="jquery-1.11.1.min.js"></script>
-	<script src="bootstrap.min.js"></script>
+	<script src="jquery-1.11.1.min.js"></script>	
+	<script src="bootstrap.min.js"></script>	
 		
 	<script>
 		var defaultLanguage;
@@ -246,8 +247,7 @@
 				}
 			});
 		}
-		
-		
+
 		function addParentCallBack(name) {
 			$("#" + name)
 				.click(function(evt) {
@@ -280,7 +280,7 @@
 				}
 			});
 		};
-		
+
 		initializeLanguages(); 
 		addParentCallBack("parent0");
 		addParentCallBack("parent1");

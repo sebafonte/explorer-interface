@@ -19,9 +19,9 @@
 				  <ul class="nav navbar-nav">
 					<li><a style="text-shadow: none;" href="/index.html">Home</a></li>
 					<li><a style="text-shadow: none;" href="/about.html">About</a></li>
-					<li><a style="text-shadow: none;" href="/blog.html">Blog</a></li>
+					<li><a style="text-shadow: none;" href="/blog.html">Blog</a></li>								
 					<li><a style="text-shadow: none;" href="/contact.html">Contact</a></li>
-					<li class="dropdown">
+					<li class="dropdown">              
 					  <a style="text-shadow: none;" href="/example-tree-languages.html" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
 					  <ul class="dropdown-menu" role="menu">
 						<li><a style="text-shadow: none;" href="/example-tree-languages.html">Mono images</a></li>
@@ -66,7 +66,7 @@
 							</button>
 							<button type="button" onclick="stopSearch()">
 							  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
-							</button>
+							</button>							
 						</div>
 					</div>
 				</div>
@@ -79,23 +79,23 @@
 	<script src="server-interface.js"></script>
 	<script src="property-editors.js"></script>
 	<script src="utils.js"></script>
-
+	
 	<style>
 		.editors-default-class {display: table-caption; margin-top: 20px; padding-left: 15px; }
 	</style>
-
+	
 	<script>
 		var entities = {};
-		// Editable properties
-		var properties = "(fitness-evaluator cities-description)_" + 
+		// Monitoring properties
+		var editableProperties = "(fitness-evaluator cities-description)_" + 
 						 "(fitness-evaluator demand-description)_" + 
 						 "(fitness-evaluator back-to-depot)_" + 
 						 "(fitness-evaluator max-capacity)_" + 
 						 "(fitness-evaluator infeasible-penalty)_" + 
 						 "(algorithm population-size)_" + 
 						 "(algorithm max-generations)";
-		// Monitoring properties
-		var monitorProperties = "(evaluations_fitness_best-individual)";
+		var monitorProperties = "(fitness-evaluator evaluations)_best-fitness";
+		var allProperties = editableProperties + "_" + monitorProperties;
 
 		function registerObject(id, obj) {
 			entities[id] = obj;
@@ -105,7 +105,7 @@
 			alert("Default error");
 		}
 
-		var startupDraw = function () {	
+		var startupDraw = function () {			
 			initWebGL("parent0", "black");
 			initWebGL("parent1", "black");
 		};
@@ -114,23 +114,23 @@
 			drawCanvas("parent0");
 			drawCanvas("parent1");
 		}
-
+		
 		function drawCanvas(name) {
 			drawEntity(name, entities[name]);
 		}
-
+		
 		function initializeParameters(parentId) {
 			// Get default object templte for vrp
 			createFunctionGeneric(
-				{ name: "default-vrp-task", properties: "(" + replaceAll("_", " ", properties) + ")" },
+				{ name: "default-vrp-task", properties: "(" + replaceAll("_", " ", allProperties) + ")" },
 				"/messageGetDefault",
 				function (data) {
 					// Register model values
 					registerObject(parentId + "default-properties", data);
 					// Create editors with values
 					var newdiv = document.createElement("div");
-					newdiv.id = parentId + "-editors";
-					newdiv.innerHTML = createEditorForProperties(parentId, data, properties);
+					newdiv.id = parentId + "-editors";					
+					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties);
 					newdiv.className = "editors-default-class";
 					var container = document.getElementById(parentId + "-form");
 					container.appendChild(newdiv);
@@ -145,7 +145,7 @@
 				{ object: entities[parentId + "-task"], properties: "(" + replaceAll("_", " ", monitorProperties) + ")" },
 				"/messageGetPropertyValue",
 				function (data) {
-					updateEditorsValue(parentId, data);
+					updateEditorsValue(parentId, data, monitorProperties);
 					drawCanvas(parentId);
 				});
 		}
@@ -153,7 +153,7 @@
 		function startSearchParent(parentId) {
 			// Crea las tareas y guarda el identificador del servidor de estas
 			createFunctionGeneric(
-				{ name: "default-vrp-task", properties: "(" + propertiesFromEditors(parentId, properties) + ")" },
+				{ name: "default-vrp-task", properties: "(" + propertiesFromEditors(parentId, editableProperties) + ")" },
 				"/messageCreateTask",
 				function (data) {
 					var split = data.split("|");
@@ -162,11 +162,11 @@
 						// Register task identifier on server for configuration parentId
 						registerObject(parentId + "-task", split[1]);
 						// Setea un timer para refrescar su estalo localmente
-						var timer = setInterval(function() { updateBestObject(parentId); }, 2000);
+						var timer = setInterval(function() { /* clearInterval(entities[parentId + "-timer"]); */ updateBestObject(parentId); }, 2000);
 						registerObject(parentId + "-timer", timer);
 					}
 					else
-						alert("");
+						alert(data);
 				});
 		}
 
@@ -178,22 +178,22 @@
 				function (data) {});
 			clearInterval(entities[parentId + "-timer"]);
 		}
-
+		
 		function startSearch() {
 			startSearchParent("parent0");
 			startSearchParent("parent1");
 		}
-
+		
 		function stopSearch() {
 			stopSearchParent("parent0");
 			stopSearchParent("parent1");
 		}
-
+		
 		function resetSearch() {
 			initializeParameters("parent0");
 			initializeParameters("parent1");
 		}
-
+		
 		resetSearch();
-	</script>
+	</script>		
 </html>

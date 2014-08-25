@@ -7,12 +7,12 @@ net = require('net'),
 url = require('url'),
 querystring = require('querystring');
 
+// Configuration
 var lispImageTCPTimeout = 150;
 http.globalAgent.maxSockets = 3;
 
-// SYB init
-
 /*
+// SYB init
 // DB init
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/test');
@@ -265,7 +265,7 @@ function getPropertyValue(res, object, properties) {
 	socket.on('data', function(data) {
 		returnData = data;
 	}).on('connect', function() {
-		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-property-value) :content (list (quote " + name + ")))\n");
+		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-property-value) :content (list (quote " + object + ") (quote " + properties + ")))\n");
 	}).on('end', function() {
 	}).on('close', function(data) {
     });
@@ -368,7 +368,7 @@ function requestHandler(req, res) {
 		var arguments = querystring.parse(url.parse(req.url).query);
 		crossoverFunctions(res, arguments.language, arguments.objectDataA, arguments.objectDataB, arguments.maxSize);
 	}
-	else if (pathname == "/messageCommand")	
+	else if (pathname == "/messageCommand")
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
 		createImage(res, arguments.language, arguments.command);

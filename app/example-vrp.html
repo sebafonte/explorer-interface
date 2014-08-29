@@ -66,7 +66,7 @@
 							</button>
 							<button id="stop-search" type="button" onclick="stopSearch()">
 							  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
-							</button>							
+							</button>
 						</div>
 					</div>
 				</div>
@@ -94,7 +94,7 @@
 						 "(fitness-evaluator infeasible-penalty)_" + 
 						 "(algorithm population-size)_" + 
 						 "(algorithm max-generations)";
-		var monitorProperties = "(fitness-evaluator evaluations)_best-fitness";
+		var monitorProperties = "(fitness-evaluator evaluations)_best-fitness_running-time";
 		var allProperties = editableProperties + "_" + monitorProperties;
 
 		function registerObject(id, obj) {
@@ -102,10 +102,10 @@
 		}
 
 		function defaultError () {
-			alert("Default error");
+			//alert("Default error");
 		}
 
-		var startupDraw = function () {			
+		var startupDraw = function () {	
 			initWebGL("parent0", "black");
 			initWebGL("parent1", "black");
 		};
@@ -114,11 +114,11 @@
 			drawCanvas("parent0");
 			drawCanvas("parent1");
 		}
-		
+
 		function drawCanvas(name) {
 			drawEntity(name, entities[name]);
 		}
-		
+
 		function initializeParameters(parentId) {
 			// Get default object templte for vrp
 			createFunctionGeneric(
@@ -129,14 +129,14 @@
 					registerObject(parentId + "default-properties", data);
 					// Create editors with values
 					var newdiv = document.createElement("div");
-					newdiv.id = parentId + "-editors";					
+					newdiv.id = parentId + "-editors";
 					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties);
 					newdiv.className = "editors-default-class";
 					var container = document.getElementById(parentId + "-form");
 					container.appendChild(newdiv);
 					// Draw
 					var canvas = document.getElementById(parentId);
-					drawEntity(data[1], "entity-vrp", canvas);
+					//drawEntity(data[1], "entity-vrp", canvas);
 				});
 		};
 		
@@ -146,11 +146,13 @@
 				"/messageGetPropertyValue",
 				function (data) {
 					updateEditorsValue(parentId, data, monitorProperties);
-					drawCanvas(parentId);
+					//drawCanvas(parentId);
 				});
 		}
 
 		function startSearchParent(parentId) {
+			// Deshabilitamos la interface para seguir buscando
+			enableSearch(false);
 			// Crea las tareas y guarda el identificador del servidor de estas
 			createFunctionGeneric(
 				{ name: "default-vrp-task", properties: "(" + propertiesFromEditors(parentId, editableProperties) + ")" },
@@ -162,12 +164,12 @@
 						// Register task identifier on server for configuration parentId
 						registerObject(parentId + "-task", split[1]);
 						// Setea un timer para refrescar su estalo localmente
-						var timer = setInterval(function() { /* clearInterval(entities[parentId + "-timer"]); */ updateBestObject(parentId); }, 2000);
+						var timer = setInterval(function() { /* clearInterval(entities[parentId + "-timer"]); */ updateBestObject(parentId); }, 1000);
 						registerObject(parentId + "-timer", timer);
 					}
 					else
 					{
-						//document.getElementById(parentId).
+						enableSearch(true);
 						alert(data);
 					}
 				});
@@ -178,25 +180,41 @@
 			createFunctionGeneric(
 				{ name: entities[parentId + "-task"] },
 				"/messageDeleteTask",
-				function (data) {});
+				function (data) { enableSearch(true); });
 			clearInterval(entities[parentId + "-timer"]);
 		}
-		
+
+		function enableSearch (flag) {
+			if (flag == true) {
+				document.getElementById("start-search").style.display = ""; 
+				document.getElementById("stop-search").style.display = "none"; 
+				document.getElementById("start-search").disabled = false; 
+				document.getElementById("stop-search").disabled = true; 
+			}
+			else {
+				document.getElementById("start-search").style.display = "none"; 
+				document.getElementById("stop-search").style.display = ""; 
+				document.getElementById("start-search").disabled = true; 
+				document.getElementById("stop-search").disabled = false; 
+			}
+		}
+
 		function startSearch() {
 			startSearchParent("parent0");
 			startSearchParent("parent1");
 		}
-		
+
 		function stopSearch() {
 			stopSearchParent("parent0");
 			stopSearchParent("parent1");
 		}
-		
+
 		function resetSearch() {
 			initializeParameters("parent0");
 			initializeParameters("parent1");
 		}
-		
+
 		resetSearch();
-	</script>		
+		enableSearch(true);
+	</script>
 </html>

@@ -61,10 +61,10 @@
 							</div>
 						</div>
 						<div>
-							<button type="button" onclick="startSearch()">
+							<button id="start-search" type="button" onclick="startSearch()">
 							  <span class="icon-bar" style="height: 18px"><i class="icon-play"></i></span>
 							</button>
-							<button type="button" onclick="stopSearch()">
+							<button id="stop-search" type="button" onclick="stopSearch()">
 							  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
 							</button>							
 						</div>
@@ -166,7 +166,10 @@
 						registerObject(parentId + "-timer", timer);
 					}
 					else
+					{
+						//document.getElementById(parentId).
 						alert(data);
+					}
 				});
 		}
 

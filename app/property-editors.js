@@ -63,7 +63,7 @@ function propertiesFromEditors(parentId, data) {
 		if (properties[i] != "") {
 			var propertyData = properties[i];
 			var propertyId = replaceAll(" ", "-", propertyData.replace("(", "").replace(")", ""));		
-			result += "(" + propertyData + " \"" + lispEditorValue(parentId, propertyId.toLowerCase(), i) + "\")";
+			result += "(" + propertyData + " \"" + lispEditorValue(parentId, propertyId.toLowerCase()) + "\")";
 		}
 	}
 	

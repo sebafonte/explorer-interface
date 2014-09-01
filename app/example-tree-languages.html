@@ -108,15 +108,15 @@
 		</div>
 	</body>
 
-	<script src="jquery-1.11.1.min.js"></script>	
-	<script src="bootstrap.min.js"></script>	
-		
+	<script src="jquery-1.11.1.min.js"></script>
+	<script src="bootstrap.min.js"></script>
+
 	<script>
 		var defaultLanguage;
 		var entitiesDictionary = {};
 		var childCount = 12, parentCount = 4;
 		var currentLanguage = document.getElementById("languages-select").value;
-		
+
 	/*
 		var saveDefaultGallery = function saveDefaultGallery () {
 			var qname       = 'a_queue';
@@ -125,7 +125,7 @@
 			for (var i=0; i< parentCount; i++) {
 				createFunctionCallSetGalleryElement(qname, "parent" + i.toString(), i);
 			}
-			
+
 			for (var i=0; i< childCount; i++) {
 				createFunctionCallSetGalleryElement(qname, "child" + i.toString(), i);
 			}
@@ -170,7 +170,8 @@
 			var result = entitiesDictionary[value];
 			entitiesDictionary[ev.target.id] = result;
 			if (result=="default") alert("Default error");
-			initWebGL(ev.target.id, result[1]);
+			initWebGLBW(ev.target.id, result[1], "entity-bw");
+			drawEntityImageBW();
 		}
 		
 		function defaultError () {
@@ -227,7 +228,7 @@
 				});
 			};
 		}*/
-
+		
 		function createFunctionGeneric(canvasId, arguments, message) {
 			$.ajax({
 					type : 'GET',
@@ -240,13 +241,17 @@
 						if (result[0]=="default") 
 							defaultError();
 						else
-							initWebGL(canvasId, result[1]);
+						{
+							initWebGLBW(canvasId, result[1], "entity-bw");
+							drawEntityImageBW();
+						}
 					},
 					error : function(data) {
 						console.log('Call failed');
 				}
 			});
 		}
+
 
 		function addParentCallBack(name) {
 			$("#" + name)

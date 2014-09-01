@@ -79,21 +79,57 @@
 	<script src="server-interface.js"></script>
 	<script src="property-editors.js"></script>
 	<script src="utils.js"></script>
-	
+		
 	<style>
 		.editors-default-class {display: table-caption; margin-top: 20px; padding-left: 15px; }
 	</style>
 	
-	<script>
+	<script>	
+		var pointsBuffer = [];
+	    
+		function initVRPBufferData(index) {
+			var vertices = 
+			[[
+				289, 190, 0,
+				320, 128, 0,
+				239, 67, 0,
+				194, 101, 0,
+				129, 83, 0,
+				75, 73, 0,
+				74, 74, 0,
+				20, 10, 0
+			],		
+			[
+				289, 190, 0,
+				320, 128, 0,
+				239, 67, 0,
+				194, 101, 0,
+				129, 83, 0,
+				75, 73, 0,
+				74, 74, 0,
+				20, 10, 0
+			]];
+			
+			initCitiesGLBuffer(vertices[index], index);
+		}
+
+		function initCitiesGLBuffer(vertices, bufferIndex) {
+			pointsBuffer[bufferIndex] = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer[bufferIndex]);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+			pointsBuffer[bufferIndex].itemSize = 3;
+			pointsBuffer[bufferIndex].numItems = vertices.length / 3;
+		}
+		
 		var entities = {};
 		// Monitoring properties
 		var editableProperties = "(fitness-evaluator cities-description)_" + 
-						 "(fitness-evaluator demand-description)_" + 
-						 "(fitness-evaluator back-to-depot)_" + 
-						 "(fitness-evaluator max-capacity)_" + 
-						 "(fitness-evaluator infeasible-penalty)_" + 
-						 "(algorithm population-size)_" + 
-						 "(algorithm max-generations)";
+								 "(fitness-evaluator demand-description)_" + 
+								 "(fitness-evaluator back-to-depot)_" + 
+								 "(fitness-evaluator max-capacity)_" + 
+								 "(fitness-evaluator infeasible-penalty)_" + 
+								 "(algorithm population-size)_" + 
+								 "(algorithm max-generations)";
 		var monitorProperties = "(fitness-evaluator evaluations)_best-fitness_running-time";
 		var allProperties = editableProperties + "_" + monitorProperties;
 
@@ -106,37 +142,38 @@
 		}
 
 		var startupDraw = function () {	
-			initWebGL("parent0", "black");
-			initWebGL("parent1", "black");
+			initWebGLVRP(index);
+			drawEntityVRP(pointsBuffer[0]);	
+			initWebGLVRP(index);
+			drawEntityVRP(pointsBuffer[1]);
 		};
-
-		function refreshScene() {
-			drawCanvas("parent0");
-			drawCanvas("parent1");
+		
+		function drawCanvas(index) {
+			initVRPBufferData(index);
+			var elementName = "parent" + index.toString();
+			drawEntityVRP("parent" + index.toString(), entities[elementName], pointsBuffer[index]);
 		}
-
-		function drawCanvas(name) {
-			drawEntity(name, entities[name]);
-		}
-
-		function initializeParameters(parentId) {
+		
+		function initializeParameters(index) {
 			// Get default object templte for vrp
 			createFunctionGeneric(
 				{ name: "default-vrp-task", properties: "(" + replaceAll("_", " ", allProperties) + ")" },
 				"/messageGetDefault",
 				function (data) {
+					var parentId = "parent" + index.toString();
 					// Register model values
 					registerObject(parentId + "default-properties", data);
 					// Create editors with values
 					var newdiv = document.createElement("div");
-					newdiv.id = parentId + "-editors";
+					newdiv.id = parentId + "-editors";					
 					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties);
 					newdiv.className = "editors-default-class";
 					var container = document.getElementById(parentId + "-form");
 					container.appendChild(newdiv);
 					// Draw
 					var canvas = document.getElementById(parentId);
-					//drawEntity(data[1], "entity-vrp", canvas);
+					initWebGLVRP(parentId, "black", "entity-vrp");
+					drawEntityVRP(pointsBuffer[index]);	
 				});
 		};
 		
@@ -170,7 +207,7 @@
 					else
 					{
 						enableSearch(true);
-						alert(data);
+						alert(data);						
 					}
 				});
 		}
@@ -198,23 +235,23 @@
 				document.getElementById("stop-search").disabled = false; 
 			}
 		}
-
+		
 		function startSearch() {
 			startSearchParent("parent0");
 			startSearchParent("parent1");
 		}
-
+		
 		function stopSearch() {
 			stopSearchParent("parent0");
 			stopSearchParent("parent1");
 		}
-
+		
 		function resetSearch() {
-			initializeParameters("parent0");
-			initializeParameters("parent1");
+			initializeParameters(0);
+			initializeParameters(1);
 		}
-
+		
 		resetSearch();
 		enableSearch(true);
-	</script>
+	</script>		
 </html>

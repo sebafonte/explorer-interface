@@ -1,4 +1,4 @@
-
+//step 1) require the modules we need
 var
 http = require('http'),
 path = require('path'),
@@ -8,8 +8,7 @@ url = require('url'),
 querystring = require('querystring');
 
 // Configuration
-var lispImageTCPTimeout = 150;
-http.globalAgent.maxSockets = 3;
+http.globalAgent.maxSockets = 20;
 
 /*
 // SYB init
@@ -86,196 +85,141 @@ function setFile(filePath, data) {
 
 function createRandom(res, language, maxSize) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	var returnData = "default";
 	
 	socket
 		.on('data', function(data) {
-		  returnData = data;
+			socket.destroy();
+			res.end(data);
 		})
 		.on('connect', function() {
 		  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-random) :content (list (quote " + language + ") " + maxSize.toString() + "))\n");
 		}).on('end', function() {
 		}).on('close', function(data) {
 		});
-
-	function log_console() {
-	  console.log("Entered with " + returnData);
-	  if (returnData != 'default')
-	  {
-		socket.destroy();
-		res.end(returnData);
-	  }
-	  else
-		console.log("Will have error " + returnData);
-	}
-
-	setTimeout(log_console,	lispImageTCPTimeout);
 }
 
 function getDefault(res, name, properties) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	var returnData = "default";
 	
 	socket
 	.on('data', function(data) {
-	  returnData = data;
+	  socket.destroy();
+	  res.end(data);
 	})
 	.on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-default) :content (list (quote " + name + ") (quote " + properties + ")))\n");
 	}).on('end', function() {
 	}).on('close', function(data) {
     });
-
-	function log_console() {
-	  socket.destroy();
-	  res.end(returnData);
-	}
-	
-	setTimeout(log_console,	lispImageTCPTimeout);
 }
 
 function createDefault(res, language) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	var returnData = "default";
 	
 	socket
 	.on('data', function(data) {
-	  returnData = data;
+	  socket.destroy();
+	  res.end(data);
 	})
 	.on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-default) :content (list (quote " + language + ")))\n");
 	}).on('end', function() {
 	}).on('close', function(data) {
     });
-
-	function log_console() {
-	  socket.destroy();
-	  res.end(returnData);
-	}
-	
-	setTimeout(log_console,	lispImageTCPTimeout);
 }
 
 function possibleLanguages(res) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	var returnData = "default";
 	
 	socket
 	.on('data', function(data) {
-	  returnData = data;
+	  socket.destroy();
+	  res.end(data);
 	})
 	.on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-languages))\n");
 	}).on('end', function() {
 	}).on('close', function(data) {
     });
-
-	function log_console() {
-	  socket.destroy();
-	  res.end(returnData);
-	}
-	
-	setTimeout(log_console,	lispImageTCPTimeout);
 }
 
 function mutateFunctions(res, language, objectData, maxSize) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	var returnData = "default";
 	
 	socket.on('data', function(data) {
-		returnData = data;
+	  socket.destroy();
+	  res.end(data);	
 	}).on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate) :content (list (quote " + language + ") (quote " + objectData + ") " + maxSize.toString() + "))\n");
 	}).on('end', function() {
 	}).on('close', function(data) {
     });
-	
-	function log_console() {
-	  socket.destroy();
-	  res.end(returnData);
-	}
-
-	setTimeout(log_console,	lispImageTCPTimeout);
 };
 
+function datePrint() {
+	return Date.now();
+}
+ 
 function crossoverFunctions(res, language, objectDataA, objectDataB, maxSize) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	var returnData = "default";
 	
 	socket.on('data', function(data) {
-		returnData = data;
+		console.log(datePrint() + " - DATA");
+		socket.destroy();
+		res.end(data);
 	}).on('connect', function() {
+		console.log(datePrint() + " - CONNECT START");
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-crossover) :content (list (quote " + language + ") (quote " + objectDataA + ") (quote " + objectDataB + ") " + maxSize.toString() + "))\n");
+		console.log(datePrint() + " - CONNECT END");
+	}).on('error', function(error) {
+		console.log(datePrint() + " -  ERROR - " + error);
 	}).on('end', function() {
+		console.log(datePrint() + " -  END");
 	}).on('close', function(data) {
-    });
-
-	function log_console() {
-	  socket.destroy();
-	  res.end(returnData);
-	}
-
-	setTimeout(log_console,	lispImageTCPTimeout);
+		console.log(datePrint() + " - CLOSE");
+	}).on('timeout', function(data) {
+		console.log(datePrint() + " - TIMEOUT");
+	});
 };
 
 function createTask(res, name, properties) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	var returnData = "default";
 	
 	socket.on('data', function(data) {
-		returnData = data;
+	  socket.destroy();
+	  res.end(data);
+
 	}).on('connect', function() {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-task-using) :content (list (quote " + name + ") (quote " + properties + ")))\n");
 	}).on('end', function() {
 	}).on('close', function(data) {
     });
-
-	function log_console() {
-	  socket.destroy();
-	  res.end(returnData);
-	}
-
-	setTimeout(log_console,	lispImageTCPTimeout);
 }
 
 function deleteTask(res, name) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	var returnData = "default";
 	
 	socket.on('data', function(data) {
-		returnData = data;
+	  socket.destroy();
+	  res.end(data);
 	}).on('connect', function() {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-delete-task) :content (list (quote " + name + ")))\n");
 	}).on('end', function() {
 	}).on('close', function(data) {
     });
-
-	function log_console() {
-	  socket.destroy();
-	  res.end(returnData);
-	}
-
-	setTimeout(log_console,	lispImageTCPTimeout);
 }
 
 function getPropertyValue(res, object, properties) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	var returnData = "default";
 	
 	socket.on('data', function(data) {
-		returnData = data;
-	}).on('connect', function() {
+	  socket.destroy();
+	  res.end(data);
+	  }).on('connect', function() {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-property-value) :content (list (quote " + object + ") (quote " + properties + ")))\n");
 	}).on('end', function() {
 	}).on('close', function(data) {
     });
-
-	function log_console() {
-	  socket.destroy();
-	  res.end(returnData);
-	}
-
-	setTimeout(log_console,	lispImageTCPTimeout);
 }
 
 function gallerGetAll(res, maxSize) {
@@ -308,32 +252,32 @@ function gallerySetElement(req, index, language, objectDataA, objectDataB) {
 function requestHandler(req, res) {	
 	var pathname = url.parse(req.url).pathname;
 	
-	if (pathname == "/messageLanguages")
+	if (pathname == "/messageLanguages")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
 		possibleLanguages(res);
 	}
-	else if (pathname == "/messageGallerySetElement")
+	else if (pathname == "/messageGallerySetElement")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
 		gallerySetElement(req, arguments.index, arguments.language, arguments.objectDataA, arguments.objectDataB);
 	}
-	else if (pathname == "/messageGalleryGetElement")
+	else if (pathname == "/messageGalleryGetElement")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
 		galleryGetElement(res, req, arguments.index);
 	}
-	else if (pathname == "/messageGalleryGetAll")
+	else if (pathname == "/messageGalleryGetAll")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
 		galleryGetAll(res, arguments.maxSize);
 	}
-	else if (pathname == "/messageGetDefault")
+	else if (pathname == "/messageGetDefault")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
-		getDefault(res, arguments.name, arguments.properties);
+		getDefault(res, arguments.name, arguments.properties);	
 	}
-	else if (pathname == "/messageCreateDefault")
+	else if (pathname == "/messageCreateDefault")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
 		createDefault(res, arguments.language);
@@ -353,22 +297,22 @@ function requestHandler(req, res) {
 		var arguments = querystring.parse(url.parse(req.url).query);
 		getPropertyValue(res, arguments.object, arguments.properties);
 	}
-	else if (pathname == "/messageCreateRandom")
+	else if (pathname == "/messageCreateRandom")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
 		createRandom(res, arguments.language, arguments.maxSize);
-	}
-	else if (pathname == "/messageMutate")
+	}	
+	else if (pathname == "/messageMutate")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
 		mutateFunctions(res, arguments.language, arguments.objectData, arguments.maxSize);
-	}
-	else if (pathname == "/messageCrossover")
+	}		
+	else if (pathname == "/messageCrossover")	
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
 		crossoverFunctions(res, arguments.language, arguments.objectDataA, arguments.objectDataB, arguments.maxSize);
 	}
-	else if (pathname == "/messageCommand")
+	else if (pathname == "/messageCommand")		
 	{
 		var arguments = querystring.parse(url.parse(req.url).query);
 		createImage(res, arguments.language, arguments.command);

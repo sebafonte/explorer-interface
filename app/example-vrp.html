@@ -165,7 +165,7 @@
 					registerObject(parentId + "default-properties", data);
 					// Create editors with values
 					var newdiv = document.createElement("div");
-					newdiv.id = parentId + "-editors";					
+					newdiv.id = parentId + "-editors";
 					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties);
 					newdiv.className = "editors-default-class";
 					var container = document.getElementById(parentId + "-form");
@@ -207,7 +207,7 @@
 					else
 					{
 						enableSearch(true);
-						alert(data);						
+						alert(data);
 					}
 				});
 		}

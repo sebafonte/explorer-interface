@@ -67,10 +67,10 @@
 									<div style="display: flex">
 										<div>
 											Object
-											<select id="languages-select" onchange="changeLanguageClass()" value="lisp-math-function-xy">
+											<select id="languages-select" onchange="changeLanguageClass()" value="lisp-math-function-xy" disabled>
 												<option value="lisp-math-function-xy">lisp-math-function-xy</option>
 												<option value="lisp-math-function-x">lisp-math-function-x</option>
-												<option value="rgb-color-images">rgb-color-images</option>
+												<option value="rgb-color-images-vector">rgb-color-images-vector</option>
 											</select>
 										</div>
 										<div style="padding-left: 10px">
@@ -117,24 +117,6 @@
 		var childCount = 12, parentCount = 4;
 		var currentLanguage = document.getElementById("languages-select").value;
 
-	/*
-		var saveDefaultGallery = function saveDefaultGallery () {
-			var qname       = 'a_queue';
-			var concurrent_calls = 2;
-	
-			for (var i=0; i< parentCount; i++) {
-				createFunctionCallSetGalleryElement(qname, "parent" + i.toString(), i);
-			}
-
-			for (var i=0; i< childCount; i++) {
-				createFunctionCallSetGalleryElement(qname, "child" + i.toString(), i);
-			}
-			
-			for (i=0;i<concurrent_calls;i++) {
-				$(document).dequeue(qname);
-			}
-		}
-		*/
 		function operate()
 		{
 			for (var i=0; i< childCount; i++) {
@@ -185,17 +167,17 @@
 				htmlCode += "<canvas id=\"" + canvasId + "\"width=\"150\" height=\"150\"></canvas>";
 			}
 			document.getElementById("parents-divi").innerHtml = "<select id=\"languages-select\" >" + htmlCode + "</select>";  */
-			
+
 			for (var i=0; i< parentCount; i++) {
 				var canvasId = "parent" + i.toString();
 				createFunctionCallCreateDefault(canvasId);
-			}	
+			}
 		};
-		
+
 		function createFunctionCallCreateDefault(name) {
 			createFunctionGeneric(name, { language: currentLanguage }, "/messageCreateDefault");
 		}
-		
+
 		function createFunctionCallCreateRandom(name) {
 			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: "30" }, "/messageCreateRandom");
 		}
@@ -203,14 +185,14 @@
 		function createFunctionCallMutateOn(name, canvasId) {
 			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name][0] }, "/messageMutate");
 		}
-		
+
 		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
 			createFunctionGeneric(
 				canvasId,
 				{ language: currentLanguage, maxSize: "50", objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
 				"/messageCrossover");
 		}
-/*		
+/*
 		function createFunctionCallSetGalleryElement(qname, name, index) {
 			// #TODO: Modificar por un POST
 			$(document).queue(qname, function() {
@@ -251,7 +233,6 @@
 				}
 			});
 		}
-
 
 		function addParentCallBack(name) {
 			$("#" + name)

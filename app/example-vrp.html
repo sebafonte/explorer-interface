@@ -5,7 +5,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-	<title>Genetic explorer test example</title>
+	<title>Metaheuristic explorer web interface</title>
 	<script src="glMatrix-0.9.5.min.js"></script>
 	<script src="webgl-utils.js"></script>
 	<script src="webgl-entities.js"></script>
@@ -25,6 +25,7 @@
 					  <a style="text-shadow: none;" href="/example-tree-languages.html" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
 					  <ul class="dropdown-menu" role="menu">
 						<li><a style="text-shadow: none;" href="/example-tree-languages.html">Mono images</a></li>
+						<li><a style="text-shadow: none;" href="/example-tree-languages-rgb.html">RGB vector mix</a></li>
 						<li class="active"><a style="text-shadow: none;" href="/example-vrp.html">VRP</a></li>
 						<li><a style="text-shadow: none;" href="/gallery.html" disabled="disabled">Gallery</a></li>
 					  </ul>
@@ -66,7 +67,7 @@
 							</button>
 							<button id="stop-search" type="button" onclick="stopSearch()">
 							  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
-							</button>
+							</button>							
 						</div>
 					</div>
 				</div>
@@ -137,10 +138,6 @@
 			entities[id] = obj;
 		}
 
-		function defaultError () {
-			//alert("Default error");
-		}
-
 		var startupDraw = function () {	
 			initWebGLVRP(index);
 			drawEntityVRP(pointsBuffer[0]);	
@@ -165,7 +162,7 @@
 					registerObject(parentId + "default-properties", data);
 					// Create editors with values
 					var newdiv = document.createElement("div");
-					newdiv.id = parentId + "-editors";
+					newdiv.id = parentId + "-editors";					
 					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties);
 					newdiv.className = "editors-default-class";
 					var container = document.getElementById(parentId + "-form");
@@ -207,7 +204,7 @@
 					else
 					{
 						enableSearch(true);
-						alert(data);
+						alert(data);						
 					}
 				});
 		}
@@ -254,4 +251,14 @@
 		resetSearch();
 		enableSearch(true);
 	</script>		
+	
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-54522358-1', 'auto');
+	  ga('send', 'pageview');
+	</script>
 </html>

@@ -2,11 +2,11 @@
 // Init functions
 var squareVertexPositionBuffer;
 
-function initWebGLBW(canvas, entity, entityType) {
+function initWebGLBW(canvas, entity) {
     var canvas = document.getElementById(canvas);
 	initGL(canvas);
 	initBuffersBW();
-	initShadersBW(entity)
+	initShadersBW(entity)	
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.disable(gl.DEPTH_TEST);
 }
@@ -44,7 +44,7 @@ function initWebGLVRP(parentId) {
     var canvas = document.getElementById(parentId);
 	initGL(canvas);
 	initBuffersVRP(parentId);
-	initShadersVRP();
+	initShadersVRP();	
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.disable(gl.DEPTH_TEST);
 }
@@ -72,15 +72,15 @@ function drawEntityVRP (pointsBuffer) {
 	gl.clear(gl.COLOR_BUFFER_BIT);
 	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 	mat4.identity(mvMatrix);
-	mat4.translate(mvMatrix, [0.0, 0.0, -1.2]);	
+	mat4.translate(mvMatrix, [0.0, 0.0, -1.2]);		
 	gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer);
 	gl.vertexAttribPointer(shaderProgram.vertexPositionLoc, pointsBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	gl.uniformMatrix4fv(shaderProgram.pMatrixLoc, 0, pMatrix);
+	gl.uniformMatrix4fv(shaderProgram.pMatrixLoc, 0, pMatrix);		
 	gl.drawArrays(gl.POINTS, 0, pointsBuffer.numItems);	
 }
 
 // RGB Vector
-function initWebGLRGB(canvas, entity, entityType) {
+function initWebGLRGB(canvas, entity) {
     var canvas = document.getElementById(canvas);
 	initGL(canvas);
 	initBuffersRGB();
@@ -97,7 +97,7 @@ function initBuffersRGB() {
 		-1.0,  1.0,  0.0,
 		 1.0, -1.0,  0.0,
 		-1.0, -1.0,  0.0
-	];
+	];	
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 	squareVertexPositionBuffer.itemSize = 3;
 	squareVertexPositionBuffer.numItems = 4;
@@ -115,3 +115,30 @@ function drawEntityImageRGB () {
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
 }
 
+// RGB Animation
+function initWebGLRGBAnimate(canvas, entity) {
+    var canvas = document.getElementById(canvas);
+	initGL(canvas);
+	initBuffersRGB();
+	initShadersRGB(entity)	
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.disable(gl.DEPTH_TEST);
+}
+
+var globalTime = 0.0;
+
+function drawEntityImageRGBAnimate () {
+	var location = gl.getUniformLocation(shaderProgram, "time");
+    gl.uniform1f(location, globalTime);
+	globalTime += 0.1;
+	
+	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+	gl.clear(gl.COLOR_BUFFER_BIT);
+	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+	mat4.identity(mvMatrix);
+	mat4.translate(mvMatrix, [0.0, 0.0, -1.2]);
+	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	setMatrixUniforms();
+	gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
+}

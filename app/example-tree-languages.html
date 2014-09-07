@@ -5,8 +5,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-	<title>Genetic explorer test example</title>
+	<title>Metaheuristic explorer web interface</title>
 	<script src="glMatrix-0.9.5.min.js"></script>
+	<script src="utils.js"></script>	
 	<script src="webgl-utils.js"></script>
 	<script src="webgl-entities.js"></script>
 	<link href="bootstrap.min.css" rel="stylesheet">
@@ -25,6 +26,7 @@
 					  <a style="text-shadow: none;" href="/example-tree-languages.html" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
 					  <ul class="dropdown-menu" role="menu">
 						<li class="active"><a style="text-shadow: none;" href="/example-tree-languages.html">Mono images</a></li>
+						<li><a style="text-shadow: none;" href="/example-tree-languages-rgb.html">RGB vector mix</a></li>
 						<li><a style="text-shadow: none;" href="/example-vrp.html">VRP</a></li>
 						<li><a style="text-shadow: none;" href="/gallery.html" disabled="disabled">Gallery</a></li>
 					  </ul>
@@ -37,7 +39,7 @@
 		<div class="container" style="padding-top: 60px">
 			<div>
 				<div id="main-div" style="max-width: 613px; border: 1px solid lightgray">
-					<div id="parents-divi" class="view-container" style="margin-bottom: 5px">
+					<div id="container-pdiv" class="view-container" style="margin-bottom: 5px">
 					<div>
 						<canvas id="parent0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						<canvas id="parent1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
@@ -46,7 +48,7 @@
 						</div>
 					</div>
 					<input type="submit" value="Operate" onclick="operate()" style="width: 100%; background-color: #5cb85c"/>
-					<div id="children-div" class="view-container" style="margin-top: 10px">
+					<div id="container-cdiv" class="view-container" style="margin-top: 10px">
 						<canvas id="child0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						<canvas id="child1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						<canvas id="child2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
@@ -92,10 +94,6 @@
 										</div>
 									</div>
 									<div style="margin-top: 10px">
-										Name: <input type="text" name="name" style="width: 500px; margin-left: 23px" disabled/><br>
-										Comment: <textarea class="form-control" rows="2" style="width: 500px" disabled></textarea>
-									</div>
-									<div style="margin-top: 10px">
 										<input type="button" value="Load"/>
 										<input type="button" value="Save" onclick="saveDefaultGallery()"/>
 									</div>
@@ -108,15 +106,75 @@
 		</div>
 	</body>
 
-	<script src="jquery-1.11.1.min.js"></script>
-	<script src="bootstrap.min.js"></script>
-
-	<script>
+	<script src="jquery-1.11.1.min.js"></script>	
+	<script src="bootstrap.min.js"></script>	
+	
+	<div id="context_menu" style="border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute;line-height:30px; padding-left: 0px;">
+		<div><input type="button" value="Open" onclick="menuCallbackPrefix(globalSelectedIndex, 0)" style="width: 100px"/></div>
+		<div><input type="button" value="Like" onclick="menuCallbackPrefix(globalSelectedIndex, 1)" style="width: 100px"/></div>
+		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
+	</div>
+	
+	<script>		
 		var defaultLanguage;
 		var entitiesDictionary = {};
 		var childCount = 12, parentCount = 4;
 		var currentLanguage = document.getElementById("languages-select").value;
-
+		
+	/*
+		var saveDefaultGallery = function saveDefaultGallery () {
+			var qname       = 'a_queue';
+			var concurrent_calls = 2;
+	
+			for (var i=0; i< parentCount; i++) {
+				createFunctionCallSetGalleryElement(qname, "parent" + i.toString(), i);
+			}
+			
+			for (var i=0; i< childCount; i++) {
+				createFunctionCallSetGalleryElement(qname, "child" + i.toString(), i);
+			}
+			
+			for (i=0;i<concurrent_calls;i++) {
+				$(document).dequeue(qname);
+			}
+		}
+		*/
+		
+		function menuCallbackPrefix(name, index) {			
+			if (index==0) {
+				var url_safe_language = encodeURIComponent(currentLanguage);
+				var url_safe_a = encodeURIComponent(entitiesDictionary[name][0]);
+				var url_safe_b = encodeURIComponent(entitiesDictionary[name][1]);
+				var url_safe_c = encodeURIComponent("entity-bw");
+				var url = "/messageView?language=" + url_safe_language + "&a=" + url_safe_a + "&b=" + url_safe_b + "&c=" + url_safe_c;
+				window.open (url, "Object inspect");
+			}
+			else if (index==1) {
+				$.ajax({
+						type : 'GET',
+						url : "/messageLike",
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: "entity-bw"},
+						dataType : "text",
+						success : function(data) { },
+						error : function(data) {
+							console.log('Like call failed');
+						}
+					});			
+			}
+			else if (index==2) {
+				$.ajax({
+						type : 'GET',
+						url : "/messageSend",
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: "entity-bw"},
+						dataType : "text",
+						success : function(data) { },
+						error : function(data) {
+							console.log('Send call failed');
+						}
+					});
+			}
+		}
+		
 		function operate()
 		{
 			for (var i=0; i< childCount; i++) {
@@ -133,7 +191,7 @@
 						canvasId);
 			}
 		}
-
+						
 		var changeLanguageClass = function () {
 			currentLanguage = document.getElementById("languages-select").value;
 		}
@@ -162,22 +220,16 @@
 		
 		var startupDraw = function () {
 			var htmlCode = "";
-		/*	for (var i=0; i< parentCount; i++) {
-				var canvasId = "parent" + i.toString();
-				htmlCode += "<canvas id=\"" + canvasId + "\"width=\"150\" height=\"150\"></canvas>";
-			}
-			document.getElementById("parents-divi").innerHtml = "<select id=\"languages-select\" >" + htmlCode + "</select>";  */
-
 			for (var i=0; i< parentCount; i++) {
 				var canvasId = "parent" + i.toString();
 				createFunctionCallCreateDefault(canvasId);
-			}
+			}	
 		};
-
+		
 		function createFunctionCallCreateDefault(name) {
 			createFunctionGeneric(name, { language: currentLanguage }, "/messageCreateDefault");
 		}
-
+		
 		function createFunctionCallCreateRandom(name) {
 			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: "30" }, "/messageCreateRandom");
 		}
@@ -185,14 +237,14 @@
 		function createFunctionCallMutateOn(name, canvasId) {
 			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name][0] }, "/messageMutate");
 		}
-
+		
 		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
 			createFunctionGeneric(
 				canvasId,
 				{ language: currentLanguage, maxSize: "50", objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
 				"/messageCrossover");
 		}
-/*
+/*		
 		function createFunctionCallSetGalleryElement(qname, name, index) {
 			// #TODO: Modificar por un POST
 			$(document).queue(qname, function() {
@@ -233,7 +285,8 @@
 				}
 			});
 		}
-
+		
+		
 		function addParentCallBack(name) {
 			$("#" + name)
 				.click(function(evt) {
@@ -243,7 +296,7 @@
 					}
 				});
 		};
-
+		
 		function initializeLanguages() {
 			defaultLanguage = "lisp-math-function-xy";
 			
@@ -254,11 +307,9 @@
 				success : function(data) {
 					var htmlCode = "";
 					var values = data.split(" ");
-					
-					for (var i=0; i< values.length; i++) {	
+
+					for (var i=0; i< values.length; i++)
 						htmlCode += "<option value=\"" + values[i] + "\">" + values[i] + "</option>";
-					}
-					
 					document.getElementById("languages-select").innerHtml = htmlCode;
 				},
 				error : function(data) {
@@ -266,11 +317,23 @@
 				}
 			});
 		};
-
+		
 		initializeLanguages(); 
 		addParentCallBack("parent0");
 		addParentCallBack("parent1");
 		addParentCallBack("parent2");
 		addParentCallBack("parent3");
+		initializeContextMenuOn("child", "context_menu", menuSetCallback);
+		initializeContextMenuOn("parent", "context_menu", menuSetCallback);
+	</script>
+	
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-54522358-1', 'auto');
+	  ga('send', 'pageview');
 	</script>
 </html>

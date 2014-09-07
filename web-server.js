@@ -49,6 +49,30 @@ function messageCommand (command, arguments) {
 	setTimeout(log_console,	lispImageTCPTimeout);
 }
 
+function renderContentsFromFile(filePath, res, page404, returnCallback){
+    fs.exists(filePath,function(exists) {
+		if (exists){
+            fs.readFile(filePath,function(err,contents){
+				if(!err){
+					returnCallback(contents);
+                } else {
+                    console.dir(err);
+                };
+            });
+        } 
+		else {
+            fs.readFile(page404, function(err,contents){
+                if (!err) {
+                    res.writeHead(404, {'Content-Type': 'text/html'});
+                    res.end(contents);
+                } else {
+                    console.dir(err);
+                };
+            });
+        };
+    });
+}
+
 function getFile(filePath, res, page404){
     fs.exists(filePath,function(exists) {
 		if (exists){
@@ -73,11 +97,12 @@ function getFile(filePath, res, page404){
     });
 }
 
-function setFile(filePath, data) {
+function setFile(filePath, data, res) {
 	fs.writeFile(filePath, data, function(err){
 		if (err)
 			throw err;
 		else {
+			res.end(data);
 			console.log("Saved file " + filePath);
 		};
 	});
@@ -92,7 +117,7 @@ function createRandom(res, language, maxSize) {
 			res.end(data);
 		})
 		.on('connect', function() {
-		  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-random) :content (list (quote " + language + ") " + maxSize.toString() + "))\n");
+		  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-random) :content (list (quote " + language + ") " + maxSize + "))\n");
 		}).on('end', function() {
 		}).on('close', function(data) {
 		});
@@ -150,7 +175,7 @@ function mutateFunctions(res, language, objectData, maxSize) {
 	  socket.destroy();
 	  res.end(data);	
 	}).on('connect', function() {
-	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate) :content (list (quote " + language + ") (quote " + objectData + ") " + maxSize.toString() + "))\n");
+	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate) :content (list (quote " + language + ") (quote " + objectData + ") " + maxSize + "))\n");
 	}).on('end', function() {
 	}).on('close', function(data) {
     });
@@ -164,21 +189,13 @@ function crossoverFunctions(res, language, objectDataA, objectDataB, maxSize) {
 	var socket = net.createConnection("20000", "127.0.0.1");
 	
 	socket.on('data', function(data) {
-		console.log(datePrint() + " - DATA");
 		socket.destroy();
 		res.end(data);
 	}).on('connect', function() {
-		console.log(datePrint() + " - CONNECT START");
-		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-crossover) :content (list (quote " + language + ") (quote " + objectDataA + ") (quote " + objectDataB + ") " + maxSize.toString() + "))\n");
-		console.log(datePrint() + " - CONNECT END");
+		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-crossover) :content (list (quote " + language + ") (quote " + objectDataA + ") (quote " + objectDataB + ") " + maxSize + "))\n");
 	}).on('error', function(error) {
-		console.log(datePrint() + " -  ERROR - " + error);
 	}).on('end', function() {
-		console.log(datePrint() + " -  END");
 	}).on('close', function(data) {
-		console.log(datePrint() + " - CLOSE");
-	}).on('timeout', function(data) {
-		console.log(datePrint() + " - TIMEOUT");
 	});
 };
 
@@ -222,12 +239,11 @@ function getPropertyValue(res, object, properties) {
     });
 }
 
-function gallerGetAll(res, maxSize) {
+function galleryGetAll(res, maxSize) {
 	var result = [];
 	
-	for (var i=0; i< 16; i++)
-	{
-		var fileName = path.basename(req.url) || 'gallery' + index.toString() + ".object",
+	for (var i=0; i< 16; i++) {
+		var fileName = path.basename(req.url) || 'gallery' + index + ".object",
 			localFolder = __dirname + '/app/gallery',
 			page404 = localFolder + "\\" + '404.html';
 		getFile((localFolder + fileName), res, page404);
@@ -235,88 +251,86 @@ function gallerGetAll(res, maxSize) {
 };
 
 function galleryGetElement(res, req, index) {
-	var fileName = 'gallery' + index.toString() + ".object",
+	var fileName = 'gallery' + index + ".object",
 		localFolder = __dirname + '/app/gallery',
 		page404 = localFolder + '\\404.html';
 	getFile((localFolder + "/" + fileName), res, page404);
 };
 
-function gallerySetElement(req, index, language, objectDataA, objectDataB) {
-	console.log(index);
-	var fileName = 'gallery' + index.toString() + ".object",
+function gallerySetElement(res, index, language, objectDataA, objectDataB) {
+	var fileName = 'gallery' + index + ".object",
 		localFolder = __dirname + '/app/gallery';
-	setFile(localFolder + "/" + fileName, language + " | " + objectDataA + " | " + objectDataB);
+	setFile(localFolder + "/" + fileName, language + " | " + objectDataA + " | " + objectDataB, res);
 };
+
+function likeObject(res, language, a, b, c) {
+	console.log("Like object: " + language + a + " - " + b + " - " + c);	
+}
+
+function dislikeObject(res, language, a, b, c) {
+	console.log("Dislike object: " + language + a + " - " + b + " - " + c);	
+}
+
+function viewObject(res, language, a, b, c) {
+	var localFolder = __dirname + '/app',
+		page404 = localFolder + '404.html';
+
+	renderContentsFromFile(localFolder + "/" + "view.html", res, page404,
+		function(contents) {
+			var result = contents.toString().replace("#A#", a);
+			result = result.replace("#B#", b);
+			result = result.replace("#C#", c);
+			result = result.replace("#LANGUAGE#", language);
+			res.end(result);
+		});
+}
+
+function sendObject(res, language, a, b, c) {
+	console.log("Send object: " + language + a + " - " + b + " - " + c);
+}
 
 // Helper for HTTP requests
 function requestHandler(req, res) {	
 	var pathname = url.parse(req.url).pathname;
+	var arguments = querystring.parse(url.parse(req.url).query);
 	
-	if (pathname == "/messageLanguages")	
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
+	// #TEMP: incoming inspector
+	console.log(datePrint().toString() + " " + req.connection.remoteAddress + ": " + pathname + "{" + arguments.toString() + "}");
+	
+	if (pathname == "/messageLanguages")		
 		possibleLanguages(res);
-	}
 	else if (pathname == "/messageGallerySetElement")	
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
-		gallerySetElement(req, arguments.index, arguments.language, arguments.objectDataA, arguments.objectDataB);
-	}
+		gallerySetElement(res, arguments.index, arguments.language, arguments.objectDataA, arguments.objectDataB);
 	else if (pathname == "/messageGalleryGetElement")	
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
 		galleryGetElement(res, req, arguments.index);
-	}
 	else if (pathname == "/messageGalleryGetAll")	
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
 		galleryGetAll(res, arguments.maxSize);
-	}
 	else if (pathname == "/messageGetDefault")	
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
 		getDefault(res, arguments.name, arguments.properties);	
-	}
 	else if (pathname == "/messageCreateDefault")	
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
 		createDefault(res, arguments.language);
-	}	
 	else if (pathname == "/messageCreateTask")
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
 		createTask(res, arguments.name, arguments.properties);
-	}
 	else if (pathname == "/messageDeleteTask")
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
 		deleteTask(res, arguments.name);
-	}
 	else if (pathname == "/messageGetPropertyValue")
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
 		getPropertyValue(res, arguments.object, arguments.properties);
-	}
 	else if (pathname == "/messageCreateRandom")	
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
 		createRandom(res, arguments.language, arguments.maxSize);
-	}	
 	else if (pathname == "/messageMutate")	
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
 		mutateFunctions(res, arguments.language, arguments.objectData, arguments.maxSize);
-	}		
+	else if (pathname == "/messageLike")
+		likeObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
+	else if (pathname == "/messageDislike")
+		dislikeObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
+	else if (pathname == "/messageView")
+		viewObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
+	else if (pathname == "/messageSend")
+		sendObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
 	else if (pathname == "/messageCrossover")	
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
 		crossoverFunctions(res, arguments.language, arguments.objectDataA, arguments.objectDataB, arguments.maxSize);
-	}
 	else if (pathname == "/messageCommand")		
-	{
-		var arguments = querystring.parse(url.parse(req.url).query);
 		createImage(res, arguments.language, arguments.command);
-	}
 	else
 	{
 		var fileName = path.basename(req.url) || 'index.html',

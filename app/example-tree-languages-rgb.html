@@ -1,0 +1,312 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+	<title>Metaheuristic explorer web interface</title>
+	<script src="glMatrix-0.9.5.min.js"></script>
+	<script src="utils.js"></script>
+	<script src="webgl-utils.js"></script>
+	<script src="webgl-entities.js"></script>
+	<link href="bootstrap.min.css" rel="stylesheet">
+  </head>
+
+	<body onload="startupDraw()">
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: indigo">
+			<div class="container">
+				<div class="navbar-collapse">
+				  <ul class="nav navbar-nav">
+					<li><a style="text-shadow: none;" href="/index.html">Home</a></li>
+					<li><a style="text-shadow: none;" href="/about.html">About</a></li>
+					<li><a style="text-shadow: none;" href="/blog.html">Blog</a></li>
+					<li><a style="text-shadow: none;" href="/contact.html">Contact</a></li>
+					<li class="dropdown">              
+					  <a style="text-shadow: none;" href="/example-tree-languages.html" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
+					  <ul class="dropdown-menu" role="menu">
+						<li><a style="text-shadow: none;" href="/example-tree-languages.html">Mono images</a></li>
+						<li class="active"><a style="text-shadow: none;" href="/example-tree-languages-rgb.html">RGB vector mix</a></li>
+						<li><a style="text-shadow: none;" href="/example-vrp.html">VRP</a></li>
+						<li><a style="text-shadow: none;" href="/gallery.html" disabled="disabled">Gallery</a></li>
+					  </ul>
+					</li>
+				  </ul>
+				</div>
+			</div>
+		</div>
+			
+		<div class="container" style="padding-top: 60px; width: 950px">
+			<div id="main-div" style="border-left: 1px solid lightgray; display: flex">
+				<div style="width: 620">
+					<div id="container-pdiv" class="view-container" style="margin-bottom: 5px; display">
+					<div>
+						<canvas id="parent0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="parent1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="parent2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="parent3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						</div>
+					</div>
+					<input type="submit" value="Operate" onclick="operate()" style="width: 100%; background-color: #5cb85c"/>
+					<div id="container-cdiv" class="view-container" style="margin-top: 10px">
+						<canvas id="child0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child4" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child5" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child6" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child7" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
+						<canvas id="child8" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child9" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>				
+						<canvas id="child10" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child11" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
+					</div>
+				</div>
+				<div id="comments-div" class="view-container" style="border: 1px solid lightgray;">
+					<form>
+						<div>
+							<div style="margin-top: 20px; padding-left: 15px">
+								<div style="display: table">
+									<div>
+										Object
+										<select id="languages-select" onchange="changeLanguageClass()" value="rgb-color-images-vector" disabled>
+											<option value="rgb-color-images-vector">rgb-color-images-vector</option>
+											<option value="lisp-math-function-xy">lisp-math-function-xy</option>
+											<option value="lisp-math-function-x">lisp-math-function-x</option>
+										</select>
+									</div>
+									<div>
+										Objective
+										<select id="fitness-select" disabled>
+											<option value="Function xy">None</option>
+											<option value="Function x">Colorfull</option>
+										</select>
+									</div>
+									<div>
+										Max time
+										<input type="text" value="1" disabled/>
+									</div>
+									<div>
+										Max size
+										<input id="input-max-size" type="text" value="30"/>
+									</div>
+									
+									<div style="margin-top: 10px">
+										<input type="button" value="Load"/>
+										<input type="button" value="Save" onclick="saveDefaultGallery()"/>
+									</div>
+								</div>			
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+
+	<script src="jquery-1.11.1.min.js"></script>	
+	<script src="bootstrap.min.js"></script>	
+		
+	<script>		
+		var defaultLanguage;
+		var entitiesDictionary = {};
+		var childCount = 12, parentCount = 4;
+		var currentLanguage = document.getElementById("languages-select").value;
+		
+		function saveDefaultGallery () {	
+			for (var i=0; i< parentCount; i++)
+				createFunctionCallSetGalleryElement("parent" + i.toString(), i);
+			for (var i=0; i< childCount; i++)
+				createFunctionCallSetGalleryElement("child" + i.toString(), i);
+		};
+		
+		function operate() {
+			for (var i=0; i< childCount; i++) {
+				var canvasId = "child" + i.toString();
+				
+				if (Math.floor(Math.random() * 10) < 5)
+					createFunctionCallMutateOn( 
+						"parent" + Math.floor(Math.random() * parentCount).toString(),
+						canvasId);
+				else
+					createFunctionCallCrossoverOn(
+						"parent" + Math.floor((Math.random() * parentCount)).toString(), 
+						"parent" + Math.floor((Math.random() * parentCount)).toString(),
+						canvasId);
+			}
+		}
+						
+		var changeLanguageClass = function () {
+			currentLanguage = document.getElementById("languages-select").value;
+		}
+
+		function allowDrop(ev) {
+			ev.preventDefault();
+		}
+
+		function drag(ev) {
+			ev.dataTransfer.setData("Text", ev.target.id);
+		}
+
+		function drop(ev) {
+			ev.preventDefault();
+			var value = ev.dataTransfer.getData("Text");
+			var result = entitiesDictionary[value];
+			entitiesDictionary[ev.target.id] = result;
+			if (result=="default") alert("Default error");
+			initWebGLRGB(ev.target.id, result[1], "entity-rgb");
+			drawEntityImageRGB();
+		}
+				
+		var startupDraw = function () {
+			var htmlCode = "";
+			for (var i=0; i< parentCount; i++) {
+				var canvasId = "parent" + i.toString();
+				createFunctionCallCreateRandom(canvasId);
+			}	
+		};
+		
+		function createFunctionCallCreateDefault(name) {
+			createFunctionGeneric(name, { language: currentLanguage }, "/messageCreateDefault");
+		}
+		
+		function createFunctionCallCreateRandom(name) {
+			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: "30" }, "/messageCreateRandom");
+		}
+		
+		function createFunctionCallMutateOn(name, canvasId) {
+			var maxSize = document.getElementById("input-max-size").value;
+			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: maxSize, objectData: entitiesDictionary[name][0] }, "/messageMutate");
+		}
+		
+		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
+			var maxSize = document.getElementById("input-max-size").value;
+			createFunctionGeneric(
+				canvasId,
+				{ language: currentLanguage, maxSize: maxSize, objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
+				"/messageCrossover");
+		}
+		
+		function createFunctionCallSetGalleryElement(name, index) {
+			// #TODO: Modificar por un POST
+			$.ajax({
+					type : 'GET',
+					url : "/messageGallerySetElement",
+					data : { index: index.toString(), language: currentLanguage, objectDataA: entitiesDictionary[name][0], objectDataB: entitiesDictionary[name][1] },
+					dataType : "text",
+					success : function(data) { },
+					error : function(data) {
+						console.log('Call failed');
+					}
+				});
+		}
+		
+		function createFunctionGeneric(canvasId, arguments, message) {
+			$.ajax({
+					type : 'GET',
+					url : message,
+					data : arguments,
+					dataType : "text",
+					success : function(data) {
+						var result = data.split("|");
+						entitiesDictionary[canvasId] = result;
+						initWebGLRGB(canvasId, result[1], "entity-rgb");
+						drawEntityImageRGB();
+					},
+					error : function(data) {
+						console.log('Call failed');
+					}
+				});
+		}
+		
+		function addParentCallBack(name) {
+			$("#" + name)
+				.click(function(evt) {
+					for (var i=0; i< childCount; i++) {
+						var canvasId = "child" + i.toString();
+						createFunctionCallMutateOn(name, canvasId);
+					}
+				});
+		};
+		
+		function initializeLanguages() {
+			defaultLanguage = "rgb-color-images-vector";
+			
+			$.ajax({
+				type : 'GET',
+				url : "/messageLanguages",
+				dataType : "text",
+				success : function(data) {
+					var htmlCode = "";
+					var values = data.split(" ");
+					for (var i=0; i< values.length; i++)
+						htmlCode += "<option value=\"" + values[i] + "\">" + values[i] + "</option>";
+					document.getElementById("languages-select").innerHtml = htmlCode;
+				},
+				error : function(data) {
+					console.log('Call failed');
+				}
+			});
+		};
+		
+		function menuCallbackPrefix(name, index) {			
+			if (index==0) {
+				var url_safe_language = encodeURIComponent(currentLanguage);
+				var url_safe_a = encodeURIComponent(entitiesDictionary[name][0]);
+				var url_safe_b = encodeURIComponent(entitiesDictionary[name][1]);
+				var url_safe_c = encodeURIComponent("entity-rgb");
+				var url = "/messageView?language=" + url_safe_language + "&a=" + url_safe_a + "&b=" + url_safe_b + "&c=" + url_safe_c;				
+				window.open (url, "Object inspect");
+			}
+			else if (index==1) {
+				$.ajax({
+						type : 'GET',
+						url : "/messageLike",
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: "entity-rgb"},
+						dataType : "text",
+						success : function(data) { },
+						error : function(data) {
+							console.log('Like call failed');
+						}
+					});			
+			}
+			else if (index==2) {
+				$.ajax({
+						type : 'GET',
+						url : "/messageSend",
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: "entity-rgb"},
+						dataType : "text",
+						success : function(data) { },
+						error : function(data) {
+							console.log('Send call failed');
+						}
+					});
+			}
+		}
+		
+		initializeLanguages(); 
+		addParentCallBack("parent0");
+		addParentCallBack("parent1");
+		addParentCallBack("parent2");
+		addParentCallBack("parent3");
+		initializeContextMenuOn("child", "context_menu", menuSetCallback);
+		initializeContextMenuOn("parent", "context_menu", menuSetCallback);
+	</script>		
+	
+	<div id="context_menu" style="border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute;line-height:30px; padding-left: 0px;">
+		<div><input type="button" value="Open" onclick="menuCallbackPrefix(globalSelectedIndex, 0)" style="width: 100px"/></div>
+		<div><input type="button" value="Like" onclick="menuCallbackPrefix(globalSelectedIndex, 1)" style="width: 100px"/></div>
+		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
+	</div>
+	
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-54522358-1', 'auto');
+	  ga('send', 'pageview');
+	</script>
+</html>

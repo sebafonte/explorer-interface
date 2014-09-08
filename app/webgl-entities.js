@@ -120,7 +120,7 @@ function initWebGLRGBAnimate(canvas, entity) {
     var canvas = document.getElementById(canvas);
 	initGL(canvas);
 	initBuffersRGB();
-	initShadersRGB(entity)	
+	initShadersRGBAnimate(entity)	
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.disable(gl.DEPTH_TEST);
 }
@@ -141,4 +141,5 @@ function drawEntityImageRGBAnimate () {
 	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 	setMatrixUniforms();
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
+	//copyImageDataToHTML5Canvas("axoss");
 }

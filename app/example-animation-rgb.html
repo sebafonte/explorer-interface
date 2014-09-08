@@ -2,8 +2,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
+    <meta name="description" content="Animation of rgb vectors example.">
     <meta name="author" content="">
+	<meta name="keywords" content="lisp, rgb, texture generation, animation, webgl">
 
 	<title>Metaheuristic explorer web interface</title>
 	<script src="glMatrix-0.9.5.min.js"></script>
@@ -41,22 +42,30 @@
 			<div id="main-div" style="border-left: 1px solid lightgray; display: flex">
 				<div style="width: 620">
 					<div id="container-pdiv" class="view-container" style="margin-bottom: 5px; display">
-					<div>
 						<canvas id="parent0" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent1" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent2" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent3" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="parent1" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>						
+						<canvas id="parent2" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>						
+						<canvas id="parent3" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>						
 						<canvas id="parent4" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent5" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent6" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent7" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent8" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent9" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<div>
+					<input type="submit" value="Operate" onclick="operate()" style="width: 100%; background-color: #5cb85c"/>
+					<div id="container-pdiv" class="view-container" style="margin-bottom: 5px; display">
+					<div>
+						<canvas id="child0" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child1" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child2" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child3" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child4" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child5" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child6" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child7" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child8" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="child9" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						</div>
 					</div>
 					<input type="submit" value="Randomize" onclick="randomize()" style="width: 100%; background-color: #5cb85c"/>
 					<div id="container-cdiv" class="view-container" style="margin-top: 10px">
-						<canvas style="padding-left: 190px" id="child0" width="240" height="240" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas style="padding-left: 190px" id="animation" width="240" height="240" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 					</div>
 				</div>
 				<div id="comments-div" class="view-container" style="border: 1px solid lightgray;">
@@ -66,8 +75,9 @@
 								<div style="display: table">
 									<div>
 										Object
-										<select id="languages-select" onchange="changeLanguageClass()" value="rgb-color-images-vector" style="max-width: 190px; margin-right: 10px" disabled>
-											<option value="rgb-color-images-vector">rgb-color-images-vector</option>
+										<select id="languages-select" onchange="changeLanguageClass()" value="rgb-color-images-vector" style="max-width: 190px; margin-right: 10px">
+											<option value="rgb-color-images-vector-time">rgb-color-images-vector-time</option>
+											<option value="rgb-color-images-vector">rgb-color-images-vector</option>											
 											<option value="lisp-math-function-xy">lisp-math-function-xy</option>
 											<option value="lisp-math-function-x">lisp-math-function-x</option>
 										</select>
@@ -95,7 +105,7 @@
 	<script>		
 		var defaultLanguage;
 		var entitiesDictionary = {};
-		var childCount = 1, parentCount = 10;
+		var parentCount = 5, childCount = 10;
 		var currentLanguage = document.getElementById("languages-select").value;
 				
 		function operate() {
@@ -138,13 +148,29 @@
 				var canvasId = "parent" + i.toString();
 				createFunctionCallCreateRandom(canvasId);
 			}	
-			
-			setInterval(function () {
-							if (entitiesDictionary["child0"]) {
-								initWebGLRGB("child0", entitiesDictionary["child0"][1], "entity-rgb-animate");
-								drawEntityImageRGBAnimate();
-							}
-						}, 200);
+			for (var i=0; i< childCount; i++) {
+				var canvasId = "child" + i.toString();
+				createFunctionCallCreateRandom(canvasId);
+			}	
+			setInterval(
+				function () {				
+					for (var i=0; i< childCount; i++) {
+						var id = "child" + i;
+						if (entitiesDictionary[id]) {
+							initWebGLRGBAnimate(id, entitiesDictionary[id][1], "entity-rgb-animate");
+							drawEntityImageRGBAnimate();
+						}
+					}
+					
+					for (var i=0; i< parentCount; i++) {
+						var id = "parent" + i;
+						if (entitiesDictionary[id]) {
+							initWebGLRGBAnimate(id, entitiesDictionary[id][1], "entity-rgb-animate");
+							drawEntityImageRGBAnimate();
+						}
+					}
+				}, 
+				200);
 		};
 		
 		function createFunctionCallCreateDefault(name) {
@@ -157,6 +183,13 @@
 		
 		function createFunctionCallMutateOn(name, canvasId) {
 			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name][0] }, "/messageMutate");
+		}
+		
+		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
+			createFunctionGeneric(
+				canvasId,
+				{ language: currentLanguage, maxSize: "50", objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
+				"/messageCrossover");
 		}
 		
 		function createFunctionGeneric(canvasId, arguments, message) {
@@ -244,9 +277,10 @@
 		
 		initializeLanguages(); 
 		addParentCallBack("parent0");
-		addParentCallBack("parent1");
+		addParentCallBack("parent1");		
 		addParentCallBack("parent2");
-		addParentCallBack("parent3");
+		addParentCallBack("parent3");	
+		addParentCallBack("parent4");			
 		initializeContextMenuOn("child", "context_menu", menuSetCallback);
 		initializeContextMenuOn("parent", "context_menu", menuSetCallback);
 	</script>		

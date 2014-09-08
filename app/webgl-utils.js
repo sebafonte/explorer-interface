@@ -181,8 +181,19 @@ function setMatrixUniforms() {
 	gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 }
 
+// RGB animated
+var myVertexShaderRGBAnimatedSrc = 
+	"attribute vec3 aVertexPosition; " +
+	"uniform mat4 uMVMatrix; " + 
+	"uniform mat4 uPMatrix; " + 
+	"varying float xx, yy; " + 
+	" " + 
+	"void main(void) { " + 
+	"	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 2.0); " + 
+	"	xx = clamp(aVertexPosition.x,0.0,1.0); " + 
+	"	yy = clamp(aVertexPosition.y,0.0,1.0); " + 
+	"}";
 
-// RGB
 var myFragmentShaderRGBAnimateSrc =
 	"precision mediump float; " + 
 	"uniform float time; " + 
@@ -192,6 +203,7 @@ var myFragmentShaderRGBAnimateSrc =
 	"" + 
 	"vec3 veccos(in vec3 a) { return vec3(cos(a.x), cos(a.y), cos(a.z)); } " + 
 	"vec3 vecsin(in vec3 a) { return vec3(sin(a.x), sin(a.y), sin(a.z)); } " + 
+	
 	"vec3 vectan(in vec3 a) { return vec3(tan(a.x), tan(a.y), tan(a.z)); } " + 
 	"vec3 vecabs(in vec3 a) { return vec3(abs(a.x), abs(a.y), abs(a.z)); } " + 
 	"vec3 vecsqr(in vec3 a) { return vec3(a.x * a.x, a.y * a.y, a.z * a.z); } " + 
@@ -205,14 +217,13 @@ var myFragmentShaderRGBAnimateSrc =
 	"" + 
 	"void main(void) { " + 
 	"	float x = xx * 10.0, y = yy * 10.0; " + 	
-	"	vec3 v = vecsin(time, time, time); " +
-	//"	vec3 v = VALUE; " +
+	"	vec3 v = VALUE; " +
 	"	gl_FragColor = vec4(v.x, v.y, v.z, 1.0); " + 
 	"}";
 	
 function initShadersRGBAnimate(entity) {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-	gl.shaderSource(vertexShader, myVertexShaderSrc);
+	gl.shaderSource(vertexShader, myVertexShaderRGBAnimatedSrc);
 	gl.compileShader(vertexShader);
 
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
@@ -235,4 +246,22 @@ function initShadersRGBAnimate(entity) {
 	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 }
 	
+function copyImageDataToHTML5Canvas(canvasID) {
+	var c = document.getElementById(canvasID);
+	var ctx = c.getContext("2d");
+	var imgData=ctx.createImageData(c.width, c.height);
+	var pixels = new Uint8Array(c.width * c.height * 4); // 320x240 RGBA image
+	gl.readPixels(0, 0, c.width, c.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
+	imgData.data = pixels;
+
+	for (var i=0;i<imgData.data.length;i+=4)
+	{
+	  imgData.data[i+0]=pixels[i];
+	  imgData.data[i+1]=pixels[i+1];
+	  imgData.data[i+2]=255;//pixels[i+2];
+	  imgData.data[i+3]=255;pixels[i+3];
+	}
+		
+	ctx.putImageData(imgData,0,0);
+}

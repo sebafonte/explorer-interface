@@ -50,21 +50,14 @@ function initializeContextMenuOn(elementsPrefix, menuId, menuSetCallback) {
 			}};
 	}
 
-	console.log(elements);
 	if (mozilla){
 		for (var i=0; i< elements.length; i++)
-		{
-			console.log(i);
 			elements[i].addEventListener("contextmenu", displaymenu(i), true)
-		}
 		document.addEventListener("click", hidemenu(i), true)
 	}
 	else if (ie){
 		for (var i=0; i< elements.length; i++)
-		{
-			console.log(i)	
 			elements[i].attachEvent("oncontextmenu", displaymenu(i))
-		}
 		document.attachEvent("onclick", hidemenu(i))
 	}
 }

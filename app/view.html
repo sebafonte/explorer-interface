@@ -40,8 +40,8 @@
 		</div>
 			
 		<div class="container" style="padding-top: 60px">
-			<div id="main-div" style="width=80%">
-				<canvas id="parent0" width="650" height="650" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			<div id="main-div">
+				<canvas id="parent0" width="650" height="650" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)" style="width: 70%" ></canvas>
 			</div>
 		</div>
 	</body>
@@ -64,13 +64,12 @@
 		}
 
 		function drag(ev) {
-			ev.dataTransfer.setData("Text", ev.target.id);
+			ev.dataTransfer.setData("Text", JSON.stringify(entitiesDictionary[ev.target.id]));
 		}
-
+		
 		function drop(ev) {
 			ev.preventDefault();
-			var value = ev.dataTransfer.getData("Text");
-			var result = entitiesDictionary[value];
+			var result = JSON.parse(ev.dataTransfer.getData("Text"));
 			entitiesDictionary[ev.target.id] = result;
 			
 			if (result[2] == "entity-bw") {
@@ -82,11 +81,11 @@
 				drawEntityImageRGB();
 			}
 			else if (result[2] == "entity-rgb-animate") {
-				initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1], entitiesDictionary["parent0"][2]);
+				initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1]);
 				drawEntityImageRGBAnimate();
 			}
 			else if (result[2] == "entity-rgb-animate-interpolation") {
-				initWebGLRGBInterpolatedAnimate("parent0", entitiesDictionary["parent0"][1], entitiesDictionary["parent0"][2]);
+				initWebGLRGBInterpolatedAnimate("parent0", entitiesDictionary["parent0"][1]);
 				drawEntityImageRGBInterpolatedAnimate();
 			}			
 		}
@@ -104,7 +103,7 @@
 				initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1]);
 				setInterval(
 				function () {				
-					initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1], entitiesDictionary["parent0"][2]);
+					initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1]);
 					drawEntityImageRGBAnimate();
 				}, 
 				100);	

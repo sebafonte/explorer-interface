@@ -77,12 +77,45 @@
 		var galleryDictionary = {};
 		var gallerySize = 16;
 		
-		var startupDraw = function () {			
+		function startupDraw () {			
 			for (var i=0; i< gallerySize; i++) {
 				var canvasId = "gallery" + i.toString();
 				createFunctionGeneric(canvasId, { index: i.toString() }, "/messageGalleryGetElement");
 			}
-		};
+		}
+
+		function allowDrop(ev) {
+			ev.preventDefault();
+		}
+
+		function drag(ev) {
+			ev.dataTransfer.setData("Text", JSON.stringify(galleryDictionary[ev.target.id]));
+		}
+		
+		function drop(ev) {
+			ev.preventDefault();
+			var result = JSON.parse(ev.dataTransfer.getData("Text"));
+			galleryDictionary[ev.target.id] = result;
+			if (result=="default") alert("Default error");
+			var canvasId = ev.target.id;
+			
+			if (result[3].trim() == "entity-bw") {
+				initWebGLBW(canvasId, result[2]);
+				drawEntityImageBW();
+			}
+			else if (result[3].trim() == "entity-rgb") {
+				initWebGLRGB(canvasId, result[2]);
+				drawEntityImageRGB();
+			}
+			else if (result[3].trim() == "entity-rgb-animate") {
+				setInterval(
+					function () {				
+						initWebGLRGBAnimate(canvasId, result[2]);
+						drawEntityImageRGBAnimate();					
+					}, 
+					200);				
+			}	
+		}
 		
 		function createFunctionGeneric(canvasId, arguments, message) {
 			$.ajax({
@@ -119,10 +152,10 @@
 		
 		function menuCallbackPrefix(name, index) {			
 			if (index==0) {
-				var url_safe_language = encodeURIComponent(currentLanguage);
-				var url_safe_a = entitiesDictionary[name][0];
-				var url_safe_b = entitiesDictionary[name][1];
-				var url_safe_c = entitiesDictionary[name][2];
+				var url_safe_language = encodeURIComponent(galleryDictionary[name][3]);
+				var url_safe_a = galleryDictionary[name][0];
+				var url_safe_b = galleryDictionary[name][1];
+				var url_safe_c = galleryDictionary[name][2];
 				var url = "http://localhost:3000/messageView?language=" + url_safe_language + "&a=" + url_safe_a + "&b=" + url_safe_b + "&c=" + url_safe_c;				
 				window.open (url, "Object inspect");
 			}
@@ -130,7 +163,7 @@
 				$.ajax({
 						type : 'GET',
 						url : "/messageLike",
-						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
+						data : { language: galleryDictionary[name][3], a: galleryDictionary[name][0], b: galleryDictionary[name][1], c: galleryDictionary[name][2]},
 						dataType : "text",
 						success : function(data) { },
 						error : function(data) {
@@ -142,7 +175,7 @@
 				$.ajax({
 						type : 'GET',
 						url : "/messageDislike",
-						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
+						data : { language: galleryDictionary[name][3], a: galleryDictionary[name][0], b: galleryDictionary[name][1], c: galleryDictionary[name][2]},
 						dataType : "text",
 						success : function(data) { },
 						error : function(data) {
@@ -154,7 +187,7 @@
 				$.ajax({
 						type : 'GET',
 						url : "/messageSend",
-						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
+						data : { language: entitiesDictionary[name][3], a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
 						dataType : "text",
 						success : function(data) { },
 						error : function(data) {

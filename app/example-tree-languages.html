@@ -183,15 +183,14 @@
 		function allowDrop(ev) {
 			ev.preventDefault();
 		}
-
+		
 		function drag(ev) {
-			ev.dataTransfer.setData("Text", ev.target.id);
+			ev.dataTransfer.setData("Text", JSON.stringify(entitiesDictionary[ev.target.id]));
 		}
-
+		
 		function drop(ev) {
 			ev.preventDefault();
-			var value = ev.dataTransfer.getData("Text");
-			var result = entitiesDictionary[value];
+			var result = JSON.parse(ev.dataTransfer.getData("Text"));
 			entitiesDictionary[ev.target.id] = result;
 			if (result=="default") alert("Default error");
 			initWebGLBW(ev.target.id, result[1], result[2]);

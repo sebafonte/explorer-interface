@@ -12,9 +12,10 @@
 	<script src="webgl-utils.js"></script>
 	<script src="webgl-entities.js"></script>
 	<link href="bootstrap.min.css" rel="stylesheet">
+	<link href="site.css" rel="stylesheet">
   </head>
 
-	<body onload="startupDraw()">
+	<body onload="startupDraw()" style="background-color: black">
 		<div class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: indigo">
 			<div class="container">
 				<div class="navbar-collapse">
@@ -80,7 +81,14 @@
 				initWebGLRGB(ev.target.id, result[1]);
 				drawEntityImageRGB();
 			}
-		
+			else if (result[2] == "entity-rgb-animate") {
+				initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1], entitiesDictionary["parent0"][2]);
+				drawEntityImageRGBAnimate();
+			}
+			else if (result[2] == "entity-rgb-animate-interpolation") {
+				initWebGLRGBInterpolatedAnimate("parent0", entitiesDictionary["parent0"][1], entitiesDictionary["parent0"][2]);
+				drawEntityImageRGBInterpolatedAnimate();
+			}			
 		}
 		
 		var startupDraw = function () {
@@ -92,6 +100,15 @@
 				initWebGLRGB("parent0", entitiesDictionary["parent0"][1]);
 				drawEntityImageRGB();
 			}
+			else if (entitiesDictionary["parent0"][2] == "entity-rgb-animate") {
+				initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1]);
+				setInterval(
+				function () {				
+					initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1], entitiesDictionary["parent0"][2]);
+					drawEntityImageRGBAnimate();
+				}, 
+				100);	
+			}		
 		};
 		
 		//initializeContextMenuOn("parent", "context_menu");

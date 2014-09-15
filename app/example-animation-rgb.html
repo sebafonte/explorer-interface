@@ -12,7 +12,8 @@
 	<script src="webgl-utils.js"></script>
 	<script src="webgl-entities.js"></script>
 	<link href="bootstrap.min.css" rel="stylesheet">
-  </head>
+	<link href="site.css" rel="stylesheet">
+	</head>
 
 	<body onload="startupDraw()">
 		<div class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: indigo">
@@ -28,7 +29,7 @@
 					  <ul class="dropdown-menu" role="menu">
 						<li><a style="text-shadow: none;" href="/example-tree-languages.html">Mono images</a></li>
 						<li><a style="text-shadow: none;" href="/example-tree-languages-rgb.html">RGB vector mix</a></li>
-						<li class="active"><a style="text-shadow: none;" href="/example-tree-languages-rgb.html">RGB vector animated</a></li>
+						<li class="active"><a style="text-shadow: none;" href="/example-animation-rgb.html">RGB vector animated</a></li>
 						<li><a style="text-shadow: none;" href="/example-vrp.html">VRP</a></li>
 						<li><a style="text-shadow: none;" href="/gallery.html" disabled="disabled">Gallery</a></li>
 					  </ul>
@@ -38,58 +39,117 @@
 			</div>
 		</div>
 			
-		<div class="container" style="padding-top: 60px; width: 950px">
+		<div class="container" style="padding-top: 60px; width: 1042px">
 			<div id="main-div" style="border-left: 1px solid lightgray; display: flex">
-				<div style="width: 620">
-					<div id="container-pdiv" class="view-container" style="margin-bottom: 5px; display">
+				<div style="width: 620px">
+					<div id="container-parents-div" class="view-container" style="margin-bottom: 5px; display">
 						<canvas id="parent0" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent1" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>						
-						<canvas id="parent2" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>						
-						<canvas id="parent3" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>						
+						<canvas id="parent1" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>			<canvas id="parent2" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="parent3" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						<canvas id="parent4" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<div>
-					<input type="submit" value="Operate" onclick="operate()" style="width: 100%; background-color: #5cb85c"/>
-					<div id="container-pdiv" class="view-container" style="margin-bottom: 5px; display">
-					<div>
-						<canvas id="child0" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child1" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child2" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child3" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child4" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child5" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child6" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child7" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child8" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child9" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					</div>
+					<div style="display: flex">
+						<input type="submit" value="Operate" onclick="operate()" style="width: 50%; background-color: #5cb85c"/>
+						<input type="submit" value="Add time var" onclick="operateAddVar()" style="width: 50%; background-color: #5cb85c"/>
+					</div>
+					<div id="container-children-div" class="view-container" style="margin-bottom: 5px; display">
+						<div>
+							<canvas id="child0" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="child1" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="child2" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="child3" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="child4" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="child5" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="child6" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="child7" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="child8" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="child9" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						</div>
 					</div>
 					<input type="submit" value="Randomize" onclick="randomize()" style="width: 100%; background-color: #5cb85c"/>
-					<div id="container-cdiv" class="view-container" style="margin-top: 10px">
+					<div id="container-animation-div" class="view-container" style="margin-top: 10px">
 						<canvas style="padding-left: 190px" id="animation" width="240" height="240" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 					</div>
 				</div>
-				<div id="comments-div" class="view-container" style="border: 1px solid lightgray;">
+				<div id="parameters-div" class="view-container" style="border: 1px solid lightgray;">
 					<form>
 						<div>
-							<div style="margin-top: 20px; padding-left: 10px">
+							<div style="margin-top: 10px; padding-left: 5px; padding-right: 5px">
 								<div style="display: table">
 									<div>
 										Object
-										<select id="languages-select" onchange="changeLanguageClass()" value="rgb-color-images-vector" style="max-width: 190px; margin-right: 10px">
+										<select id="languages-select" onchange="changeLanguageClass()" value="rgb-color-images-vector" style="width: 260px; margin-right: 10px">
 											<option value="rgb-color-images-vector-time">rgb-color-images-vector-time</option>
 											<option value="rgb-color-images-vector">rgb-color-images-vector</option>											
 											<option value="lisp-math-function-xy">lisp-math-function-xy</option>
 											<option value="lisp-math-function-x">lisp-math-function-x</option>
 										</select>
 									</div>
-									<div>
-										<button id="start-search" type="button" onclick="startSearch()">
-										  <span class="icon-bar" style="height: 18px"><i class="icon-play"></i></span>
-										</button>
-										<button id="stop-search" type="button" onclick="stopSearch()">
-										  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
-										</button>							
-									</div>
+									<div style="display: flex">
+										<div style="display: block">
+										<div style="padding: 10px; border: 1px solid lightgray; max-width: 170px;">
+											<h6>Time</h6>
+											<div>
+												<button id="start-time" type="button" onclick="startTime()">
+													<span class="icon-bar" style="height: 18px"><i class="icon-play"></i></span>
+												</button>
+												
+												<button id="stop-time" type="button" onclick="stopTime()">
+													<span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
+												</button>
+												
+												<button id="reset-time" type="button" onclick="resetTime()" style="width: 100px; height: 24px; margin-top: 1px">
+													<div style="display: flex">
+														<span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
+														<p>Reset time</p>
+													</div>
+												</button>
+											</div>
+											<div style="padding-top: 10px">
+												<div style="display: flex">
+													<div>Value</div>
+													<input type="text" value="0.0" onblur="setTime()" style="width: 100px"/>
+												</div>	
+												<div style="display: flex">				
+													<div>Delta</div>
+													<input type="text" value="0.1" onblur="setDeltaTime()" style="width: 100px" />
+												</div>	
+											</div>
+										</div>
+										<div style="padding: 10px; border: 1px solid lightgray; max-width: 170px;">
+											<h6>Interpolator</h6>
+											<div>
+												<select id="languages-select" onchange="changeLanguageClass()" value="rgb-color-images-vector" style="margin-right: 10px; max-width: 160px">
+													<option value="lisp-math-function-x">default</option>
+												</select>
+											</div>
+											<div style="padding-top: 10px">
+												<div style="display: flex">				
+													<div>Delta</div>
+													<input type="text" value="0.1" onblur="setDeltaTime()" style="width: 100px" />
+												</div>	
+											</div>
+										</div>		
+										</div>												
+										<div style="padding: 10px; border: 1px solid lightgray; width: 160px;">
+											<div style="max-width: 100px;">
+												<h6>Operations</h6>
+												<select name="Operations" style="max-width: 160px; height: 62px" size="2" multiple>
+												  <option value="crossover-cfg">crossover-cfg</option>
+												  <option value="mutation-cfg">mutation-cfg</option>
+												  <option value="branch-delete-cfg">branch-delete-cfg</option>
+												</select>
+											</div>
+											<div style="max-width: 100px;" size="3">
+												<h6>Functions</h6>
+												<select name="Operations" style="max-width: 160px; height: 62px;" size="3" multiple>
+												  <option value="generic">Generic abs tan cos</option>
+												  <option value="saab">Dissolve</option>
+												  <option value="opel">Noise</option>
+												</select>
+											</div>									
+										</div>		
+									</div>	
 								</div>			
 							</div>
 						</div>
@@ -103,7 +163,6 @@
 	<script src="bootstrap.min.js"></script>	
 		
 	<script>		
-		var defaultLanguage;
 		var entitiesDictionary = {};
 		var parentCount = 5, childCount = 10;
 		var currentLanguage = document.getElementById("languages-select").value;
@@ -122,6 +181,13 @@
 						"parent" + Math.floor((Math.random() * parentCount)).toString(),
 						canvasId);
 			}
+		}
+		
+		function operateAddVar() {
+			for (var i=0; i< childCount; i++)
+				createFunctionCallMutateAddVarOn( 
+					"parent" + Math.floor(Math.random() * parentCount).toString(),
+					canvasId);
 		}
 
 		function allowDrop(ev) {
@@ -144,20 +210,17 @@
 				
 		var startupDraw = function () {
 			var htmlCode = "";
-			for (var i=0; i< parentCount; i++) {
-				var canvasId = "parent" + i.toString();
-				createFunctionCallCreateRandom(canvasId);
-			}	
-			for (var i=0; i< childCount; i++) {
-				var canvasId = "child" + i.toString();
-				createFunctionCallCreateRandom(canvasId);
-			}	
+			for (var i=0; i< parentCount; i++)
+				createFunctionCallCreateRandom("parent" + i.toString());
+			for (var i=0; i< childCount; i++)
+				createFunctionCallCreateRandom("child" + i.toString());
+			
 			setInterval(
 				function () {				
 					for (var i=0; i< childCount; i++) {
 						var id = "child" + i;
 						if (entitiesDictionary[id]) {
-							initWebGLRGBAnimate(id, entitiesDictionary[id][1], "entity-rgb-animate");
+							initWebGLRGBAnimate(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
 							drawEntityImageRGBAnimate();
 						}
 					}
@@ -165,9 +228,15 @@
 					for (var i=0; i< parentCount; i++) {
 						var id = "parent" + i;
 						if (entitiesDictionary[id]) {
-							initWebGLRGBAnimate(id, entitiesDictionary[id][1], "entity-rgb-animate");
+							initWebGLRGBAnimate(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
 							drawEntityImageRGBAnimate();
 						}
+					}
+					
+					var id = "animation";
+					if (entitiesDictionary[id]) {
+						initWebGLRGBInterpolatedAnimate(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
+						drawEntityImageRGBInterpolatedAnimate();					
 					}
 				}, 
 				200);
@@ -183,6 +252,10 @@
 		
 		function createFunctionCallMutateOn(name, canvasId) {
 			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name][0] }, "/messageMutate");
+		}
+		
+		function createFunctionCallMutateAddVarOn(name, canvasId) {
+			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name][0] }, "/messageMutateAddVar");
 		}
 		
 		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
@@ -201,6 +274,7 @@
 					success : function(data) {
 						var result = data.split("|");
 						entitiesDictionary[canvasId] = result;
+						result[2] = "entity-rgb-animate";
 						initWebGLRGBAnimate(canvasId, result[1]);
 						drawEntityImageRGBAnimate();
 					},
@@ -220,9 +294,7 @@
 				});
 		};
 		
-		function initializeLanguages() {
-			defaultLanguage = "rgb-color-images-vector";
-			
+		function initializeLanguages() {			
 			$.ajax({
 				type : 'GET',
 				url : "/messageLanguages",
@@ -245,7 +317,7 @@
 				var url_safe_language = encodeURIComponent(currentLanguage);
 				var url_safe_a = encodeURIComponent(entitiesDictionary[name][0]);
 				var url_safe_b = encodeURIComponent(entitiesDictionary[name][1]);
-				var url_safe_c = encodeURIComponent("entity-rgb");
+				var url_safe_c = encodeURIComponent(entitiesDictionary[name][2]);
 				var url = "/messageView?language=" + url_safe_language + "&a=" + url_safe_a + "&b=" + url_safe_b + "&c=" + url_safe_c;				
 				window.open (url, "Object inspect");
 			}
@@ -253,7 +325,7 @@
 				$.ajax({
 						type : 'GET',
 						url : "/messageLike",
-						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: "entity-rgb"},
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
 						dataType : "text",
 						success : function(data) { },
 						error : function(data) {
@@ -264,8 +336,20 @@
 			else if (index==2) {
 				$.ajax({
 						type : 'GET',
+						url : "/messageDislike",
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
+						dataType : "text",
+						success : function(data) { },
+						error : function(data) {
+							console.log('Dislike call failed');
+						}
+					});			
+			}
+			else if (index==3) {
+				$.ajax({
+						type : 'GET',
 						url : "/messageSend",
-						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: "entity-rgb"},
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
 						dataType : "text",
 						success : function(data) { },
 						error : function(data) {
@@ -275,20 +359,42 @@
 			}
 		}
 		
+		function resetTime() {
+			globalTime = 0.0;
+		}
+		
+		function stopTime() {
+			deltaTime = 0.0;
+		}
+		
+		function startTime() {
+			deltaTime = 0.1;
+		}
+		
+		function setDeltaTime() {
+			deltaTime = document.getElementByID("set-delta-time");
+		}
+
+		function setTime() {
+			globalTime = document.getElementByID("set-time");
+		}
+		
 		initializeLanguages(); 
 		addParentCallBack("parent0");
 		addParentCallBack("parent1");		
 		addParentCallBack("parent2");
 		addParentCallBack("parent3");	
-		addParentCallBack("parent4");			
+		addParentCallBack("parent4");
 		initializeContextMenuOn("child", "context_menu", menuSetCallback);
 		initializeContextMenuOn("parent", "context_menu", menuSetCallback);
+		initializeContextMenuOn("animation", "context_menu", menuSetCallback);
 	</script>		
 	
 	<div id="context_menu" style="border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute;line-height:30px; padding-left: 0px;">
 		<div><input type="button" value="Open" onclick="menuCallbackPrefix(globalSelectedIndex, 0)" style="width: 100px"/></div>
 		<div><input type="button" value="Like" onclick="menuCallbackPrefix(globalSelectedIndex, 1)" style="width: 100px"/></div>
-		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
+		<div><input type="button" value="Dislike" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
+		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 3)" style="width: 100px"/ disabled></div>
 	</div>
 	
 	<script>

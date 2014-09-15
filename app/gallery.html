@@ -12,6 +12,7 @@
 	<script src="webgl-utils.js"></script>
 	<script src="webgl-entities.js"></script>
 	<link href="bootstrap.min.css" rel="stylesheet">
+	<link href="site.css" rel="stylesheet">
 	
 	<style type="text/css">
 		canvas {
@@ -92,14 +93,23 @@
 				success : function(data) {
 					var result = data.split("|");
 					galleryDictionary[canvasId] = result;
-					if (result[2].trim() == "entity-bw") {
+					
+					if (result[3].trim() == "entity-bw") {
 						initWebGLBW(canvasId, result[2]);
 						drawEntityImageBW();
 					}
-					else if (result[0].trim() == "rgb-color-images-vector") {
+					else if (result[3].trim() == "entity-rgb") {
 						initWebGLRGB(canvasId, result[2]);
 						drawEntityImageRGB();
 					}
+					else if (result[3].trim() == "entity-rgb-animate") {
+						setInterval(
+							function () {				
+								initWebGLRGBAnimate(canvasId, result[2]);
+								drawEntityImageRGBAnimate();					
+							}, 
+							200);				
+					}					
 				},
 				error : function(data) {
 					console.log('Call failed');
@@ -131,6 +141,18 @@
 			else if (index==2) {
 				$.ajax({
 						type : 'GET',
+						url : "/messageDislike",
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
+						dataType : "text",
+						success : function(data) { },
+						error : function(data) {
+							console.log('Like call failed');
+						}
+					});			
+			}			
+			else if (index==3) {
+				$.ajax({
+						type : 'GET',
 						url : "/messageSend",
 						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
 						dataType : "text",
@@ -146,7 +168,8 @@
 	<div id="context_menu" style="border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute;line-height:30px; padding-left: 0px;">
 		<div><input type="button" value="Open" onclick="menuCallbackPrefix(globalSelectedIndex, 0)" style="width: 100px"/></div>
 		<div><input type="button" value="Like" onclick="menuCallbackPrefix(globalSelectedIndex, 1)" style="width: 100px"/></div>
-		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
+		<div><input type="button" value="Dislike" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
+		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 3)" style="width: 100px"/ disabled></div>
 	</div>
 
 	<script type="text/javascript">

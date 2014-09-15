@@ -245,7 +245,72 @@ function initShadersRGBAnimate(entity) {
 	shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
 	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 }
+
+// Animated interpolation
+var myFragmentShaderRGBAnimateInterpolateSrc =
+	"precision mediump float; " + 
+	"uniform float time; " + 
+	"varying vec4 vColor; " + 
+	"varying float xx; " + 
+	"varying float yy; " + 
+	"" + 
+	"vec3 veccos(in vec3 a) { return vec3(cos(a.x), cos(a.y), cos(a.z)); } " + 
+	"vec3 vecsin(in vec3 a) { return vec3(sin(a.x), sin(a.y), sin(a.z)); } " + 
 	
+	"vec3 vectan(in vec3 a) { return vec3(tan(a.x), tan(a.y), tan(a.z)); } " + 
+	"vec3 vecabs(in vec3 a) { return vec3(abs(a.x), abs(a.y), abs(a.z)); } " + 
+	"vec3 vecsqr(in vec3 a) { return vec3(a.x * a.x, a.y * a.y, a.z * a.z); } " + 
+	"" + 
+	"vec3 vecadd(in vec3 a, in vec3 b) { return vec3(a.x + b.x, a.y + b.y, a.z + b.z); } " + 
+	"vec3 vecsubstract(in vec3 a, in vec3 b) { return vec3(a.x - b.x, a.y - b.y, a.z - b.z); } " + 
+	"vec3 vecmultiply(in vec3 a, in vec3 b) { return vec3(a.x * b.x, a.y * b.y, a.z * b.z); } " + 
+	"vec3 vecdiv(in vec3 a, in vec3 b) { return vec3(a.x / b.x, a.y / b.y, a.z / b.z); } " + 
+	"vec3 createvector(in float a, in float b, in float c) { return vec3(a, b, c); } " + 
+	"vec3 veccolormap(in vec3 a, in vec3 b, in vec3 c) { return createvector(a.x / 10.0, b.x / 10.0, c.x / 10.0); } " + 
+	"FUNCTIONS" + 
+	+ 
+	"void main(void) { " + 
+	" 	float a = mod(time, 10.0); " + 
+	" 	float index = div(time, 10.0); " + 
+	"	vec3 va, vb; " + 
+	"	VALUE " +	
+	"	gl_FragColor = vec4(va.x * a + vb.x * (1.0 - a), va.y * a + vb.y * (1.0 - a), va.z * a + vb.z * (1.0 - a), 1.0); " + 
+	"}";
+	
+function initShadersRGBInterpolatedAnimate(entity) {
+	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+	gl.shaderSource(vertexShader, myVertexShaderRGBAnimatedSrc);
+	gl.compileShader(vertexShader);
+
+	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+	
+	var code = "if (false) {} ", functions = "";
+	for (var i=0; i< entity.values.size; i++) {
+		functions += "vec3 f" + i + " (in float ) {	float x = xx * 10.0, y = yy * 10.0; return " + entity.values[i]; + "} ";
+		code += "else if (index < " + i + ".0) { va = f" + i + "(); vb = f" + (i + 1) + "(); }"
+	}
+	
+	var withFunctions = myFragmentShaderRGBAnimateInterpolateSrc.replace("FUNCTIONS", functions.toLowerCase())
+	var withIfs = withFunctions.replace("VALUE", code.toLowerCase())
+	gl.shaderSource(fragmentShader, withIfs);
+	gl.compileShader(fragmentShader);
+
+	shaderProgram = gl.createProgram();
+	gl.attachShader(shaderProgram, vertexShader);
+	gl.attachShader(shaderProgram, fragmentShader);
+	gl.linkProgram(shaderProgram);
+
+	if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+		console.log("Could not initialise shaders for " + entity);
+	}
+
+	gl.useProgram(shaderProgram);
+	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+	shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+}
+		
 function copyImageDataToHTML5Canvas(canvasID) {
 	var c = document.getElementById(canvasID);
 	var ctx = c.getContext("2d");

@@ -72,7 +72,7 @@
 									<div style="display: flex">
 										<div>
 											Object
-											<select id="languages-select" onchange="changeLanguageClass()" value="lisp-math-function-xy" disabled>
+											<select id="languages-select" onchange="changeLanguageClass()" value="lisp-math-function-xy" data-toggle="tooltip" data-placement="right" title="Images language" disabled>
 												<option value="lisp-math-function-xy">lisp-math-function-xy</option>
 												<option value="lisp-math-function-x">lisp-math-function-x</option>
 												<option value="rgb-color-images-vector">rgb-color-images-vector</option>
@@ -80,7 +80,7 @@
 										</div>
 										<div style="padding-left: 10px">
 											Objective
-											<select id="fitness-select" disabled>
+											<select id="fitness-select" data-toggle="tooltip" data-placement="right" title="Fitness weight function" disabled>
 												<option value="Function xy">None</option>
 												<option value="Function x">Colorfull</option>
 											</select>
@@ -89,16 +89,12 @@
 									<div style="display: flex">									
 										<div style="margin-left: 5px">
 											Max time
-											<input type="text" value="1" disabled/>
+											<input id="max-time" type="text" value="1" data-toggle="tooltip" data-placement="right" title="Maximum time desired for each image" disabled/>
 										</div>
 										<div style="margin-left: 20px">
 											Max size
-											<input type="text" value="20" disabled/>
+											<input id="input-max-size" type="text" value="20" data-toggle="tooltip" data-placement="right" title="Maximum tree size" disabled/>
 										</div>
-									</div>
-									<div style="margin-top: 10px">
-										<input type="button" value="Load"/>
-										<input type="button" value="Save" onclick="saveDefaultGallery()"/>
 									</div>
 								</div>
 							</div>
@@ -214,17 +210,20 @@
 		}
 		
 		function createFunctionCallCreateRandom(name) {
-			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: "30" }, "/messageCreateRandom");
+			var maxSize = document.getElementById("input-max-size").value;
+			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: maxSize }, "/messageCreateRandom");
 		}
 		
 		function createFunctionCallMutateOn(name, canvasId) {
-			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: "30", objectData: entitiesDictionary[name][0] }, "/messageMutate");
+			var maxSize = document.getElementById("input-max-size").value;
+			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: maxSize, objectData: entitiesDictionary[name][0] }, "/messageMutate");
 		}
 		
 		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
+			var maxSize = document.getElementById("input-max-size").value;
 			createFunctionGeneric(
 				canvasId,
-				{ language: currentLanguage, maxSize: "50", objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
+				{ language: currentLanguage, maxSize: maxSize, objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
 				"/messageCrossover");
 		}
 		

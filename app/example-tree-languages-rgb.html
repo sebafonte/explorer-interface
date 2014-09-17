@@ -95,11 +95,6 @@
 										Max size
 										<input id="input-max-size" type="text" value="30"/>
 									</div>
-									
-									<div style="margin-top: 10px">
-										<input type="button" value="Load"/>
-										<input type="button" value="Save" onclick="saveDefaultGallery()"/>
-									</div>
 								</div>			
 							</div>
 						</div>
@@ -116,13 +111,6 @@
 		var entitiesDictionary = {};
 		var childCount = 12, parentCount = 4;
 		var currentLanguage = document.getElementById("languages-select").value;
-		
-		function saveDefaultGallery () {	
-			for (var i=0; i< parentCount; i++)
-				createFunctionCallSetGalleryElement("parent" + i.toString(), i);
-			for (var i=0; i< childCount; i++)
-				createFunctionCallSetGalleryElement("child" + i.toString(), i);
-		};
 		
 		function operate() {
 			for (var i=0; i< childCount; i++) {
@@ -190,21 +178,7 @@
 				{ language: currentLanguage, maxSize: maxSize, objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
 				"/messageCrossover");
 		}
-		
-		function createFunctionCallSetGalleryElement(name, index) {
-			// #TODO: Modificar por un POST
-			$.ajax({
-					type : 'GET',
-					url : "/messageGallerySetElement",
-					data : { index: index.toString(), language: currentLanguage, objectDataA: entitiesDictionary[name][0], objectDataB: entitiesDictionary[name][1] },
-					dataType : "text",
-					success : function(data) { },
-					error : function(data) {
-						console.log('Call failed');
-					}
-				});
-		}
-		
+				
 		function createFunctionGeneric(canvasId, arguments, message) {
 			$.ajax({
 					type : 'GET',

@@ -1,56 +1,294 @@
-<script>
-	function influenceBySound(entity) {
-	
-	}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loading and playing a sound with the Web Audio API</title>
+    <script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+    <style>
+        *{
+            font-family: sans-serif;
+        }
+		
+		.separator {
+			width: 100px;
+		}
+		
 
-	// check if the default naming is enabled, if not use the chrome one.
-    if (! window.AudioContext) {
-        if (! window.webkitAudioContext) {
-            alert('no audiocontext found');
-        }
-        window.AudioContext = window.webkitAudioContext;
-    }
-    var context = new AudioContext();
-    var audioBuffer;
-    var sourceNode;
- 
-    // load the sound
-    setupAudioNodes();
-    loadSound("wagner-short.ogg");
- 
-    function setupAudioNodes() {
-        // create a buffer source node
-        sourceNode = context.createBufferSource();
-        // and connect to destination
-        sourceNode.connect(context.destination);
-    }
- 
-    // load the specified sound
-    function loadSound(url) {
-        var request = new XMLHttpRequest();
-        request.open('GET', url, true);
-        request.responseType = 'arraybuffer';
- 
-        // When loaded decode the data
-        request.onload = function() {
- 
-            // decode the data
-            context.decodeAudioData(request.response, function(buffer) {
-                // when the audio is decoded play the sound
-                playSound(buffer);
-            }, onError);
-        }
-        request.send();
-    }
- 
- 
-    function playSound(buffer) {
-        sourceNode.buffer = buffer;
-        sourceNode.start(0);
-    }
- 
-    // log if an error occurs
-    function onError(e) {
-        console.log(e);
-    }
-</script>
+    </style>
+</head>
+
+<body>
+	<h1>Sound affection test</h1>	
+	
+	<div style="display: block">
+		<h2>Samples</h2>	
+		<div style="display: flex">
+			<canvas id="myCanvas" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			<canvas id="myCanvas" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			<canvas id="myCanvas" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			<canvas id="myCanvas" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+		</div>
+	</div>
+
+	<div>
+		<h2>Editors</h2>
+		<div style="display: block">
+			<div style="display: flex">
+				<div><input type="button" text="-"/></div>
+				<div class="separator">vtime</div>
+				<div class="separator">
+					<select id="channel1-select" onchange="changeLanguageClass()" value="CH 1" style="width: 100px; margin-right: 10px">
+						<option value="CH Mono">CH Mono</option>
+						<option value="CH 1">CH 1</option>
+						<option value="CH 2">CH 2</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="transform1-select" onchange="changeLanguageClass()" value="Time" style="width: 100px; margin-right: 10px">
+						<option value="Time">Time</option>
+						<option value="Spectrum">Spectrum</option>
+						<option value="Amplitude">Amplitude</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="proyection1-select" onchange="changeLanguageClass()" value="Value" style="width: 100px; margin-right: 10px">
+						<option value="Value">Value</option>
+						<option value="Peak">Peak</option>
+						<option value="Peaks">Peaks</option>
+					</select>
+				</div>				
+				<div style="border: 1px solid gray;"><canvas id="ed1" width="80" style="max-heigth: 17px" height="15" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas></div>
+				<div><input type="checkbox" name="ed1-check" value="" checked></div>
+			</div>		
+			<div style="display: flex">
+				<div><input type="button" text="-"/></div>
+				<div class="separator">vb</div>
+				<div class="separator">
+					<select id="channel1-select" onchange="changeLanguageClass()" value="CH 1" style="width: 100px; margin-right: 10px">
+						<option value="CH Mono">CH Mono</option>
+						<option value="CH 1">CH 1</option>
+						<option value="CH 2">CH 2</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="transform1-select" onchange="changeLanguageClass()" value="rgb-color-images-vector" style="width: 100px; margin-right: 10px">
+						<option value="Spectrum">Spectrum</option>
+						<option value="Amplitude">Amplitude</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="proyection1-select" onchange="changeLanguageClass()" value="Peak" style="width: 100px; margin-right: 10px">
+						<option value="Peak">Peak</option>
+						<option value="Value">Value</option>
+						<option value="Peaks">Peaks</option>
+					</select>
+				</div>				
+				<div style="border: 1px solid gray;"><canvas id="ed2" width="80" style="max-heigth: 17px" height="15" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas></div>
+				<div><input type="checkbox" name="ed2-check" value="" checked></div>
+			</div>
+			<div style="display: flex">
+				<div><input type="button" text="-"/></div>
+				<div class="separator">vc</div>
+				<div class="separator">
+					<select id="channel2-select" onchange="changeLanguageClass()" value="CH 2" style="width: 100px; margin-right: 10px">
+						<option value="CH Mono">CH Mono</option>
+						<option value="CH 1">CH 1</option>
+						<option value="CH 2">CH 2</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="transform2-select" onchange="changeLanguageClass()" value="Spectrum" style="width: 100px; margin-right: 10px">
+						<option value="Spectrum">Spectrum</option>
+						<option value="Amplitude">Amplitude</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="proyection2-select" onchange="changeLanguageClass()" value="Peak" style="width: 100px; margin-right: 10px">
+						<option value="Peak">Peak</option>
+						<option value="Value">Value</option>
+						<option value="Peaks">Peaks</option>
+					</select>
+				</div>				
+				<div style="border: 1px solid gray;"><canvas id="ed3" width="512px" style="max-heigth: 17px" height="15" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas></div>
+				<div><input type="checkbox" name="ed3-check" value="" checked></div>
+			</div>		
+			<div style="display: flex">
+				<div><input type="button" text="-"/></div>
+				<div class="separator">vd</div>
+				<div class="separator">
+					<select id="channel2-select" onchange="changeLanguageClass()" value="CH 2" style="width: 100px; margin-right: 10px">
+						<option value="CH Mono">CH Mono</option>
+						<option value="CH 1">CH 1</option>
+						<option value="CH 2">CH 2</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="transform2-select" onchange="changeLanguageClass()" value="Spectrum" style="width: 100px; margin-right: 10px">
+						<option value="Spectrum">Spectrum</option>
+						<option value="Amplitude">Amplitude</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="proyection2-select" onchange="changeLanguageClass()" value="Peaks" style="width: 100px; margin-right: 10px">
+						<option value="Peaks">Peaks</option>
+						<option value="Peak">Peak</option>
+						<option value="Value">Value</option>
+					</select>
+				</div>
+				<div style="border: 1px solid gray;"><canvas id="ed4" width="512px" style="max-heigth: 17px" height="15" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas></div>
+				<div><input type="checkbox" name="ed4-check" value="" checked></div>
+			</div>				
+		</div>
+		<div>
+			<h2>Options</h2>
+			<div style="display: block">
+			<div>
+				<input type="checkbox" name="play-sound-check" value="" checked>Play sound</div>
+				<div>
+					<button id="reset-time" type="button" onclick="resetTime()">
+						<div style="display: flex">
+							<span class="icon-bar" ><i class="icon-stop"></i></span>
+							<p>Reset time</p>
+						</div>
+					</button>
+				</div>
+				<div style="padding-top: 10px">
+					<div style="display: flex">
+						<div>Time value</div>
+						<input type="text" value="0.0" onblur="setTime()" />
+					</div>	
+					<div style="display: flex">				
+						<div>Time delta</div>
+						<input type="text" value="0.1" onblur="setDeltaTime()"/>
+					</div>	
+				</div>
+			</div>	
+		</div>
+	</div>
+	
+	<script src="webaudio-utils.js"></script>
+	
+	<script type="text/javascript">
+		var sourceNode;
+		var javascriptNode;
+		var analyser, analyser2;
+		
+		function setupAudioNodes() {
+			javascriptNode = context.createScriptProcessor(4096, 1, 1);
+			javascriptNode.connect(context.destination);
+			analyser = createAnalyzer(0.0, 2048);
+			analyser2 = createAnalyzer(0.0, 2048);			
+			sourceNode = context.createBufferSource();
+			splitter = context.createChannelSplitter();
+			sourceNode.connect(splitter);
+			splitter.connect(analyser, 0, 0);
+			splitter.connect(analyser2, 1, 0);
+			analyser.connect(javascriptNode);
+			sourceNode.connect(context.destination);
+		} 
+		
+		setupAudioNodes();
+		loadSound("http://gpexplorer.ddns.net/sample.mp3");
+		
+		javascriptNode.onaudioprocess = function() {
+			processAndDrawAmplitude("ed1");
+			processAndDrawAmplitude("ed2");
+			processAndDrawSpectrumPeak("ed3");
+			processAndDrawSpectrumPeaks("ed4");
+		}
+
+		function color(ctx) {
+			return '#000000';
+		}
+		
+		function processAndDrawAmplitude(id) { 
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var average = getAverageVolume(array);
+			var ctx = document.getElementById(id).getContext("2d");
+			var w = document.getElementById(id).width, h = document.getElementById(id).height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			ctx.fillRect(0,0,average,h);
+		}
+			
+		function processAndDrawSpectrum (id) {
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var element = document.getElementById(id);
+			var ctx = element.getContext("2d");
+			var w = element.width, h = element.height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			drawSpectrum(array, ctx, element);
+		}
+		
+		function processAndDrawSpectrumPeak (id) {
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var element = document.getElementById(id);
+			var ctx = element.getContext("2d");
+			var w = element.width, h = element.height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			drawSpectrumPeak(array, ctx, element);
+		}
+
+		function processAndDrawSpectrumPeaks (id) {
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var element = document.getElementById(id);
+			var ctx = element.getContext("2d");
+			var w = element.width, h = element.height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			drawSpectrumPeaks(array, ctx, element);
+		}
+		
+		function drawSpectrum(array, ctx, element) {
+			var h = element.height;
+			for (var i = 0; i < (array.length); i++ ) { 
+					var value = array[i] * (h / 256);
+					ctx.fillRect(i, 0, 1, h-value);
+				}
+		}
+
+		function drawSpectrumPeak(array, ctx, element) {
+			var h = element.height;
+			var maxValue = 0, index = 0;
+			ctx.fillStyle = color();	
+			for (var i = 0; i < (array.length); i++ ) {
+				var value = array[i] * (h / 256);
+				ctx.fillRect(i, 0, 1, h-value);
+				if (value > maxValue) {
+					maxValue = value;
+					index = i;
+				}
+			}
+			
+			ctx.fillStyle = "#00FF00";	
+			ctx.fillRect(index, 0, 1, maxValue);
+		}
+		
+		function drawSpectrumPeaks(array, ctx, element) {
+			var h = element.height;
+			var maxValue = 0, index = 0;
+			ctx.fillStyle = color();	
+			for (var i = 0; i < (array.length); i++ ) {
+				var value = array[i] * (h / 256);
+				ctx.fillRect(i, 0, 1, h-value);
+				if (value > maxValue) {
+					maxValue = value;
+					index = i;
+				}
+			}
+			
+			ctx.fillStyle = "#00FF00";
+			for (var i = 0; i < (array.length); i++ ) {
+				var value = array[i] * (h / 256);
+				if (value == maxValue) 
+					ctx.fillRect(i, 0, 1, maxValue);
+			}
+		}
+	</script>
+</body>
+</html>

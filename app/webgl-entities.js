@@ -27,7 +27,6 @@ function initBuffersBW() {
 
 function drawEntityImageBW() {
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-	gl.clear(gl.COLOR_BUFFER_BIT);
 	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 	mat4.identity(mvMatrix);
 	mat4.translate(mvMatrix, [0.0, 0.0, -1.2]);
@@ -105,7 +104,6 @@ function initBuffersRGB() {
 
 function drawEntityImageRGB () { 
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-	gl.clear(gl.COLOR_BUFFER_BIT);
 	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 	mat4.identity(mvMatrix);
 	mat4.translate(mvMatrix, [0.0, 0.0, -1.2]);
@@ -125,15 +123,22 @@ function initWebGLRGBAnimate(canvas, entity) {
     gl.disable(gl.DEPTH_TEST);
 }
 
-var globalTime = 0.0;
+var globalStartTime = 0.0;
+var globalTime = 0.0, globalVa = 0.0, globalVb = 0.0, globalVc = 0.0, globalVd = 0.0;
+var deltaTime = 0.1;
+
+function resetTimer() {
+	globalStartTime = Date.now();
+}
+
+function timerValue() {
+	return (Date.now() - globalStartTime) / 1000.0;
+}
 
 function drawEntityImageRGBAnimate () {
 	var location = gl.getUniformLocation(shaderProgram, "time");
-    gl.uniform1f(location, globalTime);
-	globalTime += 0.1;
-	
+    gl.uniform1f(location, timerValue());	
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
-	gl.clear(gl.COLOR_BUFFER_BIT);
 	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 	mat4.identity(mvMatrix);
 	mat4.translate(mvMatrix, [0.0, 0.0, -1.2]);
@@ -141,5 +146,49 @@ function drawEntityImageRGBAnimate () {
 	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 	setMatrixUniforms();
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
-	//copyImageDataToHTML5Canvas("axoss");
 }
+
+// RGB interpolated animation
+function initWebGLRGBInterpolatedAnimate(canvas, entity) {
+    var canvas = document.getElementById(canvas);
+	initGL(canvas);
+	initBuffersRGB();
+	initShadersRGBInterpolatedAnimate(entity)	
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.disable(gl.DEPTH_TEST);
+}
+
+function drawEntityImageRGBInterpolatedAnimate () {
+	drawEntityImageRGBAnimate();
+}
+
+// RGB sound vector
+function initWebGLRGBAnimateSound(canvas, entity) {
+    var canvas = document.getElementById(canvas);
+	initGL(canvas);
+	initBuffersRGB();
+	initShadersRGBAnimateSound(entity)	
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.disable(gl.DEPTH_TEST);
+}
+
+function drawEntityImageRGBAnimateSound () {
+	var location = gl.getUniformLocation(shaderProgram, "va");
+    gl.uniform1f(location, globalVa);	
+	location = gl.getUniformLocation(shaderProgram, "vb");
+    gl.uniform1f(location, globalVb);	
+	location = gl.getUniformLocation(shaderProgram, "vc");
+    gl.uniform1f(location, globalVc);	
+	location = gl.getUniformLocation(shaderProgram, "vd");
+	gl.uniform1f(location, globalVd);	
+	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+	mat4.identity(mvMatrix);
+	mat4.translate(mvMatrix, [0.0, 0.0, -1.2]);
+	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	setMatrixUniforms();
+	gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
+}
+
+resetTimer();

@@ -22,10 +22,20 @@ function loadSound(url) {
 
 	request.onload = function() {
 		context.decodeAudioData(request.response, function(buffer) {
+			lastBuffer = buffer;
 			playSound(buffer);
 		}, onError);
 	}
 	request.send();
+}
+
+var lastBuffer; 
+
+function resetMusic(url) {
+	sourceNode.stop();
+	sourceNode.noteOn(0);
+	//playSound(lastBuffer);
+	//loadSound(url);
 }
 
 function playSound(buffer) {
@@ -49,3 +59,21 @@ function getAverageVolume(array) {
 		values += array[i];
 	return values / length;
 }
+
+// globals
+var volume;
+  
+function gotStream(stream) {
+    var input = context.createMediaStreamSource(stream);
+    volume = context.createGainNode();
+    volume.gain.value = 0.8;
+    input.connect(volume);
+    volume.connect(context.destination);
+}
+
+function errorGotStream(e) {
+	console.log(e);
+}
+// one-off initialization
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+navigator.getUserMedia( {video:false, audio:true}, gotStream, errorGotStream);

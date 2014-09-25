@@ -10,12 +10,11 @@ querystring = require('querystring');
 // Configuration
 http.globalAgent.maxSockets = 20;
 
-/*
-// SYB init
 // DB init
+var likeSchema, Like, dislikeSchema, Dislike;
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test');
-*/
+var db = mongoose.createConnection( 'mongodb://localhost/test' );
+
 
 // Command execution function
 function run_cmd(cmd, args, cb) {
@@ -110,6 +109,7 @@ function setFile(filePath, data, res) {
 
 function createRandom(res, language, maxSize) {
 	var socket = net.createConnection("20000", "127.0.0.1");
+	console.log("creando");
 	
 	socket
 		.on('data', function(data) {
@@ -119,8 +119,7 @@ function createRandom(res, language, maxSize) {
 		.on('connect', function() {
 		  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-random) :content (list (quote " + language + ") " + maxSize + "))\n");
 		}).on('end', function() {
-		}).on('close', function(data) {
-		});
+		}).on('close', function(data) { });
 }
 
 function getDefault(res, name, properties) {
@@ -134,8 +133,7 @@ function getDefault(res, name, properties) {
 	.on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-default) :content (list (quote " + name + ") (quote " + properties + ")))\n");
 	}).on('end', function() {
-	}).on('close', function(data) {
-    });
+	}).on('close', function(data) { });
 }
 
 function createDefault(res, language) {
@@ -149,8 +147,7 @@ function createDefault(res, language) {
 	.on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-default) :content (list (quote " + language + ")))\n");
 	}).on('end', function() {
-	}).on('close', function(data) {
-    });
+	}).on('close', function(data) { });
 }
 
 function possibleLanguages(res) {
@@ -164,8 +161,7 @@ function possibleLanguages(res) {
 	.on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-languages))\n");
 	}).on('end', function() {
-	}).on('close', function(data) {
-    });
+	}).on('close', function(data) { });
 }
 
 function mutateFunctions(res, language, objectData, maxSize) {
@@ -177,12 +173,23 @@ function mutateFunctions(res, language, objectData, maxSize) {
 	}).on('connect', function() {
 	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate) :content (list (quote " + language + ") (quote " + objectData + ") " + maxSize + "))\n");
 	}).on('end', function() {
-	}).on('close', function(data) {
-    });
+	}).on('close', function(data) { });
+};
+
+function mutateAddVarFunctions(res, language, objectData, maxSize) {
+	var socket = net.createConnection("20000", "127.0.0.1");
+	
+	socket.on('data', function(data) {
+	  socket.destroy();
+	  res.end(data);	
+	}).on('connect', function() {
+	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate-add-var) :content (list (quote " + language + ") (quote " + objectData + ") " + maxSize + "))\n");
+	}).on('end', function() {
+	}).on('close', function(data) { });
 };
 
 function datePrint() {
-	return Date.now();
+	return new Date(Date.now()).toISOString();
 }
  
 function crossoverFunctions(res, language, objectDataA, objectDataB, maxSize) {
@@ -195,8 +202,7 @@ function crossoverFunctions(res, language, objectDataA, objectDataB, maxSize) {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-crossover) :content (list (quote " + language + ") (quote " + objectDataA + ") (quote " + objectDataB + ") " + maxSize + "))\n");
 	}).on('error', function(error) {
 	}).on('end', function() {
-	}).on('close', function(data) {
-	});
+	}).on('close', function(data) { });
 };
 
 function createTask(res, name, properties) {
@@ -205,12 +211,10 @@ function createTask(res, name, properties) {
 	socket.on('data', function(data) {
 	  socket.destroy();
 	  res.end(data);
-
 	}).on('connect', function() {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-task-using) :content (list (quote " + name + ") (quote " + properties + ")))\n");
 	}).on('end', function() {
-	}).on('close', function(data) {
-    });
+	}).on('close', function(data) { });
 }
 
 function deleteTask(res, name) {
@@ -222,8 +226,7 @@ function deleteTask(res, name) {
 	}).on('connect', function() {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-delete-task) :content (list (quote " + name + ")))\n");
 	}).on('end', function() {
-	}).on('close', function(data) {
-    });
+	}).on('close', function(data) { });
 }
 
 function getPropertyValue(res, object, properties) {
@@ -235,8 +238,7 @@ function getPropertyValue(res, object, properties) {
 	  }).on('connect', function() {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-property-value) :content (list (quote " + object + ") (quote " + properties + ")))\n");
 	}).on('end', function() {
-	}).on('close', function(data) {
-    });
+	}).on('close', function(data) { });
 }
 
 function galleryGetAll(res, maxSize) {
@@ -251,10 +253,15 @@ function galleryGetAll(res, maxSize) {
 };
 
 function galleryGetElement(res, req, index) {
-	var fileName = 'gallery' + index + ".object",
-		localFolder = __dirname + '/app/gallery',
-		page404 = localFolder + '\\404.html';
-	getFile((localFolder + "/" + fileName), res, page404);
+	Like.find(function(err, likes) {
+		var value = Math.random() * likes.length;
+	  //var result = Like.find().limit(-1).skip(value).next();
+		var result = likes[Math.floor(value)];
+		if (result != null)	
+			res.end(result.language + " | " + result.a + " | " + result.b + " | " + result.c);
+		else
+			res.end("none");
+	}); 
 };
 
 function gallerySetElement(res, index, language, objectDataA, objectDataB) {
@@ -263,12 +270,47 @@ function gallerySetElement(res, index, language, objectDataA, objectDataB) {
 	setFile(localFolder + "/" + fileName, language + " | " + objectDataA + " | " + objectDataB, res);
 };
 
+var printBDError = function (err, result) {
+      if (err) throw err;
+      console.log(result);
+};
+
+function initializeDatabase() {	
+	likeSchema = mongoose.Schema({
+		user: { type: String, trim: true, index: true },
+		language: String,
+		a: String,
+		b: String,
+		c: String });
+		
+	Like = db.model('likes', likeSchema);
+/*	
+	Like.find(function(err, likes) {
+		for (var i in likes) likes[i].remove();
+	}); */
+}
+
 function likeObject(res, language, a, b, c) {
-	console.log("Like object: " + language + a + " - " + b + " - " + c);	
+	var value =  new Like({
+		language: language,
+		a: a,
+		b: b,
+		c: c
+	});
+	value.save(printBDError);
+	res.end();
 }
 
 function dislikeObject(res, language, a, b, c) {
-	console.log("Dislike object: " + language + a + " - " + b + " - " + c);	
+	var Dislike = db.model('dislikes', likeSchema);
+	var value =  new Dislike({
+		language: language,
+		a: a,
+		b: b,
+		c: c
+	});
+	value.save(printBDError);
+	res.end();
 }
 
 function viewObject(res, language, a, b, c) {
@@ -295,7 +337,7 @@ function requestHandler(req, res) {
 	var arguments = querystring.parse(url.parse(req.url).query);
 	
 	// #TEMP: incoming inspector
-	console.log(datePrint().toString() + " " + req.connection.remoteAddress + ": " + pathname + "{" + arguments.toString() + "}");
+	console.log(datePrint() + " : " + req.connection.remoteAddress + ": " + pathname + "{" + arguments.toString() + "}");
 	
 	if (pathname == "/messageLanguages")		
 		possibleLanguages(res);
@@ -319,6 +361,8 @@ function requestHandler(req, res) {
 		createRandom(res, arguments.language, arguments.maxSize);
 	else if (pathname == "/messageMutate")	
 		mutateFunctions(res, arguments.language, arguments.objectData, arguments.maxSize);
+	else if (pathname == "/messageMutateAddVar")	
+		mutateAddVarFunctions(res, arguments.language, arguments.objectData, arguments.maxSize);
 	else if (pathname == "/messageLike")
 		likeObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
 	else if (pathname == "/messageDislike")
@@ -331,14 +375,15 @@ function requestHandler(req, res) {
 		crossoverFunctions(res, arguments.language, arguments.objectDataA, arguments.objectDataB, arguments.maxSize);
 	else if (pathname == "/messageCommand")		
 		createImage(res, arguments.language, arguments.command);
-	else
-	{
+	else {
 		var fileName = path.basename(req.url) || 'index.html',
 			localFolder = __dirname + '/app/',
 			page404 = localFolder + '404.html';
 		getFile((localFolder + fileName), res, page404);
 	}
 };
+
+initializeDatabase();
 
 http.createServer(requestHandler)
 .listen(3000);

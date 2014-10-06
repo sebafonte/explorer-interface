@@ -1,0 +1,235 @@
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+	<meta name="keywords" content="lisp vrp vehicle routing webgl">
+
+	<title>Metaheuristic explorer web interface</title>
+	<script src="glMatrix-0.9.5.min.js"></script>
+	<script src="webgl-utils.js"></script>
+	<script src="webgl-entities.js"></script>
+	<link href="bootstrap.min.css" rel="stylesheet">
+	<link href="site.css" rel="stylesheet">	
+  </head>
+
+	<body onload="startupDraw()">
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: indigo">
+			<div class="container">
+				<div class="navbar-collapse">
+				  <ul class="nav navbar-nav">
+					<li><a style="text-shadow: none;" href="/index.html">Home</a></li>
+					<li><a style="text-shadow: none;" href="/about.html">About</a></li>
+					<li><a style="text-shadow: none;" href="/blog.html">Blog</a></li>								
+					<li><a style="text-shadow: none;" href="/contact.html">Contact</a></li>
+					<li class="dropdown">              
+					  <a style="text-shadow: none;" href="/example-tree-languages.html" class="dropdown-toggle" data-toggle="dropdown">Examples <span class="caret"></span></a>
+					  <ul class="dropdown-menu" role="menu">
+						<li><a style="text-shadow: none;" href="/example-tree-languages.html">Mono images</a></li>
+						<li><a style="text-shadow: none;" href="/example-tree-languages-rgb.html">RGB vector mix</a></li>
+						<li><a style="text-shadow: none;" href="/example-animation-rgb.html">RGB vector animated</a></li>
+						<li class="active"><a style="text-shadow: none;" href="/example-vrp.html">VRP</a></li>
+						<li><a style="text-shadow: none;" href="/gallery.html" disabled="disabled">Gallery</a></li>
+					  </ul>
+					</li>
+				  </ul>
+				</div>
+			</div>
+		</div>
+			
+		<div class="container" style="padding-top: 60px">
+			<div>
+				<div id="main-div" style="max-width: 613px; border: 1px solid lightgray; display: block">
+					<div>
+						<div style="display: flex; border: 1px solid black; ">
+							<div>
+								<canvas style="border: 1px solid black;" id="parent0" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							</div>
+
+							<div id="parent0-data" class="view-container">
+								<form id="parent0-form">
+								<!-- editors parent 0 -->
+								</form>
+							</div>
+						</div>
+						<div style="display: flex; border: 1px solid black; ">
+							<div>
+								<canvas id="parent1" style="border: 1px solid black;" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							</div>
+							
+							<div id="parent1-data" class="view-container">
+								<form id="parent1-form">
+								<!-- editors parent 1 -->
+								</form>
+							</div>
+						</div>
+						<div>
+							<button id="start-search" type="button" onclick="startSearch()">
+							  <span class="icon-bar" style="height: 18px"><i class="icon-play"></i></span>
+							</button>
+							<button id="stop-search" type="button" onclick="stopSearch()">
+							  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
+							</button>							
+						</div>
+					</div>
+					<div style="display: block">
+						<img src="1.bmp" border="2" width="80" height="20" />
+						<img src="2.bmp" border="2" width="80" height="20" />
+						<img src="3.bmp" border="2" width="80" height="20" />
+						<img src="4.bmp" border="2" width="80" height="20" />
+						<img src="5.bmp" border="2" width="80" height="20" />
+						<img src="6.bmp" border="2" width="80" height="20" />
+						<img src="7.bmp" border="2" width="80" height="20" />						
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+
+	<script src="jquery-1.11.1.min.js"></script>
+	<script src="bootstrap.min.js"></script>
+	<script src="server-interface.js"></script>
+	<script src="property-editors.js"></script>
+	<script src="utils.js"></script>
+		
+	<style>
+		.editors-default-class {display: table-caption; margin-top: 20px; padding-left: 15px; }
+	</style>
+	
+	<script>		
+		var entities = {};
+		// Monitoring properties
+		var editableProperties = "(fitness-evaluator image-file)_" + 
+								 "(fitness-evaluator points)_" + 
+								 "(algorithm population-size)_" + 
+								 "(algorithm max-generations)";
+		var monitorProperties = "task-best-program-rgb_task-evaluations_best-fitness_running-time";
+		var allProperties = editableProperties + "_" + monitorProperties;
+
+		function registerObject(id, obj) {
+			entities[id] = obj;
+		}
+
+		var startupDraw = function () {	
+			drawCanvas();
+			drawCanvas();
+		};
+		
+		function drawCanvas(index) {
+			initWebGLRGB(index, entities[index]);
+			drawEntityImageRGB();
+		}
+		
+		function initializeParameters(index) {
+			// Get default object template for rgb image similarity task
+			createFunctionGeneric(
+				{ name: "default-image-task", properties: "(" + replaceAll("_", " ", allProperties) + ")" },
+				"/messageGetDefault",
+				function (data) {
+					var parentId = "parent" + index.toString();
+					// Register model values
+					registerObject(parentId + "default-properties", data);
+					// Create editors with values
+					var newdiv = document.createElement("div");
+					newdiv.id = parentId + "-editors";					
+					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties);
+					newdiv.className = "editors-default-class";
+					var container = document.getElementById(parentId + "-form");
+					container.appendChild(newdiv);
+					// Draw
+					var canvas = document.getElementById(parentId);
+					initWebGLRGB(parentId, entities[parentId]);
+					drawEntityImageRGB();	
+				});
+		};
+		
+		function updateBestObject(parentId) {
+			createFunctionGeneric(
+				{ object: entities[parentId + "-task"], properties: "(" + replaceAll("_", " ", monitorProperties) + ")" },
+				"/messageGetPropertyValue",
+				function (data) {
+					updateEditorsValue(parentId, data, monitorProperties);
+					entities[parentId] = $("#editor-" + parentId + "-task-best-program-rgb")[0].value;
+					drawCanvas(parentId);
+				});
+		}
+
+		function startSearchParent(parentId) {
+			// Deshabilitamos la interface para seguir buscando
+			enableSearch(false);
+			// Crea las tareas y guarda el identificador del servidor de estas
+			createFunctionGeneric(
+				{ name: "default-image-task", properties: "(" + propertiesFromEditors(parentId, editableProperties) + ")" },
+				"/messageCreateTask",
+				function (data) {
+					var split = data.split("|");
+					if (split[0]=="Task started")
+					{
+						// Register task identifier on server for configuration parentId
+						registerObject(parentId + "-task", split[1]);
+						// Setea un timer para refrescar su estalo localmente
+						var timer = setInterval(function() { /* clearInterval(entities[parentId + "-timer"]); */ updateBestObject(parentId); }, 1000);
+						registerObject(parentId + "-timer", timer);
+					}
+					else
+					{
+						enableSearch(true);
+						alert(data);						
+					}
+				});
+		}
+
+		function stopSearchParent(parentId) {
+			// Delete task for parentId
+			createFunctionGeneric(
+				{ name: entities[parentId + "-task"] },
+				"/messageDeleteTask",
+				function (data) { enableSearch(true); });
+			clearInterval(entities[parentId + "-timer"]);
+		}
+
+		function enableSearch (flag) {
+			if (flag == true) {
+				document.getElementById("start-search").style.display = ""; 
+				document.getElementById("stop-search").style.display = "none"; 
+				document.getElementById("start-search").disabled = false; 
+				document.getElementById("stop-search").disabled = true; 
+			}
+			else {
+				document.getElementById("start-search").style.display = "none"; 
+				document.getElementById("stop-search").style.display = ""; 
+				document.getElementById("start-search").disabled = true; 
+				document.getElementById("stop-search").disabled = false; 
+			}
+		}
+		
+		function startSearch() {
+			startSearchParent("parent0");
+			startSearchParent("parent1");
+		}
+		
+		function stopSearch() {
+			stopSearchParent("parent0");
+			stopSearchParent("parent1");
+		}
+		
+		function resetSearch() {
+			initializeParameters(0);
+			initializeParameters(1);
+		}
+		
+		resetSearch();
+		enableSearch(true);
+	</script>		
+	
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-54522358-1', 'auto');
+	  ga('send', 'pageview');
+	</script>
+</html>

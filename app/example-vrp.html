@@ -8,8 +8,8 @@
 
 	<title>Metaheuristic explorer web interface</title>
 	<script src="glMatrix-0.9.5.min.js"></script>
-	<script src="webgl-utils.js"></script>
-	<script src="webgl-entities.js"></script>
+	<script src="webgl-utils2.js"></script>
+	<!--<script src="webgl-entities.js"></script>-->
 	<link href="bootstrap.min.css" rel="stylesheet">
 	<link href="site.css" rel="stylesheet">	
   </head>
@@ -33,6 +33,16 @@
 						<li><a style="text-shadow: none;" href="/gallery.html" disabled="disabled">Gallery</a></li>
 					  </ul>
 					</li>
+					<li class="dropdown">              
+					  <a style="text-shadow: none;" href="/example-languages.html" class="dropdown-toggle" data-toggle="dropdown">Search <span class="caret"></span></a>
+					  <ul class="dropdown-menu" role="menu">
+						<li><a style="text-shadow: none;" href="/example-fx.html">F(x) search</a></li>
+						<li><a style="text-shadow: none;" href="/example-bw.html">F(xy) search</a></li>
+						<li><a style="text-shadow: none;" href="/example-rgb.html">RGB image search</a></li>
+						<li><a style="text-shadow: none;" href="/example-rgbt.html">RGBT</a></li>
+						<li><a style="text-shadow: none;" href="/example-vrp.html">VRP</a></li>
+					  </ul>
+					</li>
 				  </ul>
 				</div>
 			</div>
@@ -40,7 +50,7 @@
 			
 		<div class="container" style="padding-top: 60px">
 			<div>
-				<div id="main-div" style="max-width: 613px; border: 1px solid lightgray">
+				<div id="main-div" style="max-width: 720px; border: 1px solid lightgray">
 					<div>
 						<div style="display: flex; border: 1px solid black; ">
 							<div>
@@ -51,17 +61,11 @@
 								<form id="parent0-form">
 								<!-- editors parent 0 -->
 								</form>
-							</div>
-						</div>
-						<div style="display: flex; border: 1px solid black; ">
-							<div>
-								<canvas id="parent1" style="border: 1px solid black;" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-							</div>
-							
-							<div id="parent1-data" class="view-container">
-								<form id="parent1-form">
-								<!-- editors parent 1 -->
-								</form>
+								
+								<div style="display: flex; height: 30px; padding-left: 15px;">
+									<p style="width: 245px">evaluations /sec</p>
+									<p><input style="max-width: 180px" id="editor-parent0-evaluations-per-second" value="" required=""></p>
+								</div>
 							</div>
 						</div>
 						<div>
@@ -88,43 +92,29 @@
 		.editors-default-class {display: table-caption; margin-top: 20px; padding-left: 15px; }
 	</style>
 	
-	<script>	
-		var pointsBuffer = [];
-	    
-		function initVRPBufferData(index) {
-			var vertices = 
-			[[
-				289, 190, 0,
-				320, 128, 0,
-				239, 67, 0,
-				194, 101, 0,
-				129, 83, 0,
-				75, 73, 0,
-				74, 74, 0,
-				20, 10, 0
-			],		
-			[
-				289, 190, 0,
-				320, 128, 0,
-				239, 67, 0,
-				194, 101, 0,
-				129, 83, 0,
-				75, 73, 0,
-				74, 74, 0,
-				20, 10, 0
-			]];
-			
-			initCitiesGLBuffer(vertices[index], index);
-		}
+	<script id="shader-fs" type="x-shader/x-fragment">
+	    precision mediump float;
+	
+	    void main(void) {
+	        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+	    }
+	</script>
 
-		function initCitiesGLBuffer(vertices, bufferIndex) {
-			pointsBuffer[bufferIndex] = gl.createBuffer();
-			gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer[bufferIndex]);
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-			pointsBuffer[bufferIndex].itemSize = 3;
-			pointsBuffer[bufferIndex].numItems = vertices.length / 3;
-		}
-		
+	<script id="shader-vs" type="x-shader/x-vertex">
+	    attribute vec3 aVertexPosition;
+	
+	    uniform mat4 uPMatrix;
+	
+	    void main(void) {
+	    	gl_PointSize = 2.0;
+	        gl_Position = uPMatrix * vec4(aVertexPosition, 1.0);
+	    }
+	</script>
+	
+	<script>	
+		var pointsBuffer = {};
+	    var pMatrix = mat4.create();
+			
 		var entities = {};
 		// Monitoring properties
 		var editableProperties = "(fitness-evaluator cities-description)_" + 
@@ -134,28 +124,136 @@
 								 "(fitness-evaluator infeasible-penalty)_" + 
 								 "(algorithm population-size)_" + 
 								 "(algorithm max-generations)";
-		var monitorProperties = "(fitness-evaluator evaluations)_best-fitness_running-time";
+		var monitorProperties = "task-evaluations_best-fitness_running-time";
 		var allProperties = editableProperties + "_" + monitorProperties;
 
 		function registerObject(id, obj) {
 			entities[id] = obj;
 		}
 
-		var startupDraw = function () {	
-			initWebGLVRP(index);
-			drawEntityVRP(pointsBuffer[0]);	
-			initWebGLVRP(index);
-			drawEntityVRP(pointsBuffer[1]);
-		};
+		var gl;
+		var shaderProgram;
+		var pMatrix = mat4.create();
+		var pointsBuffer;
 		
-		function drawCanvas(index) {
-			initVRPBufferData(index);
-			var elementName = "parent" + index.toString();
-			drawEntityVRP("parent" + index.toString(), entities[elementName], pointsBuffer[index]);
+		function initGL(canvas) {
+			gl = WebGLUtils.setupWebGL(canvas);
+			if (!gl) return;
+            gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        	mat4.ortho(0, canvas.width, 0, canvas.height, -1, 1, pMatrix);
 		}
 		
+		function getShader(gl, id) {
+	        var shaderScript = document.getElementById(id);
+	        
+	        if (!shaderScript) {
+	            return null;
+	        }
+	
+	        var str = "";
+	        var k = shaderScript.firstChild;
+	        
+	        while (k) {
+	            if (k.nodeType == 3) {
+	                str += k.textContent;
+	            }
+	            
+	            k = k.nextSibling;
+	        }
+	
+	        var shader;
+	        
+	        if (shaderScript.type == "x-shader/x-fragment") {
+	            shader = gl.createShader(gl.FRAGMENT_SHADER);
+	        } else if (shaderScript.type == "x-shader/x-vertex") {
+	            shader = gl.createShader(gl.VERTEX_SHADER);
+	        } else {
+	            return null;
+	        }
+	
+	        gl.shaderSource(shader, str);
+	        gl.compileShader(shader);
+	
+	        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+	            alert(gl.getShaderInfoLog(shader));
+	            return null;
+	        }
+	
+	        return shader;
+	    }
+
+	    function initShaders() {
+	        var fragmentShader = getShader(gl, "shader-fs");
+	        var vertexShader = getShader(gl, "shader-vs");
+	
+	        shaderProgram = gl.createProgram();
+	        gl.attachShader(shaderProgram, vertexShader);
+	        gl.attachShader(shaderProgram, fragmentShader);
+	        gl.linkProgram(shaderProgram);
+	
+	        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+	            alert("Could not initialise shaders");
+	        }
+	
+	        gl.useProgram(shaderProgram);
+	        shaderProgram.vertexPositionLoc = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+	        gl.enableVertexAttribArray(shaderProgram.vertexPositionLoc);
+	        shaderProgram.pMatrixLoc = gl.getUniformLocation(shaderProgram, "uPMatrix");
+	    }
+	    
+		function initBuffers() {
+			var parentId = "parent0";
+			var value = lispEditorValue(parentId, "(fitness-evaluator cities-description)");
+			value = value.substring(1, value.length-1);
+			var value = replaceAll("\\)", " 0.0)", value);
+			var value = value.split(") (");
+			value[0] = value[0].substring(1, value[0].length);
+			value[value.length-1] = value[value.length-1].substring(0, value[value.length-1].length-1);
+			var dataArray = [];
+			
+			for (var index = 0; index< value.length; index++) {
+				var temp = getVertexFromString(value[index]);
+				dataArray.push(temp[0]);
+				dataArray.push(temp[1]);
+				dataArray.push(0.0);
+			}
+		
+			var vertices = dataArray;
+			pointsBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+			
+			pointsBuffer.itemSize = 3;
+			pointsBuffer.numItems = 20;
+		}
+		
+		function getVertexFromString (string) {
+			var result = [];
+			var split = string.split(" ");
+			result.push(parseFloat(split[0]));
+			result.push(parseFloat(split[1]));
+			result.push(parseFloat(split[2]));
+			return result;
+		}
+		
+		function render() {
+			gl.clear(gl.COLOR_BUFFER_BIT);			
+			gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer);
+			gl.vertexAttribPointer(shaderProgram.vertexPositionLoc, pointsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+			gl.uniformMatrix4fv(shaderProgram.pMatrixLoc, 0, pMatrix);
+			gl.drawArrays(gl.POINTS, 0, pointsBuffer.numItems);
+		}
+		
+		function startupDraw() {
+	        var canvas = document.getElementById("parent0");
+	        initGL(canvas);
+	        initShaders();
+	        initBuffers();
+	        render();
+	    }
+		
 		function initializeParameters(index) {
-			// Get default object templte for vrp
+			// Get default object template for vrp
 			createFunctionGeneric(
 				{ name: "default-vrp-task", properties: "(" + replaceAll("_", " ", allProperties) + ")" },
 				"/messageGetDefault",
@@ -166,14 +264,13 @@
 					// Create editors with values
 					var newdiv = document.createElement("div");
 					newdiv.id = parentId + "-editors";					
-					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties);
+					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties, "width: 245px");
 					newdiv.className = "editors-default-class";
 					var container = document.getElementById(parentId + "-form");
 					container.appendChild(newdiv);
 					// Draw
 					var canvas = document.getElementById(parentId);
-					initWebGLVRP(parentId, "black", "entity-vrp");
-					drawEntityVRP(pointsBuffer[index]);	
+					startupDraw();	
 				});
 		};
 		
@@ -183,7 +280,9 @@
 				"/messageGetPropertyValue",
 				function (data) {
 					updateEditorsValue(parentId, data, monitorProperties);
-					//drawCanvas(parentId);
+					$("#editor-parent0-evaluations-per-second")[0].value = 
+						(0.00 + Math.round(100 * $("#editor-parent0-task-evaluations")[0].value / $("#editor-parent0-running-time")[0].value) / 100).toFixed(2);
+					startupDraw();
 				});
 		}
 
@@ -196,16 +295,14 @@
 				"/messageCreateTask",
 				function (data) {
 					var split = data.split("|");
-					if (split[0]=="Task started")
-					{
+					if (split[0]=="Task started") {
 						// Register task identifier on server for configuration parentId
 						registerObject(parentId + "-task", split[1]);
 						// Setea un timer para refrescar su estalo localmente
 						var timer = setInterval(function() { /* clearInterval(entities[parentId + "-timer"]); */ updateBestObject(parentId); }, 1000);
 						registerObject(parentId + "-timer", timer);
 					}
-					else
-					{
+					else {
 						enableSearch(true);
 						alert(data);						
 					}
@@ -238,17 +335,14 @@
 		
 		function startSearch() {
 			startSearchParent("parent0");
-			startSearchParent("parent1");
 		}
 		
 		function stopSearch() {
 			stopSearchParent("parent0");
-			stopSearchParent("parent1");
 		}
 		
 		function resetSearch() {
 			initializeParameters(0);
-			initializeParameters(1);
 		}
 		
 		resetSearch();

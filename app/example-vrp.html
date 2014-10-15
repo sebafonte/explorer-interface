@@ -54,7 +54,7 @@
 					<div>
 						<div style="display: flex; border: 1px solid black; ">
 							<div>
-								<canvas style="border: 1px solid black;" id="parent0" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+								<canvas style="border: 1px solid black; padding-top: 50px;" id="parent0" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 							</div>
 
 							<div id="parent0-data" class="view-container">
@@ -74,7 +74,7 @@
 							</button>
 							<button id="stop-search" type="button" onclick="stopSearch()">
 							  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
-							</button>							
+							</button>
 						</div>
 					</div>
 				</div>
@@ -87,7 +87,7 @@
 	<script src="server-interface.js"></script>
 	<script src="property-editors.js"></script>
 	<script src="utils.js"></script>
-		
+
 	<style>
 		.editors-default-class {display: table-caption; margin-top: 20px; padding-left: 15px; }
 	</style>
@@ -111,7 +111,7 @@
 	    }
 	</script>
 	
-	<script>	
+	<script>
 		var pointsBuffer = {};
 	    var pMatrix = mat4.create();
 			
@@ -124,7 +124,7 @@
 								 "(fitness-evaluator infeasible-penalty)_" + 
 								 "(algorithm population-size)_" + 
 								 "(algorithm max-generations)";
-		var monitorProperties = "task-evaluations_best-fitness_running-time";
+		var monitorProperties = "task-evaluations_best-fitness_running-time_task-best-program-vrp";
 		var allProperties = editableProperties + "_" + monitorProperties;
 
 		function registerObject(id, obj) {
@@ -201,6 +201,8 @@
 	        shaderProgram.pMatrixLoc = gl.getUniformLocation(shaderProgram, "uPMatrix");
 	    }
 	    
+		var globalPoints = [];
+		
 		function initBuffers() {
 			var parentId = "parent0";
 			var value = lispEditorValue(parentId, "(fitness-evaluator cities-description)");
@@ -216,8 +218,9 @@
 				dataArray.push(temp[0]);
 				dataArray.push(temp[1]);
 				dataArray.push(0.0);
+				globalPoints[index] = new Point(temp[0], temp[1]);
 			}
-		
+
 			var vertices = dataArray;
 			pointsBuffer = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer);
@@ -226,7 +229,7 @@
 			pointsBuffer.itemSize = 3;
 			pointsBuffer.numItems = 20;
 		}
-		
+
 		function getVertexFromString (string) {
 			var result = [];
 			var split = string.split(" ");
@@ -235,13 +238,33 @@
 			result.push(parseFloat(split[2]));
 			return result;
 		}
-		
+
 		function render() {
-			gl.clear(gl.COLOR_BUFFER_BIT);			
+			gl.clear(gl.COLOR_BUFFER_BIT);
 			gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer);
 			gl.vertexAttribPointer(shaderProgram.vertexPositionLoc, pointsBuffer.itemSize, gl.FLOAT, false, 0, 0);
 			gl.uniformMatrix4fv(shaderProgram.pMatrixLoc, 0, pMatrix);
 			gl.drawArrays(gl.POINTS, 0, pointsBuffer.numItems);
+			
+			var value = lispEditorValue("parent0", "task-best-program-vrp");
+			value = value.substring(1, value.length-1);
+			var value = replaceAll("\\)", " 0.0)", value);
+			var value = value.split(") (");
+			value[0] = value[0].substring(1, value[0].length);
+			value[value.length-1] = value[value.length-1].substring(0, value[value.length-1].length-1);
+			
+			for (var index = 0; index< value.length; index++) {
+				var points = [];
+				points.push(globalPoints[0]);
+				var route = value[index].split(" ");
+				
+				for (var j = 0; j< route.length; j++) {
+					var city = route[j];
+					points.push(globalPoints[parseInt(city)]);
+				}
+				
+				drawPolyline(points, gl, shaderProgram.vertexPositionLoc);
+			}
 		}
 		
 		function startupDraw() {
@@ -282,6 +305,7 @@
 					updateEditorsValue(parentId, data, monitorProperties);
 					$("#editor-parent0-evaluations-per-second")[0].value = 
 						(0.00 + Math.round(100 * $("#editor-parent0-task-evaluations")[0].value / $("#editor-parent0-running-time")[0].value) / 100).toFixed(2);
+					entities["data"] = data.split("|")[2];
 					startupDraw();
 				});
 		}
@@ -304,7 +328,7 @@
 					}
 					else {
 						enableSearch(true);
-						alert(data);						
+						alert(data);
 					}
 				});
 		}
@@ -345,10 +369,35 @@
 			initializeParameters(0);
 		}
 		
+		function Point(x, y, z) {
+			this.x = (typeof x == "undefined") ? 0 : x;
+			this.y = (typeof y == "undefined") ? 0 : y;
+			this.z = (typeof z == "undefined") ? 0 : z;
+		}
+
+		function drawPolyline (points, gl, pLoc) {
+			var vertices = [];
+			
+			for (var i = 0; i < points.length; i++) {
+				var p = points[i];
+				vertices.push(p.x, p.y, p.z);
+			}
+			
+			var itemSize = 3;
+			var numItems = vertices.length / itemSize;
+			
+			var posBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);	
+			gl.vertexAttribPointer(pLoc, itemSize, gl.FLOAT, false, 0, 0);
+			
+			gl.drawArrays(gl.LINE_STRIP, 0, numItems);
+		}
+
 		resetSearch();
 		enableSearch(true);
-	</script>		
-	
+	</script>
+
 	<script>
 	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

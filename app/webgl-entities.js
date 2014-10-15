@@ -49,33 +49,51 @@ function initWebGLVRP(parentId) {
 }
 
 function initBuffersVRP(parentId) {
-	citiesVertexPositionBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, citiesVertexPositionBuffer);
 	var value = lispEditorValue(parentId, "(fitness-evaluator cities-description)");
-	var value = replaceAll("(", "(", value);
-	var value = replaceAll(")", " 0.0", value);
-	var value = value.split(" ");
-	pointsBuffer = [
-		 1.0,  1.0,  0.0,
-		-1.0,  1.0,  0.0,
-		 1.0, -1.0,  0.0,
-		-1.0, -1.0,  0.0
-	];	
-	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+	value = value.substring(1, value.length-1);
+	var value = replaceAll("\\)", " 0.0)", value);
+	var value = value.split(") (");
+	value[0] = value[0].substring(1, value[0].length);
+	value[value.length-1] = value[value.length-1].substring(0, value[value.length-1].length-1);
+	var dataArray = [];
+	
+	for (var index = 0; index< value.length; index++) {
+		var temp = getVertexFromString(value[index]);
+		dataArray.push(temp[0]);
+		dataArray.push(temp[1]);
+		dataArray.push(-0.5);
+	}
+	
+	citiesVertexPositionBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, citiesVertexPositionBuffer);	
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dataArray), gl.STATIC_DRAW);
 	citiesVertexPositionBuffer.itemSize = 3;
-	citiesVertexPositionBuffer.numItems = 4;
+	citiesVertexPositionBuffer.numItems = value.length;
+	pointsBuffer[parentId] = dataArray;
 }
 
-function drawEntityVRP (pointsBuffer) { 
-	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+function getVertexFromString (string) {
+	var result = [];
+	var split = string.split(" ");
+	result.push(parseFloat(split[0]));
+	result.push(parseFloat(split[1]));
+	result.push(parseFloat(split[2]));
+	return result;
+}
+
+function drawEntityVRP (pointsBuffer, canvas) { 
+	mat4.ortho(0, canvas.width, 0, canvas.height, -1, 1, pMatrix);
+	//gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 	gl.clear(gl.COLOR_BUFFER_BIT);
-	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
-	mat4.identity(mvMatrix);
-	mat4.translate(mvMatrix, [0.0, 0.0, -1.2]);		
-	gl.bindBuffer(gl.ARRAY_BUFFER, pointsBuffer);
-	gl.vertexAttribPointer(shaderProgram.vertexPositionLoc, pointsBuffer.itemSize, gl.FLOAT, false, 0, 0);
-	gl.uniformMatrix4fv(shaderProgram.pMatrixLoc, 0, pMatrix);		
-	gl.drawArrays(gl.POINTS, 0, pointsBuffer.numItems);	
+	//mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
+	//mat4.identity(mvMatrix);
+	//mat4.translate(mvMatrix, [0.0, 0.0, -1.2]);	
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, citiesVertexPositionBuffer);
+	gl.vertexAttribPointer(shaderProgram.vertexPositionLoc, citiesVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	gl.uniformMatrix4fv(shaderProgram.pMatrixLoc, 0, pMatrix);	
+	
+	gl.drawArrays(gl.POINTS, 0, citiesVertexPositionBuffer.numItems);	
 }
 
 // RGB Vector
@@ -173,6 +191,7 @@ function initWebGLRGBAnimateSound(canvas, entity) {
 }
 
 function drawEntityImageRGBAnimateSound () {
+	globalVa = timerValue();
 	var location = gl.getUniformLocation(shaderProgram, "va");
     gl.uniform1f(location, globalVa);	
 	location = gl.getUniformLocation(shaderProgram, "vb");

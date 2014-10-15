@@ -33,6 +33,16 @@
 						<li><a style="text-shadow: none;" href="/gallery.html" disabled="disabled">Gallery</a></li>
 					  </ul>
 					</li>
+					<li class="dropdown">              
+					  <a style="text-shadow: none;" href="/example-languages.html" class="dropdown-toggle" data-toggle="dropdown">Search <span class="caret"></span></a>
+					  <ul class="dropdown-menu" role="menu">
+						<li><a style="text-shadow: none;" href="/example-fx.html">F(x) search</a></li>
+						<li><a style="text-shadow: none;" href="/example-bw.html">F(xy) search</a></li>
+						<li><a style="text-shadow: none;" href="/example-rgb.html">RGB image search</a></li>
+						<li><a style="text-shadow: none;" href="/example-rgbt.html">RGBT</a></li>
+						<li><a style="text-shadow: none;" href="/example-vrp.html">VRP</a></li>
+					  </ul>
+					</li>
 				  </ul>
 				</div>
 			</div>
@@ -40,7 +50,7 @@
 			
 		<div class="container" style="padding-top: 60px">
 			<div>
-				<div id="main-div" style="max-width: 613px; border: 1px solid lightgray">
+				<div id="main-div" style="max-width: 720px; border: 1px solid lightgray">
 					<div>
 						<div style="display: flex; border: 1px solid black; ">
 							<div>
@@ -51,17 +61,11 @@
 								<form id="parent0-form">
 								<!-- editors parent 0 -->
 								</form>
-							</div>
-						</div>
-						<div style="display: flex; border: 1px solid black; ">
-							<div>
-								<canvas id="parent1" style="border: 1px solid black;" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-							</div>
-							
-							<div id="parent1-data" class="view-container">
-								<form id="parent1-form">
-								<!-- editors parent 1 -->
-								</form>
+								
+								<div style="display: flex; height: 30px; padding-left: 15px;">
+									<p style="width: 245px">evaluations /sec</p>
+									<p><input style="max-width: 180px" id="editor-parent0-evaluations-per-second" value="" required=""></p>
+								</div>
 							</div>
 						</div>
 						<div>
@@ -89,11 +93,14 @@
 	</style>
 	
 	<script>	
-		var pointsBuffer = [];
-	    
+		var pointsBuffer = {};
+	    var pMatrix = mat4.create();
+		
 		function initVRPBufferData(index) {
 			var vertices = 
-			[[
+			{
+				parent0:
+				[
 				289, 190, 0,
 				320, 128, 0,
 				239, 67, 0,
@@ -102,17 +109,7 @@
 				75, 73, 0,
 				74, 74, 0,
 				20, 10, 0
-			],		
-			[
-				289, 190, 0,
-				320, 128, 0,
-				239, 67, 0,
-				194, 101, 0,
-				129, 83, 0,
-				75, 73, 0,
-				74, 74, 0,
-				20, 10, 0
-			]];
+			]};
 			
 			initCitiesGLBuffer(vertices[index], index);
 		}
@@ -134,7 +131,7 @@
 								 "(fitness-evaluator infeasible-penalty)_" + 
 								 "(algorithm population-size)_" + 
 								 "(algorithm max-generations)";
-		var monitorProperties = "(fitness-evaluator evaluations)_best-fitness_running-time";
+		var monitorProperties = "task-evaluations_best-fitness_running-time";
 		var allProperties = editableProperties + "_" + monitorProperties;
 
 		function registerObject(id, obj) {
@@ -142,20 +139,17 @@
 		}
 
 		var startupDraw = function () {	
-			initWebGLVRP(index);
-			drawEntityVRP(pointsBuffer[0]);	
-			initWebGLVRP(index);
-			drawEntityVRP(pointsBuffer[1]);
+			initWebGLVRP("parent0");
+			//drawEntityVRP(pointsBuffer["parent0"]);
 		};
-		
+
 		function drawCanvas(index) {
 			initVRPBufferData(index);
-			var elementName = "parent" + index.toString();
-			drawEntityVRP("parent" + index.toString(), entities[elementName], pointsBuffer[index]);
+			drawEntityVRP(pointsBuffer["parent0"], document.getElementById("parent0"));
 		}
 		
 		function initializeParameters(index) {
-			// Get default object templte for vrp
+			// Get default object template for vrp
 			createFunctionGeneric(
 				{ name: "default-vrp-task", properties: "(" + replaceAll("_", " ", allProperties) + ")" },
 				"/messageGetDefault",
@@ -166,14 +160,14 @@
 					// Create editors with values
 					var newdiv = document.createElement("div");
 					newdiv.id = parentId + "-editors";					
-					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties);
+					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties, "width: 245px");
 					newdiv.className = "editors-default-class";
 					var container = document.getElementById(parentId + "-form");
 					container.appendChild(newdiv);
 					// Draw
 					var canvas = document.getElementById(parentId);
 					initWebGLVRP(parentId, "black", "entity-vrp");
-					drawEntityVRP(pointsBuffer[index]);	
+					drawEntityVRP(pointsBuffer[parentId], canvas);	
 				});
 		};
 		
@@ -183,7 +177,9 @@
 				"/messageGetPropertyValue",
 				function (data) {
 					updateEditorsValue(parentId, data, monitorProperties);
-					//drawCanvas(parentId);
+					$("#editor-parent0-evaluations-per-second")[0].value = 
+						(0.00 + Math.round(100 * $("#editor-parent0-task-evaluations")[0].value / $("#editor-parent0-running-time")[0].value) / 100).toFixed(2);
+					drawCanvas(parentId, document.getElementById(parentId));
 				});
 		}
 
@@ -196,16 +192,14 @@
 				"/messageCreateTask",
 				function (data) {
 					var split = data.split("|");
-					if (split[0]=="Task started")
-					{
+					if (split[0]=="Task started") {
 						// Register task identifier on server for configuration parentId
 						registerObject(parentId + "-task", split[1]);
 						// Setea un timer para refrescar su estalo localmente
 						var timer = setInterval(function() { /* clearInterval(entities[parentId + "-timer"]); */ updateBestObject(parentId); }, 1000);
 						registerObject(parentId + "-timer", timer);
 					}
-					else
-					{
+					else {
 						enableSearch(true);
 						alert(data);						
 					}
@@ -238,17 +232,14 @@
 		
 		function startSearch() {
 			startSearchParent("parent0");
-			startSearchParent("parent1");
 		}
 		
 		function stopSearch() {
 			stopSearchParent("parent0");
-			stopSearchParent("parent1");
 		}
 		
 		function resetSearch() {
 			initializeParameters(0);
-			initializeParameters(1);
 		}
 		
 		resetSearch();

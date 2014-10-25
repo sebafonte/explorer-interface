@@ -232,6 +232,7 @@
 			setExpressionText(ev.target.id);
 		}
 		
+		/*
 		function setupAudioNodes() {
 			javascriptNode = context.createScriptProcessor(4096, 1, 1);
 			javascriptNode.connect(context.destination);
@@ -244,41 +245,65 @@
 			splitter.connect(analyser2, 1, 0);
 			analyser.connect(javascriptNode);
 			sourceNode.connect(context.destination);
+		} */
+		
+		function setupAudioNodes(stream) {
+			javascriptNode = context.createScriptProcessor(4096, 1, 1);
+			javascriptNode.connect(context.destination);
+			analyser = createAnalyzer(0.0, 2048);
+			analyser2 = createAnalyzer(0.0, 2048);			
+			sourceNode = context.createBufferSource();
+			
+			var audioInput = context.createMediaStreamSource(stream);
+			var gainNode = context.createGain();
+
+			audioInput.connect(gainNode);
+			gainNode.connect(context.destination);
+			
+			splitter = context.createChannelSplitter();
+			sourceNode.connect(splitter);
+			splitter.connect(analyser, 0, 0);
+			splitter.connect(analyser2, 1, 0);
+			analyser.connect(javascriptNode);
+			//sourceNode.connect(context.destination);
+			
+			javascriptNode.onaudioprocess = function() {
+				processAndDrawAmplitude("ed1");
+				processAndDrawAmplitude("ed2");
+				processAndDrawSpectrumPeak("ed3");
+				processAndDrawSpectrumPeaks("ed4");
+				
+				if (document.getElementById("ed1-check").checked)
+					globalVa = timerValue();
+				else
+					globalVa = 0.0;
+					
+				if (document.getElementById("ed2-check").checked)
+					globalVb = variableValues["ed2"];
+				else
+					globalVb = 0.0;
+				
+				if (document.getElementById("ed3-check").checked)
+					globalVc = variableValues["ed3"];
+				else
+					globalVc = 0.0;
+					
+				if (document.getElementById("ed4-check").checked)
+					globalVd = variableValues["ed4"];
+				else
+					globalVd = 0.0;
+			}			
 		} 
 		
 		function loadSoundFromUrl() {
 			loadSound("http://gpexplorer.ddns.net/sample3.mp3");
 		}
 		
-		setupAudioNodes();
+		//setupAudioNodes();
+		// one-off initialization
+		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+		navigator.getUserMedia( {video:false, audio:true}, setupAudioNodes, errorGotStream);	
 		//loadSoundFromUrl();
-		
-		javascriptNode.onaudioprocess = function() {
-			processAndDrawAmplitude("ed1");
-			processAndDrawAmplitude("ed2");
-			processAndDrawSpectrumPeak("ed3");
-			processAndDrawSpectrumPeaks("ed4");
-			
-			if (document.getElementById("ed1-check").checked)
-				globalVa = timerValue();
-			else
-				globalVa = 0.0;
-				
-			if (document.getElementById("ed2-check").checked)
-				globalVb = variableValues["ed2"];
-			else
-				globalVb = 0.0;
-			
-			if (document.getElementById("ed3-check").checked)
-				globalVc = variableValues["ed3"];
-			else
-				globalVc = 0.0;
-				
-			if (document.getElementById("ed4-check").checked)
-				globalVd = variableValues["ed4"];
-			else
-				globalVd = 0.0;
-		}
 
 		function color(ctx) {
 			return '#000000';

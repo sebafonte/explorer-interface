@@ -39,6 +39,16 @@
 						<li class="active"><a style="text-shadow: none;" href="/gallery.html" disabled="disabled">Gallery</a></li>
 					  </ul>
 					</li>
+					<li class="dropdown">              
+					  <a style="text-shadow: none;" href="/example-languages.html" class="dropdown-toggle" data-toggle="dropdown">Search <span class="caret"></span></a>
+					  <ul class="dropdown-menu" role="menu">
+						<li><a style="text-shadow: none;" href="/example-fx.html">F(x) search</a></li>
+						<li><a style="text-shadow: none;" href="/example-bw.html">F(xy) search</a></li>
+						<li><a style="text-shadow: none;" href="/example-rgb.html">RGB image search</a></li>
+						<li><a style="text-shadow: none;" href="/example-rgbt.html">RGBT</a></li>
+						<li><a style="text-shadow: none;" href="/example-vrp.html">VRP</a></li>
+					  </ul>
+					</li>
 				  </ul>
 				</div>
 			</div>
@@ -156,7 +166,7 @@
 				var url_safe_a = galleryDictionary[name][0];
 				var url_safe_b = galleryDictionary[name][1];
 				var url_safe_c = galleryDictionary[name][2];
-				var url = "http://localhost:3000/messageView?language=" + url_safe_language + "&a=" + url_safe_a + "&b=" + url_safe_b + "&c=" + url_safe_c;				
+				var url = "http://gpexplorer.ddns.net/messageView?language=" + url_safe_language + "&a=" + url_safe_a + "&b=" + url_safe_b + "&c=" + url_safe_c;				
 				window.open (url, "Object inspect");
 			}
 			else if (index==1) {

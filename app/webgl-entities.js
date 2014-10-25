@@ -61,7 +61,7 @@ function initBuffersVRP(parentId) {
 		var temp = getVertexFromString(value[index]);
 		dataArray.push(temp[0]);
 		dataArray.push(temp[1]);
-		dataArray.push(-0.5);
+		dataArray.push(0.0);
 	}
 	
 	citiesVertexPositionBuffer = gl.createBuffer();
@@ -83,16 +83,10 @@ function getVertexFromString (string) {
 
 function drawEntityVRP (pointsBuffer, canvas) { 
 	mat4.ortho(0, canvas.width, 0, canvas.height, -1, 1, pMatrix);
-	//gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 	gl.clear(gl.COLOR_BUFFER_BIT);
-	//mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
-	//mat4.identity(mvMatrix);
-	//mat4.translate(mvMatrix, [0.0, 0.0, -1.2]);	
-	
 	gl.bindBuffer(gl.ARRAY_BUFFER, citiesVertexPositionBuffer);
 	gl.vertexAttribPointer(shaderProgram.vertexPositionLoc, citiesVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 	gl.uniformMatrix4fv(shaderProgram.pMatrixLoc, 0, pMatrix);	
-	
 	gl.drawArrays(gl.POINTS, 0, citiesVertexPositionBuffer.numItems);	
 }
 
@@ -176,7 +170,42 @@ function initWebGLRGBInterpolatedAnimate(canvas, entity) {
     gl.disable(gl.DEPTH_TEST);
 }
 
+var timeFrame = 2.0;
+var valueAA, indexA = 0, indexB = 0;
+var lastUpdate;
+
+function initializeInterpolation() {
+	indexA = Math.floor(Math.random() * 4);
+	updateInterpolationValues();
+	setInterval(updateInterpolationValues, 1000 * timeFrame);
+}
+
+function updateInterpolationValues() {	
+	// random
+	//indexA = indexB;
+	//indexB = Math.floor(Math.random() * 4);
+	
+	// ciclico
+	indexA++;
+	if (indexA > 3) indexA = 0;
+	indexB = indexA + 1;
+	if (indexB > 3) indexB = 0;
+	
+	lastUpdate = timerValue();	
+	valueAA = 0.0;
+}
+
 function drawEntityImageRGBInterpolatedAnimate () {
+	valueAA = (timerValue() - lastUpdate) / timeFrame;
+	
+	var location = gl.getUniformLocation(shaderProgram, "indexA");
+    gl.uniform1f(location, indexA);	
+	location = gl.getUniformLocation(shaderProgram, "indexB");
+    gl.uniform1f(location, indexB);	
+	location = gl.getUniformLocation(shaderProgram, "aa");
+    var aa = valueAA < 1.0 ? valueAA : 1.0;
+	gl.uniform1f(location, 1.0 - aa);	
+	
 	drawEntityImageRGBAnimate();
 }
 

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loading and playing a sound with the Web Audio API</title>
+    <script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+	<script src="glMatrix-0.9.5.min.js"></script>
+	<script src="utils.js"></script>
+	<script src="webgl-utils.js"></script>
+	<script src="webgl-entities.js"></script>
+	<link href="bootstrap.min.css" rel="stylesheet">
+	<link href="site.css" rel="stylesheet">
+		
+    <style>
+        *{
+            font-family: sans-serif;
+        }
+		
+		.separator {
+			width: 100px;
+		}
+		
+		.label {
+			width: 80px; height: 25px
+		}
+		.child {
+			border: 1px solid gray;
+		}
+		
+		.variable-graphic {
+			width: 512px;
+			height: 25px;
+			margin-top: 1px;
+			border: 1px solid gray
+		}
+    </style>
+</head>
+
+<body onload="startupDraw()">
+	<h1>RGB Mixer</h1>	
+	
+	<div style="display: block">
+		<h3>Samples</h3>	
+		<div style="display: flex">
+			<div>
+			<canvas id="parent0" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			<canvas id="parent1" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			<canvas id="parent2" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			<canvas id="parent3" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			</div>
+			=>
+			<div style="display: block">
+				<div style="display: flex">
+					<canvas id="child0" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child1" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child2" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child3" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child4" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child5" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child6" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child7" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				</div>
+			</div>
+		</div>
+		
+		<div style="display: block">
+			<h3>Result</h3>
+			<canvas id="result" class="child" width="256" height="256" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+		</div>
+	</div>
+
+	<div>
+		<div>
+			<h3>Options</h3>
+			<div style="display: block">
+			<div>
+				<div style="display: flex">
+					<input type="checkbox" name="play-sound-check" value="" checked>Play sound</div>
+					<button id="reset-time" type="button" onclick="resetTime()">
+						<div style="display: flex">
+							<span class="icon-bar" ><i class="icon-stop"></i></span>
+							<p>Reset time</p>
+						</div>
+					</button>
+				</div>
+				<div style="padding-top: 10px">
+					<div style="display: flex">
+						<div class="label">Frame time</div>
+						<input type="text" value="0.0" onblur="setTime()" />
+					</div>	
+					<div style="display: flex">
+						<div class="label">Set number</div>
+						<input type="text" value="0.0" onblur="setTime()" />
+					</div>	
+				</div>
+				<div style="width: 100%">
+					<div style="display: flex">
+					<div class="label">				
+						Max size
+					</div>
+					<div>
+					<input id="input-max-size" type="text" value="30" data-toggle="tooltip" data-placement="right" title="Maximum tree size"/>
+					</div>
+					<div>
+				</div>
+			</div>	
+		</div>
+		<input type="file" accept="audio/*;capture=microphone">
+	</div>
+	
+	<script type="text/javascript">
+		var sourceNode;
+		var javascriptNode;
+		var analyser, analyser2;
+		
+		function allowDrop(ev) {
+			ev.preventDefault();
+		}
+
+		function resetTime() {
+			resetTimer();
+			resetMusic("http://gpexplorer.ddns.net/sample-randy.mp3");
+		}
+
+		function drag(ev) {
+			ev.dataTransfer.setData("Text", JSON.stringify(entitiesDictionary[ev.target.id]));
+		}
+		
+		function drop(ev) {
+			ev.preventDefault();
+			var result = JSON.parse(ev.dataTransfer.getData("Text"));
+			entitiesDictionary[ev.target.id] = result;
+			if (result=="default") alert("Default error");
+			initWebGLRGBAnimateSound(ev.target.id, result[1]);
+			drawEntityImageRGBAnimateSound();
+		}
+		
+		function color(ctx) {
+			return '#000000';
+		}
+		
+		function processAndDrawAmplitude(id) { 
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var average = getAverageVolume(array);
+			var ctx = document.getElementById(id).getContext("2d");
+			var element = document.getElementById(id);
+			var w = element.width, h = element.height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			ctx.fillRect(0,0,average,h);
+			variableValues[id] = average;
+		}
+			
+		function processAndDrawSpectrum (id) {
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var element = document.getElementById(id);
+			var ctx = element.getContext("2d");
+			var w = element.width, h = element.height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			drawSpectrum(array, ctx, element);
+		}
+		
+		function processAndDrawSpectrumPeak (id) {
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var element = document.getElementById(id);
+			var ctx = element.getContext("2d");
+			var w = element.width, h = element.height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			drawSpectrumPeak(array, ctx, element, id);
+		}
+
+		function processAndDrawSpectrumPeaks (id) {
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var element = document.getElementById(id);
+			var ctx = element.getContext("2d");
+			var w = element.width, h = element.height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			drawSpectrumPeaks(array, ctx, element, id);
+		}
+		
+		function drawSpectrum(array, ctx, element) {
+			var h = element.height;
+			for (var i = 0; i < (array.length); i++) { 
+				var value = array[i] * (h / 256);
+				ctx.fillRect(i, 0, 1, h-value);
+			}
+		}
+
+		function drawSpectrumPeak(array, ctx, element, id) {
+			var h = element.height;
+			var maxValue = 0, index = 0;
+			ctx.fillStyle = color();	
+			for (var i = 0; i < (array.length); i++ ) {
+				var value = array[i] * (h / 256);
+				ctx.fillRect(i, 0, 1, h-value);
+				if (value > maxValue) {
+					maxValue = value;
+					index = i;
+				}
+			}
+			
+			ctx.fillStyle = "#00FF00";	
+			ctx.fillRect(index, 0, 1, maxValue);
+			variableValues[id] = index;
+		}
+		
+		function drawSpectrumPeaks(array, ctx, element, id) {
+			var h = element.height, maxValue = 0, index = 0, count = 0;
+			ctx.fillStyle = color();	
+			for (var i = 0; i < (array.length); i++ ) {
+				var value = array[i] * (h / 256);
+				ctx.fillRect(i, 0, 1, h-value);
+				if (value > maxValue) {
+					maxValue = value;
+					index = i;
+				}
+			}
+			
+			ctx.fillStyle = "#00FF00";
+			for (var i = 0; i < (array.length); i++ ) {
+				var value = array[i] * (h / 256);
+				if (value == maxValue) {
+					ctx.fillRect(i, 0, 1, maxValue);
+					count++;
+				}
+			}
+			
+			variableValues[id] = count;
+		}
+		
+		var entitiesDictionary = {};
+		var parentCount = 4, childCount = 8;
+		var currentLanguage = "rgb-sound-vector";
+		var variableValues = {};
+		
+		function createFunctionGeneric(canvasId, arguments, message, set) {
+			$.ajax({
+				type : 'GET',
+				url : message,
+				data : arguments,
+				dataType : "text",
+				success : function(data) {
+					var result = data.split("|");
+					entitiesDictionary[canvasId] = result;
+					result[2] = "entity-rgb-animate";
+					initWebGLRGBAnimateSound(canvasId, result[1]);
+					drawEntityImageRGBAnimateSound();
+				},
+				error : function(data) {
+					console.log('Call failed');
+				}
+			});
+		}
+		
+		function createFunctionCallCreateDefault(name) {
+			createFunctionGeneric(name, { language: "rgb-color-images-vector" }, "/messageCreateDefault");
+		}
+		
+		function createFunctionCallMutateOn(name, canvasId, set) {
+			var maxSize = document.getElementById("input-max-size").value;
+			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: maxSize, objectData: entitiesDictionary[name][0] }, "/messageMutate", set);
+		}
+		
+		function createFunctionCallCreateRandom(name, set) {
+			var maxSize = document.getElementById("input-max-size").value;
+			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: maxSize }, "/messageCreateRandom", set);
+		}
+		
+		function addParentCallBack(name) {
+			$("#" + name)
+				.click(function(evt) {
+					for (var i=0; i< childCount; i++) {
+						var canvasId = "child" + i.toString();
+						createFunctionCallMutateOn(name, canvasId, false);
+					}
+				});
+		}
+		
+		function addChildCallBack(name) {
+			$("#" + name)
+				.click(function(evt) {
+					for (var i=0; i< childCount; i++) {
+						var canvasId = "child" + i.toString();
+						if (name != canvasId)
+							createFunctionCallMutateOn(name, canvasId, false);
+					}
+				});
+		}
+				
+		var startupDraw = function () {
+			var htmlCode = "";
+			for (var i=0; i< parentCount; i++)
+				createFunctionCallCreateRandom("parent" + i.toString(), true);
+			for (var i=0; i< childCount; i++)
+				createFunctionCallCreateRandom("child" + i.toString());
+			
+			setInterval(
+				function () {				
+					for (var i=0; i< childCount; i++) {
+						var id = "child" + i;
+						if (entitiesDictionary[id]) {
+							initWebGLRGBAnimateSound(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
+							drawEntityImageRGBAnimateSound();
+						}
+					}
+					
+					for (var i=0; i< parentCount; i++) {
+						var id = "parent" + i;
+						if (entitiesDictionary[id]) {
+							initWebGLRGBAnimateSound(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
+							drawEntityImageRGBAnimateSound();
+						}
+					}
+										
+					var id = "result";
+					initWebGLRGBInterpolatedAnimate(id, 
+						[[entitiesDictionary["parent0"][1], entitiesDictionary["parent0"][2]], 
+						 [entitiesDictionary["parent1"][1], entitiesDictionary["parent1"][2]],
+						 [entitiesDictionary["parent2"][1], entitiesDictionary["parent2"][2]],
+						 [entitiesDictionary["parent3"][1], entitiesDictionary["parent3"][2]]
+						]);
+					drawEntityImageRGBInterpolatedAnimate();					
+				}, 
+				200);
+				
+				initializeContextMenuOn("child", "context_menu", menuSetCallback);
+				initializeContextMenuOn("parent", "context_menu", menuSetCallback);
+		};
+		
+		addParentCallBack("parent0");
+		addParentCallBack("parent1");
+		addParentCallBack("parent2");
+		addParentCallBack("parent3");
+		addChildCallBack("child0");
+		addChildCallBack("child1");
+		addChildCallBack("child2");
+		addChildCallBack("child3");
+		addChildCallBack("child4");
+		addChildCallBack("child5");
+		addChildCallBack("child6");
+		addChildCallBack("child7");
+		initializeInterpolation();
+	</script>
+	
+	<div id="context_menu" style="border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute;line-height:30px; padding-left: 0px;">
+		<div><input type="button" value="Open" onclick="menuCallbackPrefix(globalSelectedIndex, 0)" style="width: 100px"/></div>
+		<div><input type="button" value="Like" onclick="menuCallbackPrefix(globalSelectedIndex, 1)" style="width: 100px"/></div>
+		<div><input type="button" value="Dislike" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
+		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 3)" style="width: 100px"/ disabled></div>
+	</div>
+</body>
+</html>

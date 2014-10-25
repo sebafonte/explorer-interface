@@ -106,7 +106,7 @@ var myFragmentShaderRGBSrc =
 	"vec3 veccolormap(in vec3 a, in vec3 b, in vec3 c) { return createvector(a.x / 10.0, b.x / 10.0, c.x / 10.0); } " + 
 	"" + 
 	"void main(void) { " + 
-	"	float x = xx * 10.0, y = yy * 10.0; " + 	
+	"	float x = xx * 10.0, y = yy * 10.0; " + 
 	"	vec3 v = VALUE; " +
 	"	gl_FragColor = vec4(v.x, v.y, v.z, 1.0); " + 
 	"}";
@@ -141,14 +141,14 @@ var myVertexShaderVRPSrc =
 	"   attribute vec3 aVertexPosition; " + 
 	"   uniform mat4 uPMatrix; " + 
 	"   void main(void) { " + 
-	"    	gl_PointSize = 4.0; " + 
+	"    	gl_PointSize = 1.0; " + 
 	"       gl_Position = uPMatrix * vec4(aVertexPosition, 1.0); " + 
 	"    }";
 	
 var myFragmentShaderVRPSrc =         
 	"precision mediump float;" + 
 	"	void main(void) { " + 
-	"       gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); " + 
+	"       gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0); " + 
 	"   } ";	
 	
 function initShadersVRP() {
@@ -170,10 +170,9 @@ function initShadersVRP() {
 	}
 
 	gl.useProgram(shaderProgram)
-	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-	shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+	shaderProgram.vertexPositionLoc = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionLoc);
+	shaderProgram.pMatrixLoc = gl.getUniformLocation(shaderProgram, "uPMatrix");
 }
 
 function setMatrixUniforms() {
@@ -220,6 +219,7 @@ var myFragmentShaderRGBAnimateSrc =
 	"	vec3 v = VALUE; " +
 	"	gl_FragColor = vec4(v.x, v.y, v.z, 1.0); " + 
 	"}";
+
 	
 function initShadersRGBAnimate(entity) {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -246,17 +246,34 @@ function initShadersRGBAnimate(entity) {
 	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 }
 
-// Animated interpolation
+// RGB animated interpolation
+var myVertexShaderRGBAnimatedInterpolateSrc = 
+	"attribute vec3 aVertexPosition; " +
+	"uniform mat4 uMVMatrix; " + 
+	"uniform mat4 uPMatrix; " + 
+	"varying float xx, yy; " + 
+	" " + 
+	"void main(void) { " + 
+	"	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 2.0); " + 
+	"	xx = clamp(aVertexPosition.x,0.0,1.0); " + 
+	"	yy = clamp(aVertexPosition.y,0.0,1.0); " + 
+	"}";
+	
 var myFragmentShaderRGBAnimateInterpolateSrc =
 	"precision mediump float; " + 
-	"uniform float time; " + 
-	"varying vec4 vColor; " + 
 	"varying float xx; " + 
 	"varying float yy; " + 
+	"uniform float indexA; " + 
+	"uniform float indexB; " + 
+	"uniform float aa; " + 
+	"uniform float va; " + 
+	"uniform float vb; " + 
+	"uniform float vc; " + 
+	"uniform float vd; " + 	
+	"uniform float time; " + 
 	"" + 
 	"vec3 veccos(in vec3 a) { return vec3(cos(a.x), cos(a.y), cos(a.z)); } " + 
 	"vec3 vecsin(in vec3 a) { return vec3(sin(a.x), sin(a.y), sin(a.z)); } " + 
-	
 	"vec3 vectan(in vec3 a) { return vec3(tan(a.x), tan(a.y), tan(a.z)); } " + 
 	"vec3 vecabs(in vec3 a) { return vec3(abs(a.x), abs(a.y), abs(a.z)); } " + 
 	"vec3 vecsqr(in vec3 a) { return vec3(a.x * a.x, a.y * a.y, a.z * a.z); } " + 
@@ -267,34 +284,30 @@ var myFragmentShaderRGBAnimateInterpolateSrc =
 	"vec3 vecdiv(in vec3 a, in vec3 b) { return vec3(a.x / b.x, a.y / b.y, a.z / b.z); } " + 
 	"vec3 createvector(in float a, in float b, in float c) { return vec3(a, b, c); } " + 
 	"vec3 veccolormap(in vec3 a, in vec3 b, in vec3 c) { return createvector(a.x / 10.0, b.x / 10.0, c.x / 10.0); } " + 
-	"FUNCTIONS" + 
-	+ 
 	"void main(void) { " + 
-	" 	float a = mod(time, 10.0); " + 
-	" 	float index = div(time, 10.0); " + 
-	"	vec3 va, vb; " + 
-	"	VALUE " +	
-	"	gl_FragColor = vec4(va.x * a + vb.x * (1.0 - a), va.y * a + vb.y * (1.0 - a), va.z * a + vb.z * (1.0 - a), 1.0); " + 
+	" 	float a = aa; " + 
+	"	float x = xx * 10.0, y = yy * 10.0; " + 	
+	"	vec3 vaa, vbb;" + 
+	" FUNCIONES " + 
+	"	gl_FragColor = vec4(vaa.x * a + vbb.x * (1.0 - a), vaa.y * a + vbb.y * (1.0 - a), vaa.z * a + vbb.z * (1.0 - a), 1.0); " + 
 	"}";
 	
 function initShadersRGBInterpolatedAnimate(entity) {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
-	gl.shaderSource(vertexShader, myVertexShaderRGBAnimatedSrc);
+	gl.shaderSource(vertexShader, myVertexShaderRGBAnimatedInterpolateSrc);
 	gl.compileShader(vertexShader);
 
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+	var funcionesCode = "if (false) {} ";
+	for (var i=0; i< entity.length; i++)
+		funcionesCode += " else if (indexA == " + i + ".0) { vaa = " + entity[i][0].toLowerCase() + "; } ";
+	funcionesCode += " if (false) {} ";
+	for (var i=0; i< entity.length; i++)
+		funcionesCode += " else if (indexB == " + i + ".0) { vbb = " + entity[i][0].toLowerCase() + "; } ";
+	source = myFragmentShaderRGBAnimateInterpolateSrc.replace("FUNCIONES", funcionesCode);
 	
-	var code = "if (false) {} ", functions = "";
-	for (var i=0; i< entity.values.size; i++) {
-		functions += "vec3 f" + i + " (in float ) {	float x = xx * 10.0, y = yy * 10.0; return " + entity.values[i]; + "} ";
-		code += "else if (index < " + i + ".0) { va = f" + i + "(); vb = f" + (i + 1) + "(); }"
-	}
-	
-	var withFunctions = myFragmentShaderRGBAnimateInterpolateSrc.replace("FUNCTIONS", functions.toLowerCase())
-	var withIfs = withFunctions.replace("VALUE", code.toLowerCase())
-	gl.shaderSource(fragmentShader, withIfs);
+	gl.shaderSource(fragmentShader, source);
 	gl.compileShader(fragmentShader);
-
 	shaderProgram = gl.createProgram();
 	gl.attachShader(shaderProgram, vertexShader);
 	gl.attachShader(shaderProgram, fragmentShader);

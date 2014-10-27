@@ -88,7 +88,6 @@ var diffuseShaderFunction =
 // RGB
 var myFragmentShaderRGBSrc =
 	"precision mediump float; " + 
-	"varying vec4 vColor; " + 
 	"varying float xx; " + 
 	"varying float yy; " + 
 	"" + 
@@ -106,7 +105,7 @@ var myFragmentShaderRGBSrc =
 	"vec3 veccolormap(in vec3 a, in vec3 b, in vec3 c) { return createvector(a.x / 10.0, b.x / 10.0, c.x / 10.0); } " + 
 	"" + 
 	"void main(void) { " + 
-	"	float x = xx * 10.0, y = yy * 10.0; " + 
+	"	float x = xx * 10.0, y = yy * 10.0; " + 	
 	"	vec3 v = VALUE; " +
 	"	gl_FragColor = vec4(v.x, v.y, v.z, 1.0); " + 
 	"}";
@@ -196,7 +195,6 @@ var myVertexShaderRGBAnimatedSrc =
 var myFragmentShaderRGBAnimateSrc =
 	"precision mediump float; " + 
 	"uniform float time; " + 
-	"varying vec4 vColor; " + 
 	"varying float xx; " + 
 	"varying float yy; " + 
 	"" + 

@@ -170,33 +170,33 @@ function initWebGLRGBInterpolatedAnimate(canvas, entity) {
     gl.disable(gl.DEPTH_TEST);
 }
 
-var timeFrame = 2.0;
-var valueAA, indexA = 0, indexB = 0;
+var timeFrame = 4.0;
+var indexA = 0, indexB = 0;
 var lastUpdate;
 
-function initializeInterpolation() {
-	indexA = Math.floor(Math.random() * 4);
+function initializeInterpolation(count) {
+	indexA = Math.floor(Math.random() * count);
 	updateInterpolationValues();
-	setInterval(updateInterpolationValues, 1000 * timeFrame);
+	setInterval(function () { updateInterpolationValues(count); }, 1000 * timeFrame);
 }
 
-function updateInterpolationValues() {	
+function updateInterpolationValues(count) {	
 	// random
-	//indexA = indexB;
-	//indexB = Math.floor(Math.random() * 4);
+	indexA = indexB;
+	indexB = Math.floor(Math.random() * count);
 	
+	/*
 	// ciclico
 	indexA++;
-	if (indexA > 3) indexA = 0;
+	if (indexA > count - 1) indexA = 0;
 	indexB = indexA + 1;
-	if (indexB > 3) indexB = 0;
+	if (indexB > count - 1) indexB = 0; */
 	
 	lastUpdate = timerValue();	
-	valueAA = 0.0;
 }
 
 function drawEntityImageRGBInterpolatedAnimate () {
-	valueAA = (timerValue() - lastUpdate) / timeFrame;
+	var valueAA = (timerValue() - lastUpdate) / timeFrame;
 	
 	var location = gl.getUniformLocation(shaderProgram, "indexA");
     gl.uniform1f(location, indexA);	
@@ -206,7 +206,7 @@ function drawEntityImageRGBInterpolatedAnimate () {
     var aa = valueAA < 1.0 ? valueAA : 1.0;
 	gl.uniform1f(location, 1.0 - aa);	
 	
-	drawEntityImageRGBAnimate();
+	drawEntityImageRGBAnimateSound();
 }
 
 // RGB sound vector

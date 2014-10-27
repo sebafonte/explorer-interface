@@ -205,14 +205,14 @@ function crossoverFunctions(res, language, objectDataA, objectDataB, maxSize) {
 	}).on('close', function(data) { });
 };
 
-function createTask(res, name, properties) {
+function createTask(res, name, properties, scheduler) {
 	var socket = net.createConnection("20000", "127.0.0.1");
 	
 	socket.on('data', function(data) {
 	  socket.destroy();
 	  res.end(data);
 	}).on('connect', function() {
-		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-task-using) :content (list (quote " + name + ") (quote " + properties + ")))\n");
+		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-task-using) :content (list (quote " + name + ") (quote " + properties + ") (quote " + scheduler + ")))\n");
 	}).on('end', function() {
 	}).on('close', function(data) { });
 }
@@ -237,6 +237,7 @@ function getPropertyValue(res, object, properties) {
 	  res.end(data);
 	  }).on('connect', function() {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-property-value) :content (list (quote " + object + ") (quote " + properties + ")))\n");
+		//socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-property-value) :content (list \"" + object + "\") (quote " + properties + ")))\n");
 	}).on('end', function() {
 	}).on('close', function(data) { });
 }
@@ -254,14 +255,35 @@ function galleryGetAll(res, maxSize) {
 
 function galleryGetElement(res, req, index) {
 	Like.find(function(err, likes) {
+		
 		var value = Math.random() * likes.length;
 	  //var result = Like.find().limit(-1).skip(value).next();
 		var result = likes[Math.floor(value)];
+		if (result != null)	{
+			console.log(result);
+			res.end(result.language + " | " + result.a + " | " + result.b + " | " + result.c);
+		}
+		else
+			res.end("none");
+	}); 
+};
+
+function getWithCriteria(res, req, arguments) {
+	console.log(arguments.language);
+	var a = Like.find({ language: arguments.language }, function(err, likes) {
+		console.log("found " + likes.length);
+		console.log(likes[0]);
+		
+		var value = Math.random() * likes.length;
+		var result = likes[Math.floor(value)];
+		
 		if (result != null)	
 			res.end(result.language + " | " + result.a + " | " + result.b + " | " + result.c);
 		else
 			res.end("none");
 	}); 
+	
+	//console.log(a);
 };
 
 function gallerySetElement(res, index, language, objectDataA, objectDataB) {
@@ -284,8 +306,8 @@ function initializeDatabase() {
 		c: String });
 		
 	Like = db.model('likes', likeSchema);
-/*	
-	Like.find(function(err, likes) {
+
+/*	Like.find(function(err, likes) {
 		for (var i in likes) likes[i].remove();
 	}); */
 }
@@ -345,6 +367,8 @@ function requestHandler(req, res) {
 		gallerySetElement(res, arguments.index, arguments.language, arguments.objectDataA, arguments.objectDataB);
 	else if (pathname == "/messageGalleryGetElement")	
 		galleryGetElement(res, req, arguments.index);
+	else if (pathname == "/getWithCriteria")
+		getWithCriteria(res, req, arguments);
 	else if (pathname == "/messageGalleryGetAll")	
 		galleryGetAll(res, arguments.maxSize);
 	else if (pathname == "/messageGetDefault")	
@@ -352,7 +376,7 @@ function requestHandler(req, res) {
 	else if (pathname == "/messageCreateDefault")	
 		createDefault(res, arguments.language);
 	else if (pathname == "/messageCreateTask")
-		createTask(res, arguments.name, arguments.properties);
+		createTask(res, arguments.name, arguments.properties, arguments.scheduler);
 	else if (pathname == "/messageDeleteTask")
 		deleteTask(res, arguments.name);
 	else if (pathname == "/messageGetPropertyValue")
@@ -386,4 +410,4 @@ function requestHandler(req, res) {
 initializeDatabase();
 
 http.createServer(requestHandler)
-.listen(3000);
+.listen(80);

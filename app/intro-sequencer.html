@@ -10,49 +10,49 @@
 		<link href="bootstrap.min.css" rel="stylesheet">
 		
 		<style>
-		div:-webkit-full-screen {
-		  width: 100% !important;
-		}
-		div:-moz-full-screen {
-		  width: 100% !important;
-		}
-		div:-ms-fullscreen {
-		  width: 100% !important;
-		}
-		div:fullscreen {
-		  width: 100% !important;
-		}
+			div:-webkit-full-screen {
+			  width: 100% !important;
+			}
+			div:-moz-full-screen {
+			  width: 100% !important;
+			}
+			div:-ms-fullscreen {
+			  width: 100% !important;
+			}
+			div:fullscreen {
+			  width: 100% !important;
+			}
 
-		/* While in fullscreen, hide any children with class 'tohide' */
-		:-webkit-full-screen .tohide {
-		  display: none;
-		}
-		:-moz-full-screen .tohide {
-		  display: none;
-		}
-		:-ms-fullscreen .tohide {
-		  display: none;
-		}
-		:fullscreen .tohide {
-		  display: none;
-		}
-		
-		:-webkit-full-screen #result {
-		  width: 100%;
-		  height: 100%;
-		}
+			/* While in fullscreen, hide any children with class 'tohide' */
+			:-webkit-full-screen .tohide {
+			  display: none;
+			}
+			:-moz-full-screen .tohide {
+			  display: none;
+			}
+			:-ms-fullscreen .tohide {
+			  display: none;
+			}
+			:fullscreen .tohide {
+			  display: none;
+			}
+			
+			:-webkit-full-screen #result {
+			  width: 100%;
+			  height: 100%;
+			}
 		</style>
 	</head>
 
 	<body onload="startupDraw()">	
 		<div style="display: block">
-			<div id="divResult" style="display: block">
-				<canvas id="result" width="512" height="512" style="width: 100%; heigth: 100%"></canvas>
+			<div id="divResult" >
+				<canvas id="result" width="768" height="768" style="width: 100%; height: 766px"></canvas>
 			</div>
 		</div>
 
 		<script type="text/javascript">		
-			var startupDraw = function () {
+			function startupDraw() {				
 				runIntro("result");
 			};
 		</script>

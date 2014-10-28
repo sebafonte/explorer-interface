@@ -48,11 +48,10 @@ function initShadersBW(entity) {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderSrc);
 	gl.compileShader(vertexShader);
-
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fragmentShader, myFragmentShaderSrc.replace("VALUE", entity.toLowerCase()));
 	gl.compileShader(fragmentShader);
-
+	
 	shaderProgram = gl.createProgram();
 	gl.attachShader(shaderProgram, vertexShader);
 	gl.attachShader(shaderProgram, fragmentShader);
@@ -114,7 +113,6 @@ function initShadersRGB(entity) {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderSrc);
 	gl.compileShader(vertexShader);
-
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fragmentShader, myFragmentShaderRGBSrc.replace("VALUE", entity.toLowerCase()));
 	gl.compileShader(fragmentShader);
@@ -154,7 +152,6 @@ function initShadersVRP() {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderSrc);
 	gl.compileShader(vertexShader);
-
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fragmentShader, myFragmentShaderVRPSrc);
 	gl.compileShader(fragmentShader);
@@ -291,6 +288,40 @@ var myFragmentShaderRGBAnimateInterpolateSrc =
 	"}";
 	
 function initShadersRGBInterpolatedAnimate(entity) {
+/*
+	#TODO: Test and verify why this does not work uncomenting it all
+	entity = 
+	[
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(X,X,0.3243)", "entity-rgb"],
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		//["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
+		]; 
+	*/
+	
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderRGBAnimatedInterpolateSrc);
 	gl.compileShader(vertexShader);
@@ -330,9 +361,7 @@ function copyImageDataToHTML5Canvas(canvasID) {
 	gl.readPixels(0, 0, c.width, c.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
 	imgData.data = pixels;
-
-	for (var i=0;i<imgData.data.length;i+=4)
-	{
+	for (var i=0;i<imgData.data.length;i+=4) {
 	  imgData.data[i+0]=pixels[i];
 	  imgData.data[i+1]=pixels[i+1];
 	  imgData.data[i+2]=255;//pixels[i+2];

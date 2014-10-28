@@ -163,12 +163,15 @@
 			var htmlCode = "";
 			for (var i=0; i< parentCount; i++) {
 				var canvasId = "parent" + i.toString();
-				createFunctionCallCreateRandom(canvasId);
+				if (Math.random() < 0.5)
+					createFunctionCallCreateRandom(canvasId);
+				else
+					createFunctionCallCreateDefault(canvasId);
 			}	
 		};
 		
 		function createFunctionCallCreateDefault(name) {
-			createFunctionGeneric(name, { language: currentLanguage }, "/messageCreateDefault");
+			createFunctionGeneric(name, { language: currentLanguage, c: "entity-rgb" }, "/messageGetWithCriteria");
 		}
 		
 		function createFunctionCallCreateRandom(name) {
@@ -189,6 +192,13 @@
 				"/messageCrossover");
 		}
 				
+		function changeData(data) {
+			var result = [];
+			result.push(data[1]);
+			result.push(data[2]);
+			return result;
+		}
+		
 		function createFunctionGeneric(canvasId, arguments, message) {
 			$.ajax({
 					type : 'GET',
@@ -197,6 +207,7 @@
 					dataType : "text",
 					success : function(data) {
 						var result = data.split("|");
+						if (message == "/messageGetWithCriteria") result = changeData(result);
 						entitiesDictionary[canvasId] = result;
 						entitiesDictionary[canvasId][2] = "entity-rgb";
 						initWebGLRGB(canvasId, result[1], result[2]);
@@ -251,7 +262,9 @@
 						url : "/messageLike",
 						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
 						dataType : "text",
-						success : function(data) { },
+						success : function(data) { 
+							console.log("Like " + data + " accepted"); 
+						},
 						error : function(data) {
 							console.log('Like call failed');
 						}
@@ -263,7 +276,9 @@
 						url : "/messageDislike",
 						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
 						dataType : "text",
-						success : function(data) { },
+						success : function(data) { 
+							console.log("Dislike " + data + " accepted"); 
+						},
 						error : function(data) {
 							console.log('Dislike call failed');
 						}

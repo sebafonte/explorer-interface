@@ -46,6 +46,9 @@
 			<canvas id="parent1" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 			<canvas id="parent2" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 			<canvas id="parent3" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			<canvas id="parent4" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			<canvas id="parent5" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			<canvas id="parent6" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 			</div>
 			=>
 			<div style="display: block">
@@ -77,8 +80,27 @@
 					<input type="checkbox" name="play-sound-check" value="" checked>Play sound</div>
 					<button id="reset-time" type="button" onclick="resetTime()">
 						<div style="display: flex">
-							<span class="icon-bar" ><i class="icon-stop"></i></span>
-							<p>Reset time</p>
+							<span class="icon-bar" style="padding-right: 5px"><i class="icon-stop"></i></span>
+							<p style="height: 10px">Reset time</p>
+						</div>
+					</button>
+					<button id="save-set" type="button" onclick="saveSet()">
+						<div style="display: flex">
+							<span class="icon-bar" style="padding-right: 5px"><i class="icon-play"></i></span>
+							<p style="height: 10px">Save set</p>
+						</div>
+					</button>
+					
+					<button id="save-set" type="button" onclick="setSequence()">
+						<div style="display: flex">
+							<span class="icon-bar" style="padding-right: 5px"><i class="icon-random"></i></span>
+							<p style="height: 10px">Sequence</p>
+						</div>
+					</button>
+					<button id="save-set" type="button" onclick="setRandom()">
+						<div style="display: flex">
+							<span class="icon-bar" style="padding-right: 5px"><i class="icon-random"></i></span>
+							<p style="height: 10px">Random</p>
 						</div>
 					</button>
 				</div>
@@ -104,7 +126,6 @@
 				</div>
 			</div>	
 		</div>
-		<input type="file" accept="audio/*;capture=microphone">
 	</div>
 	
 	<script type="text/javascript">
@@ -119,6 +140,27 @@
 		function resetTime() {
 			resetTimer();
 			resetMusic("http://gpexplorer.ddns.net/sample-randy.mp3");
+		}
+		
+		function saveSet() {
+			var result = [];
+			for (var i=0; i< parentCount; i++)
+				result.push([entitiesDictionary["parent" + i]]);
+			result = JSON.stringify(result);
+			
+			$.ajax({
+				type : 'GET',
+				url : "/messageSaveInterpolation",
+				data : { entities: result, interpolation: "sequential"},
+				dataType : "text",
+				success : function(data) {
+					var url = "/setInterpolation?entities=" + data;
+					window.open(url, "Object inspect");
+				},
+				error : function(data) {
+					console.log('Call failed');
+				}
+			});
 		}
 
 		function drag(ev) {
@@ -138,108 +180,12 @@
 			return '#000000';
 		}
 		
-		function processAndDrawAmplitude(id) { 
-			var array =  new Uint8Array(analyser.frequencyBinCount);
-			analyser.getByteFrequencyData(array);
-			var average = getAverageVolume(array);
-			var ctx = document.getElementById(id).getContext("2d");
-			var element = document.getElementById(id);
-			var w = element.width, h = element.height;
-			ctx.clearRect(0, 0, w, h); 
-			ctx.fillStyle = color(ctx);
-			ctx.fillRect(0,0,average,h);
-			variableValues[id] = average;
-		}
-			
-		function processAndDrawSpectrum (id) {
-			var array =  new Uint8Array(analyser.frequencyBinCount);
-			analyser.getByteFrequencyData(array);
-			var element = document.getElementById(id);
-			var ctx = element.getContext("2d");
-			var w = element.width, h = element.height;
-			ctx.clearRect(0, 0, w, h); 
-			ctx.fillStyle = color(ctx);
-			drawSpectrum(array, ctx, element);
-		}
-		
-		function processAndDrawSpectrumPeak (id) {
-			var array =  new Uint8Array(analyser.frequencyBinCount);
-			analyser.getByteFrequencyData(array);
-			var element = document.getElementById(id);
-			var ctx = element.getContext("2d");
-			var w = element.width, h = element.height;
-			ctx.clearRect(0, 0, w, h); 
-			ctx.fillStyle = color(ctx);
-			drawSpectrumPeak(array, ctx, element, id);
-		}
-
-		function processAndDrawSpectrumPeaks (id) {
-			var array =  new Uint8Array(analyser.frequencyBinCount);
-			analyser.getByteFrequencyData(array);
-			var element = document.getElementById(id);
-			var ctx = element.getContext("2d");
-			var w = element.width, h = element.height;
-			ctx.clearRect(0, 0, w, h); 
-			ctx.fillStyle = color(ctx);
-			drawSpectrumPeaks(array, ctx, element, id);
-		}
-		
-		function drawSpectrum(array, ctx, element) {
-			var h = element.height;
-			for (var i = 0; i < (array.length); i++) { 
-				var value = array[i] * (h / 256);
-				ctx.fillRect(i, 0, 1, h-value);
-			}
-		}
-
-		function drawSpectrumPeak(array, ctx, element, id) {
-			var h = element.height;
-			var maxValue = 0, index = 0;
-			ctx.fillStyle = color();	
-			for (var i = 0; i < (array.length); i++ ) {
-				var value = array[i] * (h / 256);
-				ctx.fillRect(i, 0, 1, h-value);
-				if (value > maxValue) {
-					maxValue = value;
-					index = i;
-				}
-			}
-			
-			ctx.fillStyle = "#00FF00";	
-			ctx.fillRect(index, 0, 1, maxValue);
-			variableValues[id] = index;
-		}
-		
-		function drawSpectrumPeaks(array, ctx, element, id) {
-			var h = element.height, maxValue = 0, index = 0, count = 0;
-			ctx.fillStyle = color();	
-			for (var i = 0; i < (array.length); i++ ) {
-				var value = array[i] * (h / 256);
-				ctx.fillRect(i, 0, 1, h-value);
-				if (value > maxValue) {
-					maxValue = value;
-					index = i;
-				}
-			}
-			
-			ctx.fillStyle = "#00FF00";
-			for (var i = 0; i < (array.length); i++ ) {
-				var value = array[i] * (h / 256);
-				if (value == maxValue) {
-					ctx.fillRect(i, 0, 1, maxValue);
-					count++;
-				}
-			}
-			
-			variableValues[id] = count;
-		}
-		
 		var entitiesDictionary = {};
-		var parentCount = 4, childCount = 8;
+		var parentCount = 7, childCount = 8;
 		var currentLanguage = "rgb-sound-vector";
 		var variableValues = {};
 		
-		function createFunctionGeneric(canvasId, arguments, message, set) {
+		function createFunctionGeneric(canvasId, arguments, message) {
 			$.ajax({
 				type : 'GET',
 				url : message,
@@ -262,14 +208,44 @@
 			createFunctionGeneric(name, { language: "rgb-color-images-vector" }, "/messageCreateDefault");
 		}
 		
-		function createFunctionCallMutateOn(name, canvasId, set) {
+		function createFunctionCallMutateOn(name, canvasId) {
 			var maxSize = document.getElementById("input-max-size").value;
-			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: maxSize, objectData: entitiesDictionary[name][0] }, "/messageMutate", set);
+			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: maxSize, objectData: entitiesDictionary[name][0] }, "/messageMutate");
 		}
 		
-		function createFunctionCallCreateRandom(name, set) {
+		function createFunctionCallCreateRandom(name) {
 			var maxSize = document.getElementById("input-max-size").value;
-			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: maxSize }, "/messageCreateRandom", set);
+			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: maxSize }, "/messageCreateRandom");
+		}
+		
+		function createFunctionCallSaveEntitiesDictionary(name) {
+			$.ajax({
+				type : 'GET',
+				url : "/messageSaveEntitiesDictionary",
+				data : { values: entities, interpolation: "random" },
+				dataType : "text",
+				success : function(data) {
+					console.log(data);
+				},
+				error : function(data) {
+					console.log('Call failed');
+				}
+			});
+		}
+		
+		function createFunctionCallSaveInterpolation() {
+			$.ajax({
+				type : 'GET',
+				url : "/messageSaveInterpolation",
+				data : { entities: entities, interpolation: "random"},
+				dataType : "text",
+				success : function(data) {
+					console.log(data);
+				},
+				error : function(data) {
+					console.log('Call failed');
+				}
+			});
 		}
 		
 		function addParentCallBack(name) {
@@ -293,7 +269,7 @@
 				});
 		}
 				
-		var startupDraw = function () {
+		function startupDraw() {
 			var htmlCode = "";
 			for (var i=0; i< parentCount; i++)
 				createFunctionCallCreateRandom("parent" + i.toString(), true);
@@ -323,11 +299,14 @@
 						[[entitiesDictionary["parent0"][1], entitiesDictionary["parent0"][2]], 
 						 [entitiesDictionary["parent1"][1], entitiesDictionary["parent1"][2]],
 						 [entitiesDictionary["parent2"][1], entitiesDictionary["parent2"][2]],
-						 [entitiesDictionary["parent3"][1], entitiesDictionary["parent3"][2]]
+						 [entitiesDictionary["parent3"][1], entitiesDictionary["parent3"][2]],
+						 [entitiesDictionary["parent4"][1], entitiesDictionary["parent4"][2]],
+						 [entitiesDictionary["parent5"][1], entitiesDictionary["parent5"][2]],
+						 [entitiesDictionary["parent6"][1], entitiesDictionary["parent6"][2]]
 						]);
 					drawEntityImageRGBInterpolatedAnimate();					
 				}, 
-				200);
+				150);
 				
 				initializeContextMenuOn("child", "context_menu", menuSetCallback);
 				initializeContextMenuOn("parent", "context_menu", menuSetCallback);
@@ -337,6 +316,10 @@
 		addParentCallBack("parent1");
 		addParentCallBack("parent2");
 		addParentCallBack("parent3");
+		addParentCallBack("parent4");
+		addParentCallBack("parent5");
+		addParentCallBack("parent6");
+		
 		addChildCallBack("child0");
 		addChildCallBack("child1");
 		addChildCallBack("child2");
@@ -345,7 +328,7 @@
 		addChildCallBack("child5");
 		addChildCallBack("child6");
 		addChildCallBack("child7");
-		initializeInterpolation();
+		initializeInterpolation(parentCount);
 	</script>
 	
 	<div id="context_menu" style="border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute;line-height:30px; padding-left: 0px;">

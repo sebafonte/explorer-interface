@@ -11,10 +11,10 @@ querystring = require('querystring');
 http.globalAgent.maxSockets = 20;
 
 // DB init
-var likeSchema, Like, dislikeSchema, Dislike;
+var likeSchema, Like, dislikeSchema, Dislike, rgbInterpolationSchema, RgbInterpolation, entitiesDictionarySchema, EntitiesDictionary;
 var mongoose = require('mongoose');
 var db = mongoose.createConnection( 'mongodb://localhost/test' );
-
+var uuid = require('node-uuid');
 
 // Command execution function
 function run_cmd(cmd, args, cb) {
@@ -255,36 +255,51 @@ function galleryGetAll(res, maxSize) {
 
 function galleryGetElement(res, req, index) {
 	Like.find(function(err, likes) {
-		
 		var value = Math.random() * likes.length;
 	  //var result = Like.find().limit(-1).skip(value).next();
 		var result = likes[Math.floor(value)];
-		if (result != null)	{
-			console.log(result);
+		if (result != null)	
 			res.end(result.language + " | " + result.a + " | " + result.b + " | " + result.c);
-		}
 		else
 			res.end("none");
 	}); 
 };
 
 function getWithCriteria(res, req, arguments) {
-	console.log(arguments.language);
 	var a = Like.find({ language: arguments.language }, function(err, likes) {
 		console.log("found " + likes.length);
 		console.log(likes[0]);
-		
 		var value = Math.random() * likes.length;
 		var result = likes[Math.floor(value)];
-		
+	
 		if (result != null)	
 			res.end(result.language + " | " + result.a + " | " + result.b + " | " + result.c);
 		else
 			res.end("none");
 	}); 
-	
-	//console.log(a);
 };
+
+function saveInterpolation(res, entities, interpolation) {
+	var id = uuid.v1();
+	var value = new RgbInterpolation({
+		id: id,
+		entities: entities,
+		interpolation: interpolation
+	});
+	value.save(printBDError);
+	res.end(id);
+}
+
+function saveEntitiesDictionary(res, entitiesDictionary, pane) {
+	var id = uuid.v1();
+	var value = new EntitiesDictionary({
+		id: id,
+		entitiesDictionary: entitiesDictionary,
+		pane: pane
+	});
+	value.save(printBDError);
+	res.end(id);
+}
 
 function gallerySetElement(res, index, language, objectDataA, objectDataB) {
 	var fileName = 'gallery' + index + ".object",
@@ -300,32 +315,51 @@ var printBDError = function (err, result) {
 function initializeDatabase() {	
 	likeSchema = mongoose.Schema({
 		user: { type: String, trim: true, index: true },
+		id: String,
 		language: String,
 		a: String,
 		b: String,
 		c: String });
 		
 	Like = db.model('likes', likeSchema);
-
+	
+	entitiesDictionarySchema = mongoose.Schema({
+		user: { type: String, trim: true, index: true },
+		id: String,
+		pane: String,
+		entitiesDictionary: String});
+	
+	EntitiesDictionary = db.model('entitiesdictionary', entitiesDictionarySchema);
+	
+	rgbInterpolationSchema = mongoose.Schema({
+		user: { type: String, trim: true, index: true },
+		id: String,
+		interpolation: String,
+		entities: String});
+	
+	RgbInterpolation = db.model('rgbinterpolation', rgbInterpolationSchema);
+	
 /*	Like.find(function(err, likes) {
 		for (var i in likes) likes[i].remove();
 	}); */
 }
 
 function likeObject(res, language, a, b, c) {
-	var value =  new Like({
+	var id = uuid.v1();
+	var value = new Like({
+		id: id,
 		language: language,
 		a: a,
 		b: b,
 		c: c
 	});
 	value.save(printBDError);
-	res.end();
+	res.end(id);
 }
 
 function dislikeObject(res, language, a, b, c) {
 	var Dislike = db.model('dislikes', likeSchema);
-	var value =  new Dislike({
+	var value = new Dislike({
 		language: language,
 		a: a,
 		b: b,
@@ -349,6 +383,27 @@ function viewObject(res, language, a, b, c) {
 		});
 }
 
+function setInterpolate(res, id) {
+	var localFolder = __dirname + '/app',
+		page404 = localFolder + '404.html';
+
+	renderContentsFromFile(localFolder + "/" + "run-interpolation.html", res, page404,
+		function(contents) {
+			var a = RgbInterpolation.find({ id: id }, function(err, likes) {
+				console.log("found " + likes.length);
+				console.log(likes[0]);
+				var result = likes[0];
+			
+				if (result != null)	{
+					var result = contents.toString().replace("#ENTITIES#", result.entities);
+					res.end(result);
+				}
+				else
+					res.end("Interpolation not found");
+			}); 		
+		});
+}
+
 function sendObject(res, language, a, b, c) {
 	console.log("Send object: " + language + a + " - " + b + " - " + c);
 }
@@ -367,7 +422,7 @@ function requestHandler(req, res) {
 		gallerySetElement(res, arguments.index, arguments.language, arguments.objectDataA, arguments.objectDataB);
 	else if (pathname == "/messageGalleryGetElement")	
 		galleryGetElement(res, req, arguments.index);
-	else if (pathname == "/getWithCriteria")
+	else if (pathname == "/messageGetWithCriteria")
 		getWithCriteria(res, req, arguments);
 	else if (pathname == "/messageGalleryGetAll")	
 		galleryGetAll(res, arguments.maxSize);
@@ -375,6 +430,10 @@ function requestHandler(req, res) {
 		getDefault(res, arguments.name, arguments.properties);	
 	else if (pathname == "/messageCreateDefault")	
 		createDefault(res, arguments.language);
+	else if (pathname == "/messageSaveInterpolation")
+		saveInterpolation(res, arguments.entities, arguments.interpolation);
+	else if (pathname == "/messageSaveEntitiesDictionary")
+		saveEntitiesDictionary(res, arguments.values, arguments.pane);		
 	else if (pathname == "/messageCreateTask")
 		createTask(res, arguments.name, arguments.properties, arguments.scheduler);
 	else if (pathname == "/messageDeleteTask")
@@ -393,6 +452,8 @@ function requestHandler(req, res) {
 		dislikeObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
 	else if (pathname == "/messageView")
 		viewObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
+	else if (pathname == "/setInterpolation")
+		setInterpolate(res, arguments.entities);
 	else if (pathname == "/messageSend")
 		sendObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
 	else if (pathname == "/messageCrossover")	

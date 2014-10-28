@@ -112,12 +112,12 @@ function Generator() {
 	this.getRgbObjectsFromGallery = function (n) {
 		var array = [];
 		for (var i=0; i< n; i++)
-			array.push(new RGBEntity(createFunctionGeneric("language=" + this.language, "/getWithCriteria")));
+			array.push(new RGBEntity(createFunctionGeneric("language=" + this.language, "/messageGetWithCriteria")));
 		return array;
     };
 	
 	this.getRgbObjectFromGallery = function () {
-		return createFunctionGeneric(new RGBEntity("language=" + this.language, "/getWithCriteria"));
+		return createFunctionGeneric(new RGBEntity("language=" + this.language, "/messageGetWithCriteria"));
     };
 	
 	this.mutate = function (entity) {
@@ -188,7 +188,7 @@ function runIntro(canvasId) {
 	backGroundRenderer = new Renderer();
 	backGroundRenderer.generator.language = "rgb-color-images-vector";
 	backGroundRenderer.generator.maxSize = 35;
-	goFullScreen(canvasId);
+	goFullScreen("divResult");
 	backGroundRenderer.generator.initialize();
 	backGroundRenderer.frameSelector.initializeInterpolation();
 	startIntroLoop(function () { endIntro() });

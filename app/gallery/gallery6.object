@@ -1,1 +1,0 @@
-rgb-color-images-vector | (VECABS (VECSIN (CREATEVECTOR Y X Y)))  |  VECABS(VECSIN(CREATEVECTOR(Y,X,Y)))

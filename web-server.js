@@ -15,6 +15,8 @@ var likeSchema, Like, dislikeSchema, Dislike, rgbInterpolationSchema, RgbInterpo
 var mongoose = require('mongoose');
 var db = mongoose.createConnection( 'mongodb://localhost/test' );
 var uuid = require('node-uuid');
+var swig  = require('swig');
+
 
 // Command execution function
 function run_cmd(cmd, args, cb) {
@@ -72,16 +74,25 @@ function renderContentsFromFile(filePath, res, page404, returnCallback){
     });
 }
 
-function getFile(filePath, res, page404){
+function getFile(filePath, res, page404, useViewsEngine){
     fs.exists(filePath,function(exists) {
 		if (exists){
-            fs.readFile(filePath,function(err,contents){
-                if(!err){
-                    res.end(contents);
-                } else {
-                    console.dir(err);
-                };
-            });
+			console.log(filePath);
+			
+			if (useViewsEngine) {
+				//var menu = swig.renderFile("app/navbar.html");
+				//var menu = swig.compileFile('app/navbar.html');
+				var result = swig.renderFile(filePath);
+				res.end(result);
+			}
+			else
+				fs.readFile(filePath,function(err,contents){
+					if(!err){
+						res.end(contents);
+					} else {
+						console.dir(err);
+					};
+				});
         } 
 		else {
             fs.readFile(page404, function(err,contents){
@@ -102,14 +113,12 @@ function setFile(filePath, data, res) {
 			throw err;
 		else {
 			res.end(data);
-			console.log("Saved file " + filePath);
 		};
 	});
 }
 
 function createRandom(res, language, maxSize) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	console.log("creando");
 	
 	socket
 		.on('data', function(data) {
@@ -237,7 +246,6 @@ function getPropertyValue(res, object, properties) {
 	  res.end(data);
 	  }).on('connect', function() {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-property-value) :content (list (quote " + object + ") (quote " + properties + ")))\n");
-		//socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-property-value) :content (list \"" + object + "\") (quote " + properties + ")))\n");
 	}).on('end', function() {
 	}).on('close', function(data) { });
 }
@@ -268,7 +276,6 @@ function galleryGetElement(res, req, index) {
 function getWithCriteria(res, req, arguments) {
 	var a = Like.find({ language: arguments.language }, function(err, likes) {
 		console.log("found " + likes.length);
-		console.log(likes[0]);
 		var value = Math.random() * likes.length;
 		var result = likes[Math.floor(value)];
 	
@@ -370,17 +377,13 @@ function dislikeObject(res, language, a, b, c) {
 }
 
 function viewObject(res, language, a, b, c) {
-	var localFolder = __dirname + '/app',
-		page404 = localFolder + '404.html';
-
-	renderContentsFromFile(localFolder + "/" + "view.html", res, page404,
-		function(contents) {
-			var result = contents.toString().replace("#A#", a);
-			result = result.replace("#B#", b);
-			result = result.replace("#C#", c);
-			result = result.replace("#LANGUAGE#", language);
-			res.end(result);
-		});
+	var localFolder = __dirname + '/app';
+	var result = swig.renderFile(localFolder + "/view.html");
+	result = result.toString().replace("#A#", a);
+	result = result.replace("#B#", b);
+	result = result.replace("#C#", c);
+	result = result.replace("#LANGUAGE#", language);			
+	res.end(result);
 }
 
 function setInterpolate(res, id) {
@@ -391,7 +394,6 @@ function setInterpolate(res, id) {
 		function(contents) {
 			var a = RgbInterpolation.find({ id: id }, function(err, likes) {
 				console.log("found " + likes.length);
-				console.log(likes[0]);
 				var result = likes[0];
 			
 				if (result != null)	{
@@ -464,7 +466,8 @@ function requestHandler(req, res) {
 		var fileName = path.basename(req.url) || 'index.html',
 			localFolder = __dirname + '/app/',
 			page404 = localFolder + '404.html';
-		getFile((localFolder + fileName), res, page404);
+		var parts = fileName.split(".");
+		getFile((localFolder + fileName), res, page404, (parts[parts.length-1] == "html"));
 	}
 };
 

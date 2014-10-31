@@ -14,7 +14,7 @@ function hxOptionHtmlValues(values) {
 //		((property value) (property.property value) ...)
 //  And constructs editors for numeric and lists, both required, and both are passed as strings and readed by lisp
 //
-function createEditorForProperties (parentId, data, propertiesData, disabledProperties) {
+function createEditorForProperties (parentId, data, propertiesData, disabledProperties, labelProperties) {
 	var editors = data.split("||");
 	var properties = propertiesData.split("_");
 	var htmlCode = "";
@@ -24,7 +24,7 @@ function createEditorForProperties (parentId, data, propertiesData, disabledProp
 		if (editors[i] != "") {
 			var propertyData = editors[i].split("|");
 			var type = propertyData[1];
-			htmlCode += createLispEditor(parentId, propertyData, properties[i], disabled);
+			htmlCode += createLispEditor(parentId, propertyData, properties[i], disabled, labelProperties);
 		}
 	}
 	
@@ -41,17 +41,19 @@ function createSelectOptionProperty(parentId, data) {
 }
 */
 
-function createLispEditor(parentId, data, propertyName, disabledProperties) {	
+function createLispEditor(parentId, data, propertyName, disabledProperties, labelProperties) {	
 	var propertyNameReturned = data[0];
 	var propertyId = replaceAll(" ", "-", propertyName.replace("(", "").replace(")", ""));
 	var propertyValue = data[2];
 	var disabled = disabledProperties.indexOf(propertyName) >= 0;
 	var disabledText = "";
 	
+	if (labelProperties == null) labelProperties = "width: 130px";
+	
 	// #HARDCODE on style part
 	if (disabled) disabledText = "disabled";
 	return 	"<div style=\"display: flex; height: 30px;\">" + 
-			"<p style=\"width: 130px\">" + propertyNameReturned.toLowerCase() + "<\p>" + 
+			"<p style=\"" + labelProperties + "\">" + propertyNameReturned.toLowerCase() + "<\p>" + 
 			"<input style=\"max-width: 180px\"id=\"editor-" + parentId + "-" + propertyId.toLowerCase() + "\" value=\"" + propertyValue + "\"/ " + disabledText + " required></div>";
 }
 

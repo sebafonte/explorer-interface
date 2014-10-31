@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>RGB vectors</title>
+		<script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+		<script src="glMatrix-0.9.5.min.js"></script>
+		<script src="webgl-utils.js"></script>
+		<script src="webgl-entities.js"></script>
+		<script src="renderers.js"></script>
+		<link href="bootstrap.min.css" rel="stylesheet">
+	</head>
+
+	<body onload="startupDraw()">	
+		<div id="divResult" style="display: block">
+			<canvas id="result" width="1024" height="1024" style="width: 100%; height: 766px"></canvas>
+		</div>
+
+		<script type="text/javascript">		
+		    // Fullscreen
+			var button = document.getElementById('divResult');
+			button.addEventListener('click', function() {
+				goFullScreen('result');
+				var a = $("#result")[0];
+				a.style.removeProperty("height");
+				a.removeStyle("width");
+				a.removeStyle("height");
+			}, false);
+			
+			function listFromParameters() {
+				var result = #ENTITIES#;
+				var newResult = [];
+				for (var i=0; i< result.length; i++)
+					newResult.push(new RGBEntity("rgb-color-images-vector" + "|" + result[i][0][0] + "|" + result[i][0][1] + "|" + result[i][0][2]));
+				return newResult;
+			}
+			
+			function startupDraw() {				
+				backGroundRenderer = new Renderer();
+				backGroundRenderer.generator.language = "rgb-color-images-vector";
+				backGroundRenderer.generator.maxSize = 35;
+				goFullScreen("result");
+				backGroundRenderer.generator.prototype.arrayEntities = listFromParameters();
+				backGroundRenderer.frameSelector.initializeInterpolation();
+				startIntroLoop(function () { endIntro() });
+			};
+		</script>
+	</body>
+
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-54522358-1', 'auto');
+	  ga('send', 'pageview');
+	</script>
+</html>

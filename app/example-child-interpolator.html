@@ -1,15 +1,13 @@
+{% extends 'main-layout.html' %}
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Loading and playing a sound with the Web Audio API</title>
-    <script type="text/javascript" src="jquery-1.11.1.min.js"></script>
-	<script src="glMatrix-0.9.5.min.js"></script>
-	<script src="utils.js"></script>
-	<script src="webgl-utils.js"></script>
-	<script src="webgl-entities.js"></script>
-	<link href="bootstrap.min.css" rel="stylesheet">
-	<link href="site.css" rel="stylesheet">
-		
+	{% block head %}
+	{% parent %}
+	<title>Loading and playing a sound with the Web Audio API</title>
+	{% endblock %}
+	
     <style>
         *{
             font-family: sans-serif;
@@ -36,8 +34,10 @@
 </head>
 
 <body onload="startupDraw()">
+	{% block content %}
+	{% parent %}
 	<h1>RGB Mixer</h1>	
-	
+
 	<div style="display: block">
 		<h3>Samples</h3>	
 		<div style="display: flex">
@@ -127,7 +127,12 @@
 			</div>	
 		</div>
 	</div>
+	{% endblock %}
 	
+	{% block mainscript %}
+	<script src="jquery-1.11.1.min.js"></script>
+	<script src="bootstrap.min.js"></script>
+		
 	<script type="text/javascript">
 		var sourceNode;
 		var javascriptNode;
@@ -337,5 +342,10 @@
 		<div><input type="button" value="Dislike" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
 		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 3)" style="width: 100px"/ disabled></div>
 	</div>
+	{% endblock %}
 </body>
+
+{% block footerscript %}
+{% parent %}
+{% endblock %}
 </html>

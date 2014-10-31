@@ -195,26 +195,21 @@ function runIntro(canvasId) {
 }
 
 function goFullScreen(canvasId) {
-	//var canvas = document.getElementById(canvasId);
-	//canvas.webkitRequestFullScreen();
-	
 	var elem = document.getElementById(canvasId);
-	if (elem.requestFullscreen) {
+	if (elem.requestFullscreen)
 	  elem.requestFullscreen();
-	} else if (elem.msRequestFullscreen) {
+	else if (elem.msRequestFullscreen)
 	  elem.msRequestFullscreen();
-	} else if (elem.mozRequestFullScreen) {
+	else if (elem.mozRequestFullScreen)
 	  elem.mozRequestFullScreen();
-	} else if (elem.webkitRequestFullscreen) {
+	else if (elem.webkitRequestFullscreen)
 	  elem.webkitRequestFullscreen();
-	}
 }
 
 function startIntroLoop(endFunction) {
 	updateFrame();
 	interval = setInterval(function () { updateFrame(); }, 1000 / frameRateSet);
 }
-
 
 function updateFrame() {
 	backGroundRenderer.updateFrame();

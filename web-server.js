@@ -13,9 +13,10 @@ http.globalAgent.maxSockets = 20;
 // DB init
 var likeSchema, Like, dislikeSchema, Dislike, rgbInterpolationSchema, RgbInterpolation, entitiesDictionarySchema, EntitiesDictionary;
 var mongoose = require('mongoose');
-var db = mongoose.createConnection( 'mongodb://localhost/test' );
+var db = mongoose.createConnection('mongodb://localhost/test');
 var uuid = require('node-uuid');
 var swig  = require('swig');
+swig.setDefaults({ cache: false });
 
 
 // Command execution function
@@ -40,7 +41,7 @@ function messageCommand (command, arguments) {
 	var foo = new run_cmd(
 		command, arguments.split(" ").toArray(),
 		function (me, buffer) { me.stdout += buffer.toString() },
-		function () { console.log(foo.stdout) }
+		function () { console.log(foo.stdout); }
 	);
 	
 	function log_console() {
@@ -76,9 +77,7 @@ function renderContentsFromFile(filePath, res, page404, returnCallback){
 
 function getFile(filePath, res, page404, useViewsEngine){
     fs.exists(filePath,function(exists) {
-		if (exists){
-			console.log(filePath);
-			
+		if (exists){			
 			if (useViewsEngine) {
 				//var menu = swig.renderFile("app/navbar.html");
 				//var menu = swig.compileFile('app/navbar.html');
@@ -117,7 +116,7 @@ function setFile(filePath, data, res) {
 	});
 }
 
-function createRandom(res, language, maxSize) {
+function genericGPExplorerMessage(res, connectFunction) {
 	var socket = net.createConnection("20000", "127.0.0.1");
 	
 	socket
@@ -125,76 +124,51 @@ function createRandom(res, language, maxSize) {
 			socket.destroy();
 			res.end(data);
 		})
-		.on('connect', function() {
-		  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-random) :content (list (quote " + language + ") " + maxSize + "))\n");
-		}).on('end', function() {
-		}).on('close', function(data) { });
+		.on('connect', function () { connectFunction(socket); })
+		.on('end', function() {})
+		.on('close', function(data) { });
+}
+
+function createRandom(res, language, maxSize) {
+	genericGPExplorerMessage(res, 
+		function(socket) {
+			socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-random) :content (list (quote " + language + ") " + maxSize + "))\n");
+		});
 }
 
 function getDefault(res, name, properties) {
-	var socket = net.createConnection("20000", "127.0.0.1");
-	
-	socket
-	.on('data', function(data) {
-	  socket.destroy();
-	  res.end(data);
-	})
-	.on('connect', function() {
-	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-default) :content (list (quote " + name + ") (quote " + properties + ")))\n");
-	}).on('end', function() {
-	}).on('close', function(data) { });
+	genericGPExplorerMessage(res, 
+		function(socket) {
+			socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-default) :content (list (quote " + name + ") (quote " + properties + ")))\n");
+		});
 }
 
 function createDefault(res, language) {
-	var socket = net.createConnection("20000", "127.0.0.1");
-	
-	socket
-	.on('data', function(data) {
-	  socket.destroy();
-	  res.end(data);
-	})
-	.on('connect', function() {
-	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-default) :content (list (quote " + language + ")))\n");
-	}).on('end', function() {
-	}).on('close', function(data) { });
+	genericGPExplorerMessage(res, 
+	function(socket) {
+		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-default) :content (list (quote " + language + ")))\n");
+	});
 }
 
 function possibleLanguages(res) {
-	var socket = net.createConnection("20000", "127.0.0.1");
-	
-	socket
-	.on('data', function(data) {
-	  socket.destroy();
-	  res.end(data);
-	})
-	.on('connect', function() {
-	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-languages))\n");
-	}).on('end', function() {
-	}).on('close', function(data) { });
+	genericGPExplorerMessage(res, 
+	function(socket) {
+		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-languages))\n");
+	});
 }
 
-function mutateFunctions(res, language, objectData, maxSize) {
-	var socket = net.createConnection("20000", "127.0.0.1");
-	
-	socket.on('data', function(data) {
-	  socket.destroy();
-	  res.end(data);	
-	}).on('connect', function() {
-	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate) :content (list (quote " + language + ") (quote " + objectData + ") " + maxSize + "))\n");
-	}).on('end', function() {
-	}).on('close', function(data) { });
+function mutateFunctions(res, language, objectData, maxSize) {	
+	genericGPExplorerMessage(res, 
+	function(socket) {
+		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate) :content (list (quote " + language + ") (quote " + objectData + ") " + maxSize + "))\n");
+	});
 };
 
 function mutateAddVarFunctions(res, language, objectData, maxSize) {
-	var socket = net.createConnection("20000", "127.0.0.1");
-	
-	socket.on('data', function(data) {
-	  socket.destroy();
-	  res.end(data);	
-	}).on('connect', function() {
-	  socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate-add-var) :content (list (quote " + language + ") (quote " + objectData + ") " + maxSize + "))\n");
-	}).on('end', function() {
-	}).on('close', function(data) { });
+	genericGPExplorerMessage(res, 
+	function(socket) {
+		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-mutate-add-var) :content (list (quote " + language + ") (quote " + objectData + ") " + maxSize + "))\n");
+	});
 };
 
 function datePrint() {
@@ -202,52 +176,31 @@ function datePrint() {
 }
  
 function crossoverFunctions(res, language, objectDataA, objectDataB, maxSize) {
-	var socket = net.createConnection("20000", "127.0.0.1");
-	
-	socket.on('data', function(data) {
-		socket.destroy();
-		res.end(data);
-	}).on('connect', function() {
+	genericGPExplorerMessage(res, 
+	function(socket) {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-crossover) :content (list (quote " + language + ") (quote " + objectDataA + ") (quote " + objectDataB + ") " + maxSize + "))\n");
-	}).on('error', function(error) {
-	}).on('end', function() {
-	}).on('close', function(data) { });
+	});	
 };
 
 function createTask(res, name, properties, scheduler) {
-	var socket = net.createConnection("20000", "127.0.0.1");
-	
-	socket.on('data', function(data) {
-	  socket.destroy();
-	  res.end(data);
-	}).on('connect', function() {
+	genericGPExplorerMessage(res, 
+	function(socket) {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-task-using) :content (list (quote " + name + ") (quote " + properties + ") (quote " + scheduler + ")))\n");
-	}).on('end', function() {
-	}).on('close', function(data) { });
+	});	
 }
 
 function deleteTask(res, name) {
-	var socket = net.createConnection("20000", "127.0.0.1");
-	
-	socket.on('data', function(data) {
-	  socket.destroy();
-	  res.end(data);
-	}).on('connect', function() {
+	genericGPExplorerMessage(res, 
+	function(socket) {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-delete-task) :content (list (quote " + name + ")))\n");
-	}).on('end', function() {
-	}).on('close', function(data) { });
+	});	
 }
 
 function getPropertyValue(res, object, properties) {
-	var socket = net.createConnection("20000", "127.0.0.1");
-	
-	socket.on('data', function(data) {
-	  socket.destroy();
-	  res.end(data);
-	  }).on('connect', function() {
+	genericGPExplorerMessage(res, 
+	function(socket) {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-property-value) :content (list (quote " + object + ") (quote " + properties + ")))\n");
-	}).on('end', function() {
-	}).on('close', function(data) { });
+	});	
 }
 
 function galleryGetAll(res, maxSize) {
@@ -275,7 +228,6 @@ function galleryGetElement(res, req, index) {
 
 function getWithCriteria(res, req, arguments) {
 	var a = Like.find({ language: arguments.language }, function(err, likes) {
-		console.log("found " + likes.length);
 		var value = Math.random() * likes.length;
 		var result = likes[Math.floor(value)];
 	
@@ -393,7 +345,6 @@ function setInterpolate(res, id) {
 	renderContentsFromFile(localFolder + "/" + "run-interpolation.html", res, page404,
 		function(contents) {
 			var a = RgbInterpolation.find({ id: id }, function(err, likes) {
-				console.log("found " + likes.length);
 				var result = likes[0];
 			
 				if (result != null)	{
@@ -471,7 +422,23 @@ function requestHandler(req, res) {
 	}
 };
 
+function handlerHook(req, res) {
+	var result;
+
+	try 
+	{
+		result = requestHandler(req, res);
+	}
+	catch(err)
+	{
+		console.log("Error: " + err.message);
+		res.end("Error");
+	}
+	
+	return result;
+}
+
 initializeDatabase();
 
-http.createServer(requestHandler)
+http.createServer(handlerHook)
 .listen(80);

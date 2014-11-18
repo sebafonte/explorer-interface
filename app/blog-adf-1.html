@@ -1,0 +1,60 @@
+<div class="accordion-group">
+			<div class="accordion-heading">
+			<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+			<h4>Subroutine extraction & compression notes</h4>
+			</a>
+			</div>
+			<div id="collapseOne" class="accordion-body collapse">
+			<div class="accordion-inner">
+<p>As a first approach to ADFs, implemented some compression operators (and some other objects to support them). Long time ago i wanted to implement something like a GLiB compression operators experiment i have seen <a href="../../Resources/Angeline+Pollack--1994--CoevolvingHigh-LevelRepresentations.pdf">here</a><a href="#"></a>. </p>
+<h4>Details</h4>
+<ul>
+  <li>A new <a href="#">compression-manager</a> manages subroutines, creates, registers and unregisters those as functions whithin other responsibilities.</li>
+  <li>Implemented <a href="#">compress-1</a> operator, which creates new programs by extracting a subtree as a subrutine.</li>
+  <li>Implemented <a href="#">expand-1</a> operator, which replaces all functions called on the tree (one level).</li>
+  <li>Implemented <a href="#">expand-all</a> operator, which replaces all functions called on the tree (until no more functions left).</li>
+  <li>Implemented <a href="#">depth-compress</a>, which accept the creation of subroutine arguments.</li>
+  <li>ADFs are still not supported, but now it´s more clear where to implement them.</li>
+</ul>
+<h4>Example by images</h4>
+<p><a href="srt-1.png"><img src="tmb-srt-1.png" alt="" width="180" height="144" hspace="2" vspace="2"></a><a href="srt-2.png"><img src="tmb-srt-2.png" alt="" width="180" height="144" hspace="2" vspace="2"></a><a href="srt-3.png"><img src="tmb-srt-3.png" alt="" width="180" height="144" hspace="2" vspace="2"></a></p>
+<ol>
+  <li>Class diagram for complete set of compression objects, with: 
+    <ol>
+      <li>Scoring, Recursion and other strategies.</li>
+      <li>New <a href="#">compression-tree-language</a> class.</li>
+      <li>Associations with tasks.</li>
+    </ol>
+  </li>
+  <li>First compression example using <a href="#">compress-1</a>, <a href="#">expand-1</a>, <a href="#">expand-all</a> operators.</li>
+  <li>Second compression example, using <a href="#">compress-1</a>, <a href="#">depth-compress</a> and <a href="#">expand-1</a> operators.
+<ol>
+      <li>Orange circle: function with no arguments, created by <a href="#">compress-1</a>.</li>
+      <li>Red circle: function with arguments, created by <a href="#">depth-compress</a>.</li>
+    </ol>
+  </li>
+</ol>
+<h4>Testing</h4>
+<p>No seriously tested yet, just run for some time. Recursion it´s still not controlled, i hope to get it working next weekend.</p>
+<h4>Performance</h4>
+<p>Slow for sure by the moment.</p>
+<h4>What's next?</h4>
+<ul>
+  <li>Continue implementing scoring, purgue and recursion strategies.</li>
+  <li>Optimize compression operators.</li>
+  <li>Test with symbolic regression.</li>
+  <li>Complete experiment with graphics, fine-tunning and some mini-report.</li>
+  <li>Implement standard ADFs.</li>
+</ul>
+<h4>Example</h4>
+<ul>
+  <li>Download <a href="sample-compression.rar">here</a> the test example. </li>
+</ul>
+<h4>References</h4>
+<ul>
+  <li><a href="../../Resources/Angeline+Pollack--1994--CoevolvingHigh-LevelRepresentations.pdf">Coevolving High-Level Representations</a> - Peter J. Angeline and Jordan B. Pollack</li>
+  <li><a href="../../Resources/10.1.1.15.5594.pdf">Genetic Programming and Emergent Intelligence</a> - Peter J. Angeline</li>
+</ul>
+			</div>
+			</div>
+			</div>

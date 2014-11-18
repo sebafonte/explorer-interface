@@ -6,8 +6,6 @@
 	{% block head %}
 	{% parent %}
 	<title>Loading and playing a sound with the Web Audio API</title>
-	{% endblock %}
-	
     <style>
         *{
             font-family: sans-serif;
@@ -31,6 +29,8 @@
 			border: 1px solid gray
 		}
     </style>
+
+	{% endblock %}
 </head>
 
 <body onload="startupDraw()">
@@ -316,6 +316,53 @@
 				initializeContextMenuOn("child", "context_menu", menuSetCallback);
 				initializeContextMenuOn("parent", "context_menu", menuSetCallback);
 		};
+		
+		function menuCallbackPrefix(name, index) {			
+			if (index==0) {
+				var url_safe_language = encodeURIComponent(currentLanguage);
+				var url_safe_a = encodeURIComponent(entitiesDictionary[name][0]);
+				var url_safe_b = encodeURIComponent(entitiesDictionary[name][1]);
+				var url_safe_c = encodeURIComponent(entitiesDictionary[name][2]);
+				var url = "/messageView?language=" + url_safe_language + "&a=" + url_safe_a + "&b=" + url_safe_b + "&c=" + url_safe_c;				
+				window.open (url, "Object inspect");
+			}
+			else if (index==1) {
+				$.ajax({
+						type : 'GET',
+						url : "/messageLike",
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
+						dataType : "text",
+						success : function(data) { },
+						error : function(data) {
+							console.log('Like call failed');
+						}
+					});			
+			}
+			else if (index==2) {
+				$.ajax({
+						type : 'GET',
+						url : "/messageDislike",
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
+						dataType : "text",
+						success : function(data) { },
+						error : function(data) {
+							console.log('Dislike call failed');
+						}
+					});			
+			}
+			else if (index==3) {
+				$.ajax({
+						type : 'GET',
+						url : "/messageSend",
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
+						dataType : "text",
+						success : function(data) { },
+						error : function(data) {
+							console.log('Send call failed');
+						}
+					});
+			}
+		}
 		
 		addParentCallBack("parent0");
 		addParentCallBack("parent1");

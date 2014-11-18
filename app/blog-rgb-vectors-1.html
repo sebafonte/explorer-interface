@@ -1,0 +1,44 @@
+<div class="accordion-group">
+	<div class="accordion-heading">
+	<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseRgbVectors">
+	<h4>RGB vectors language (11/04/2014)</h4>
+	</a>
+	</div>
+	<div id="collapseRgbVectors" class="accordion-body collapse">
+	<div class="accordion-inner">
+		<div>
+			<p>Been playing for several time with this representation in my free time. This time i wanted to move some interfaces i used at home to web and make some extensions.</p>
+			
+			<p>
+				<a href="dd1.PNG"><img src="tdd1.PNG" width="103" height="103"></a>
+				<a href="dd2.PNG"><img src="tdd2.PNG" width="103" height="103"></a>
+				<a href="dd3.PNG"><img src="tdd3.PNG" width="103" height="103"></a>
+				<a href="dd4.PNG"><img src="tdd4.PNG" width="103" height="103"></a>
+				<a href="dd5.PNG"><img src="tdd5.PNG" width="103" height="103"></a>
+				<a href="dd6.PNG"><img src="tdd6.PNG" width="103" height="103"></a>
+				<a href="dd7.PNG"><img src="tdd7.PNG" width="103" height="103"></a>
+				<a href="dd8.PNG"><img src="tdd8.PNG" width="103" height="103"></a>				
+			<p>
+			
+			<h5>Language</h5>
+			<p>Language is a closure over a three float element vector. Each one of these will be mapped to R, G, B values. Common arithmetical operations are supported (performing these for each component of each argument) and some trascendental functions (cos, sin, tan, ...) which are applied for each float value separately. Also sqr, sqrt and createvector for building vector leaf's. Basic variables are x and y, going from 0 to 1. Checkout definition <a href="https://github.com/sebafonte/MetaHeuristicExplorer/blob/master/Source/Model/Languages/language-rgb-vector.lisp">here</a>.
+			</p>
+			<p>
+			In these examples max-size was always from 30 to 40.
+			</p>
+			
+			<pre style="font-size: 11px">(VECCOS (VECADD (VECSIN (VECTAN (VECTAN (CREATEVECTOR X 0.5745977 0.26398724)))) (VECDIV (VECSQR (CREATEVECTOR X 0.17096399 X)) (VECMULTIPLY (VECCOS (CREATEVECTOR X Y Y)) (VECCOS (VECABS (CREATEVECTOR Y X X)))))))</pre>
+			<h5>Future work</h5>
+			<p>
+			<ul>
+				<li>Extend base functions</li>
+				<li>Extend interface functionality for image edit</li>
+				<li>Use a language with SRT subroutines (other images)</li>
+				<li>Obtain images using an algorithm with adhoc fitness evaluation</li>
+				<li>Include audio-extracted parameters on the image / animation</li>
+			</ul>
+			</p>
+		</div>
+	</div>
+	</div>
+</div>

@@ -1,0 +1,67 @@
+<div class="accordion-group">
+	<div class="accordion-heading">
+	<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
+	<h4>Clark &amp; Wright savings algorithm prototype (17/08/2011)</h4>
+	</a>
+	</div>
+	<div id="collapseTwo" class="accordion-body collapse">
+		<div class="accordion-inner">
+		<p>Recently implemented an example of the Clark &amp; Wright savings algorithm (parallel and sequential version) prototype, been looking for some test examples, and just found <a href="http://www.hha.dk/~ath/MAN_SC_MODELS/note_cw_savings.pdf">this one</a>. I have to optimize a whole lot of things, but at least i know that parallel example works. </p>
+		<p>This <a href="DVRP-CW-sequential-560-GW.rar">example</a> is a graphical representation of the parallel version for <a href="560-modificaiton.txt">a problem instance</a> taken from Golden &amp; Wasil 2005 instances for DVRP:</p>
+		<p><a href="testing-clark-and-wright-generation.PNG"><img src="tn_testing-clark-and-wright-generation.PNG" width="180" height="144"></a></p>
+		<p>These are the two mini monsters i created at the night, i expect to wake up to refactorize  and optimize this code:</p>
+		<pre style="font-size: 11px">
+(defun clark-and-wright-sequential (evaluator)
+ "Answer a new individual created using C-W savings heuristic.
+ Sequential version implementation (Route Extension)."
+ ;; Make initial solution
+ (let ((solution (make-initial-cw-savings-solution evaluator)))
+	 (while-do
+		 ;; Calculate first saving
+		 (let ((routes-count (length solution)))
+		 (block 1
+		 (dotimes (i routes-count)
+			 (dotimes (j routes-count)
+				 (if (not (= i j))
+					 (let ((saving (saving-when-merging evaluator solution i j)))
+						 (when (and (&gt; saving 0) (is-merge-feasible evaluator solution i j))
+							 ;; Add to feasible 
+							 (setf solution (merge-routes solution (list i j saving)))
+							 (return-from 1 t)))))))))
+	 ;; Answer merged solution
+	 solution))</pre>
+		<pre style="font-size: 11px">(defun clark-and-wright-parallel (evaluator)
+   "Answer a new individual created using C-W savings heuristic.
+   Parallel version implementation (Best Feasible Merge)."
+   ;; Make initial solution
+   (let ((solution (make-initial-cw-savings-solution evaluator)))
+	   (while-do
+		   (let* ((routes-count (length solution))
+			   (savings (make-array (sqr routes-count) :initial-element nil))
+			   (savings-counter 0))
+			   ;; Calculate savings
+			   (dotimes (i routes-count)
+				   (dotimes (j routes-count)
+					   (if (not (= i j))
+						   (let ((saving (saving-when-merging evaluator solution i j)))
+							   (when (and (&gt; saving 0) (is-merge-feasible evaluator solution i j))
+							   (let ((a (first (route-at solution i)))
+	  							     (b (first (last (route-at solution j)))))
+								   ;; Add to savings list 
+								   (setf (aref savings savings-counter) (list a b saving))
+								   (incf savings-counter)))))))
+			   ;; Merge routes with best savings when possible
+			   (sort savings (lambda (a b) (if (and a b) (&gt; (third a) (third b)) a)))
+			   (when (&gt; savings-counter 0)
+				   (dotimes (i savings-counter)
+					   (multiple-value-bind (result flag)
+						   (merge-when-possible evaluator solution (aref savings i))
+					   (when flag
+						   (setf solution result
+							   	 savings-counter 0))))
+				   (zerop savings-counter))))
+   ;; Answer merged solution
+   solution))</pre>
+		</div>
+	</div>
+</div>	

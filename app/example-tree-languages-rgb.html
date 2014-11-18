@@ -1,6 +1,7 @@
 {% extends 'main-layout.html' %}
 
-<html lang="en"><head>
+<html lang="en">
+<head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,6 +11,9 @@
 	
 	{% block head %}
 	{% parent %}
+		<style>
+			.label {width: 60px }
+		</style>
 	{% endblock %}	
   </head>
 
@@ -19,7 +23,7 @@
 			
 		<div class="container" style="padding-top: 60px; width: 950px">
 			<div id="main-div" style="border-left: 1px solid lightgray; display: flex">
-				<div style="width: 620">
+				<div style="width: 620px">
 					<div id="container-pdiv" class="view-container" style="margin-bottom: 5px; display">
 					<div>
 						<canvas id="parent0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
@@ -46,32 +50,50 @@
 				</div>
 				<div id="comments-div" class="view-container" style="border: 1px solid lightgray;">
 					<form>
-						<div>
+						<div style="width: 245px">
 							<div style="margin-top: 20px; padding-left: 15px">
-								<div style="display: table">
+								<div style="display: block">
 									<div>
+										<div class="label">
 										Object
+										</div>	
 										<select id="languages-select" onchange="changeLanguageClass()" value="rgb-color-images-vector" disabled>
 											<option value="rgb-color-images-vector">rgb-color-images-vector</option>
 											<option value="rgb-color-images-vector">rgb-color-images-vector-time</option>
 											<option value="lisp-math-function-xy">lisp-math-function-xy</option>
 											<option value="lisp-math-function-x">lisp-math-function-x</option>
 										</select>
-									</div>
+									
 									<div>
-										Objective
+										<div class="label">Objective</div>	
 										<select id="fitness-select" disabled>
 											<option value="Function xy">None</option>
 											<option value="Function x">Colorfull</option>
 										</select>
 									</div>
 									<div>
-										Max time
+										<div class="label">Max time</div>	
 										<input type="text" value="1" disabled/>
 									</div>
 									<div>
-										Max size
+										<div class="label">Max size</div>	
 										<input id="input-max-size" type="text" value="30"/>
+									</div>
+									<div>
+										<div class="label">Mutations</div>	
+										<input id="input-mutations" type="text" value="1"/>
+									</div>									
+									<div>
+										<input type="button" value="Directed crossover from gallery" onclick="directedCrossoverFromGallery()" style="width: 95%; background-color: #5cb85c;"/>
+									</div>
+									<br />
+									<div>
+										<div class="label">Mode</div>	
+										<select id="fitness-select" value="operation">
+											<option value="operation">Operation</option>
+											<option value="inspect">Inspect</option>
+											<option value="search">Search</option>
+										</select>
 									</div>
 								</div>			
 							</div>
@@ -125,7 +147,7 @@
 			var result = JSON.parse(ev.dataTransfer.getData("Text"));
 			entitiesDictionary[ev.target.id] = result;
 			if (result=="default") alert("Default error");
-			initWebGLRGB(ev.target.id, result[1], result[1]);
+			initWebGLRGB(ev.target.id, result[1]);
 			drawEntityImageRGB();
 		}
 				
@@ -162,6 +184,22 @@
 				"/messageCrossover");
 		}
 				
+		function createFunctionCrossoverFromLib(name, canvasId) {
+			var maxSize = document.getElementById("input-max-size").value;
+			var xmlHttp = null;
+			xmlHttp = new XMLHttpRequest();
+			xmlHttp.open("GET", "/messageGetWithCriteria?language=rgb-color-images-vector&c=entity-rgb", false);
+			xmlHttp.send(null);
+			
+			if (xmlHttp.status === 200) { 
+				var newElementData = xmlHttp.responseText.split("|");
+				createFunctionGeneric(
+					canvasId,
+					{ language: currentLanguage, maxSize: maxSize, objectDataA: entitiesDictionary[name][0], objectDataB: newElementData[1]},
+					"/messageCrossover");
+			}
+		}
+
 		function changeData(data) {
 			var result = [];
 			result.push(data[1]);
@@ -180,7 +218,7 @@
 						if (message == "/messageGetWithCriteria") result = changeData(result);
 						entitiesDictionary[canvasId] = result;
 						entitiesDictionary[canvasId][2] = "entity-rgb";
-						initWebGLRGB(canvasId, result[1], result[2]);
+						initWebGLRGB(canvasId, result[1]);
 						drawEntityImageRGB();
 					},
 					error : function(data) {
@@ -197,7 +235,21 @@
 						createFunctionCallMutateOn(name, canvasId);
 					}
 				});
-		};
+		}
+		
+		function directedCrossoverFromGallery(name) {
+			for (var i=0; i< childCount; i++) {
+				var canvasId = "child" + i.toString();
+				createFunctionCrossoverFromLib( 
+					"parent" + Math.floor(Math.random() * parentCount).toString(),
+					canvasId);
+			}
+		}
+		
+		// #TODO: 
+		function animateAll(index) {
+
+		}
 		
 		function initializeLanguages() {			
 			$.ajax({
@@ -281,8 +333,9 @@
 		<div><input type="button" value="Open" onclick="menuCallbackPrefix(globalSelectedIndex, 0)" style="width: 100px"/></div>
 		<div><input type="button" value="Like" onclick="menuCallbackPrefix(globalSelectedIndex, 1)" style="width: 100px"/></div>
 		<div><input type="button" value="Dislike" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>		
-		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/ disabled></div>
-		<div><input type="button" value="Animate" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/ disabled></div>
+		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 3)" style="width: 100px"/ disabled></div>
+		<div><input type="button" value="Animate" onclick="menuCallbackPrefix(globalSelectedIndex, 4)" style="width: 100px"/ disabled></div>
+		<div><input type="button" value="Animate auto" onclick="menuCallbackPrefix(globalSelectedIndex, 5)" style="width: 100px"/ disabled></div>
 	</div>
 	{% endblock %}
 	

@@ -1,0 +1,40 @@
+ <div class="accordion-group">
+	<div class="accordion-heading">
+	<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOpenGLDsl">
+	<h4>OpenGL DSL draft</h4>
+	</a>
+	</div>
+	<div id="collapseOpenGLDsl" class="accordion-body collapse">
+		<div class="accordion-inner">
+			<p>Last weekend been playing with language defined <a href="https://github.com/sebafonte/MetaHeuristicExplorer/blob/master/Source/Applications/opengl-free-drawing-application-2d-ext-1.lisp">here</a> . The basic idea was to define a language which basic OpenGL immediate mode functions wrapped, in order to map these functions to a lisp expression. Also alowed some basic control constructs, such as loops.</p>
+			<p>Not impressive results but it was very important to include iterations as an experience for the test.</p>
+			
+			<p>
+				<a href="opengl-dsl-1.PNG"><img src="topengl-dsl-1.PNG" width="103" height="103"></a>				
+				<a href="opengl-dsl-6.PNG"><img src="topengl-dsl-6.PNG" width="103" height="103"></a>
+				<a href="opengl-dsl-5.PNG"><img src="topengl-dsl-5.PNG" width="103" height="103"></a>
+				<a href="opengl-dsl-4.PNG"><img src="topengl-dsl-4.PNG" width="103" height="103"></a>
+				<a href="opengl-dsl-3.PNG"><img src="topengl-dsl-3.PNG" width="103" height="103"></a>
+				<a href="opengl-dsl-2.PNG"><img src="topengl-dsl-2.PNG" width="103" height="103"></a>
+			<p>
+			<br/>
+			
+			<p>Example expression for objects of these kind:</p>
+			<pre>(GL-APP-DRAW (GL-APP-LOAD-IDENTITY) (GL-APP-TRANSLATE-2D 50 50) (GL-APP-POINT-SIZE 2) (GL-APP-REPEAT-N 100 (GL-APP-ROTATE-2D (ABS 50)) (GL-APP-TRANSLATE-2D (GL-APP-REPEAT-VAR *TIME-VARIABLE*) (GL-APP-REPEAT-VAR (+ (ABS 0.95134205) 0.2058494))) (GL-APP-TRIANGLE-2D (GL-APP-REPEAT-VAR 50) (GL-APP-REPEAT-VAR (ABS (ASIN *TIME-VARIABLE*))) 0.4790219 (ABS (ASIN *TIME-VARIABLE*)) (- (GL-APP-REPEAT-VAR (ABS (ASIN *TIME-VARIABLE*))) *TIME-VARIABLE*) (ASIN *TIME-VARIABLE*)) (GL-APP-COLOR 0.93181205 0.96525383 0.021565903)))</pre>
+			
+			<h5>Future work on this topic</h5>
+			<p>
+			<ul>
+				<li>Include textures</li>
+				<li>Fitness evaluation, testing for example:</li>
+				<ul>
+					<li>Color histogram</li>
+					<li>Primitives count</li>
+					<li>Primitives properties count</li>
+				</ul>
+				<li>Animations</li>
+			</ul>
+			</p>
+		</div>
+	</div>
+</div>	

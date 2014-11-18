@@ -141,7 +141,7 @@
 										</div>
 										<input type="button" value="Inject" onclick="inject()" style="width: 100%; background-color: #5cb85c"/>
 									</div>
-								</div>			
+								</div>
 							</div>
 						</div>
 					</form>
@@ -151,16 +151,19 @@
 		{% endblock %}
 	</body>
 	
-	{% block mainscript %}	
-	<script>		
+	{% block mainscript %}
+	<script src="jquery-1.11.1.min.js"></script>
+	<script src="bootstrap.min.js"></script>
+
+	<script>
 		var entitiesDictionary = {};
 		var parentCount = 5, childCount = 10;
 		var currentLanguage = document.getElementById("languages-select").value;
-				
+
 		function operate() {
 			for (var i=0; i< childCount; i++) {
 				var canvasId = "child" + i.toString();
-				
+
 				if (Math.floor(Math.random() * 10) < 5)
 					createFunctionCallMutateOn( 
 						"parent" + Math.floor(Math.random() * parentCount).toString(),
@@ -217,7 +220,7 @@
 				createFunctionCallCreateRandom("child" + i.toString());
 			
 			setInterval(
-				function () {				
+				function () {
 					for (var i=0; i< childCount; i++) {
 						var id = "child" + i;
 						if (entitiesDictionary[id]) {
@@ -237,7 +240,7 @@
 					var id = "animation";
 					if (entitiesDictionary[id]) {
 						initWebGLRGBInterpolatedAnimate(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
-						drawEntityImageRGBInterpolatedAnimate();					
+						drawEntityImageRGBInterpolatedAnimate();
 					}
 				}, 
 				200);

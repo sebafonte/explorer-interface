@@ -49,14 +49,14 @@
 		{% endblock %}
 	</body>
 
+	{% block mainscript %}
 	<div id="context_menu" style="border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute;line-height:30px; padding-left: 0px;">
 		<div><input type="button" value="Open" onclick="menuCallbackPrefix(globalSelectedIndex, 0)" style="width: 100px"/></div>
 		<div><input type="button" value="Like" onclick="menuCallbackPrefix(globalSelectedIndex, 1)" style="width: 100px"/></div>
 		<div><input type="button" value="Dislike" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
 		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 3)" style="width: 100px"/ disabled></div>
 	</div>
-
-	{% block mainscript %}
+	
 	<script src="jquery-1.11.1.min.js"></script>
 	<script src="bootstrap.min.js"></script>
 	
@@ -139,11 +139,11 @@
 		
 		function menuCallbackPrefix(name, index) {			
 			if (index==0) {
-				var url_safe_language = encodeURIComponent(galleryDictionary[name][3]);
-				var url_safe_a = galleryDictionary[name][0];
-				var url_safe_b = galleryDictionary[name][1];
-				var url_safe_c = galleryDictionary[name][2];
-				var url = "http://gpexplorer.ddns.net/messageView?language=" + url_safe_language + "&a=" + url_safe_a + "&b=" + url_safe_b + "&c=" + url_safe_c;				
+				var url_safe_language = encodeURIComponent(galleryDictionary[name][3].trim());
+				var url_safe_a = galleryDictionary[name][0].trim();
+				var url_safe_b = galleryDictionary[name][1].trim();
+				var url_safe_c = galleryDictionary[name][2].trim();
+				var url = "http://gpexplorer.ddns.net/messageView?language=" + url_safe_a + "&a=" + url_safe_b + "&b=" + url_safe_c + "&c=" + url_safe_language;			
 				window.open (url, "Object inspect");
 			}
 			else if (index==1) {

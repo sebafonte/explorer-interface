@@ -133,6 +133,64 @@ function initShadersRGB(entity) {
 	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
 }
 
+
+// RGB
+var myFragmentShaderRGBCompositeSrc =
+	"precision mediump float; " + 
+	"varying float xx; " + 
+	"varying float yy; " + 
+	"" + 
+	"vec3 veccos(in vec3 a) { return vec3(cos(a.x), cos(a.y), cos(a.z)); } " + 
+	"vec3 vecsin(in vec3 a) { return vec3(sin(a.x), sin(a.y), sin(a.z)); } " + 
+	"vec3 vectan(in vec3 a) { return vec3(tan(a.x), tan(a.y), tan(a.z)); } " + 
+	"vec3 vecabs(in vec3 a) { return vec3(abs(a.x), abs(a.y), abs(a.z)); } " + 
+	"vec3 vecsqr(in vec3 a) { return vec3(a.x * a.x, a.y * a.y, a.z * a.z); } " + 
+	"" + 
+	"vec3 vecadd(in vec3 a, in vec3 b) { return vec3(a.x + b.x, a.y + b.y, a.z + b.z); } " + 
+	"vec3 vecsubstract(in vec3 a, in vec3 b) { return vec3(a.x - b.x, a.y - b.y, a.z - b.z); } " + 
+	"vec3 vecmultiply(in vec3 a, in vec3 b) { return vec3(a.x * b.x, a.y * b.y, a.z * b.z); } " + 
+	"vec3 vecdiv(in vec3 a, in vec3 b) { return vec3(a.x / b.x, a.y / b.y, a.z / b.z); } " + 
+	"vec3 createvector(in float a, in float b, in float c) { return vec3(a, b, c); } " + 
+	"vec3 veccolormap(in vec3 a, in vec3 b, in vec3 c) { return createvector(a.x / 10.0, b.x / 10.0, c.x / 10.0); } " + 
+	"" + 
+	"vec3 vecfa(in vec3 a, in vec3 b) { float x = a.x, y = b.x; return #VECFA#; } " + 
+	"vec3 vecfb(in vec3 a, in vec3 b) { float x = a.x, y = b.x; return #VECFB#; } " + 
+	"vec3 vecfc(in vec3 a, in vec3 b) { float x = a.x, y = b.x; return #VECFC#; }" + 
+	"" + 
+	"void main(void) { " + 
+	"	float x = xx * 10.0, y = yy * 10.0; " + 	
+	"	vec3 v = VALUE; " +
+	"	gl_FragColor = vec4(v.x, v.y, v.z, 1.0); " + 
+	"}";
+	
+function initShadersRGBComposite(entity, a, b, c) {
+	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+	gl.shaderSource(vertexShader, myVertexShaderSrc);
+	gl.compileShader(vertexShader);
+	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+	var result = myFragmentShaderRGBCompositeSrc.replace("VALUE", entity.toLowerCase());
+	result = result.replace("#VECFA#", a);
+	result = result.replace("#VECFB#", b);
+	result = result.replace("#VECFC#", c);	
+	gl.shaderSource(fragmentShader, result);
+	gl.compileShader(fragmentShader);
+
+	shaderProgram = gl.createProgram();
+	gl.attachShader(shaderProgram, vertexShader);
+	gl.attachShader(shaderProgram, fragmentShader);
+	gl.linkProgram(shaderProgram);
+
+	if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+		console.log("Could not initialise shaders for " + entity);
+	}
+
+	gl.useProgram(shaderProgram);
+	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+	shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+}
+
 // VRP
 var myVertexShaderVRPSrc =
 	"   attribute vec3 aVertexPosition; " + 
@@ -140,14 +198,14 @@ var myVertexShaderVRPSrc =
 	"   void main(void) { " + 
 	"    	gl_PointSize = 1.0; " + 
 	"       gl_Position = uPMatrix * vec4(aVertexPosition, 1.0); " + 
-	"    }";
-	
-var myFragmentShaderVRPSrc =         
+	"   }";
+
+var myFragmentShaderVRPSrc = 
 	"precision mediump float;" + 
 	"	void main(void) { " + 
 	"       gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0); " + 
-	"   } ";	
-	
+	"   } ";
+
 function initShadersVRP() {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderSrc);
@@ -321,7 +379,7 @@ function initShadersRGBInterpolatedAnimate(entity) {
 		//["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
 		]; 
 	*/
-	
+
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderRGBAnimatedInterpolateSrc);
 	gl.compileShader(vertexShader);

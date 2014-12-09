@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loading and playing a sound with the Web Audio API</title>
+    <script type="text/javascript" src="jquery-1.11.1.min.js"></script>
+	<script src="glMatrix-0.9.5.min.js"></script>
+	<script src="utils.js"></script>
+	<script src="webgl-utils.js"></script>
+	<script src="webgl-entities.js"></script>
+	<link href="bootstrap.min.css" rel="stylesheet">
+	<link href="site.css" rel="stylesheet">
+		
+    <style>
+        *{
+            font-family: sans-serif;
+        }
+		
+		.separator {
+			width: 100px;
+		}
+		
+		.child {
+			border: 1px solid gray;
+		}
+		
+		.variable-graphic {
+			width: 512px;
+			height: 25px;
+			margin-top: 1px;
+			border: 1px solid gray
+		}
+    </style>
+</head>
+
+<body onload="startupDraw()">
+	<h1>Sound affection test</h1>	
+	
+	<div style="display: block">
+		<h3>Samples</h3>	
+		<div style="display: flex">
+			<canvas id="parent0" width="132" height="132" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+			=>
+			<div style="display: block">
+			<div style="display: flex">
+				<canvas id="child0" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="child1" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<!--
+				<canvas id="child2" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="child3" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="child4" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="child5" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="child6" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="child7" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="child8" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="child9" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="child10" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="child11" class="child" width="64" height="64" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>			
+				-->
+			</div>
+			<div>
+				<textarea id="inject-expression" class="form-control" rows="3" style="width: 760px" data-toggle="tooltip" data-placement="right" title="Last clicked genotype.">
+				</textarea>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<div>
+		<h3>Editors</h3>
+		<div style="display: block">
+			<div style="display: flex">
+				<div><input type="button" text="-"/></div>
+				<div class="separator">vtime</div>
+				<div class="separator">
+					<select id="channel1-select" onchange="changeLanguageClass()" value="CH 1" style="width: 100px; margin-right: 10px">
+						<option value="CH Mono">CH Mono</option>
+						<option value="CH 1">CH 1</option>
+						<option value="CH 2">CH 2</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="transform1-select" onchange="changeLanguageClass()" value="Time" style="width: 100px; margin-right: 10px">
+						<option value="Time">Time</option>
+						<option value="Spectrum">Spectrum</option>
+						<option value="Amplitude">Amplitude</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="proyection1-select" onchange="changeLanguageClass()" value="Value" style="width: 100px; margin-right: 10px">
+						<option value="Value">Value</option>
+						<option value="Peak">Peak</option>
+						<option value="Peaks">Peaks</option>
+					</select>
+				</div>				
+				<div><canvas id="ed1" class="variable-graphic" style="max-heigth: 17px" height="15" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas></div>
+				<div><input type="checkbox" id="ed1-check" value="" checked></div>
+			</div>		
+			<div style="display: flex">
+				<div><input type="button" text="-"/></div>
+				<div class="separator">vb</div>
+				<div class="separator">
+					<select id="channel1-select" onchange="changeLanguageClass()" value="CH 1" style="width: 100px; margin-right: 10px">
+						<option value="CH Mono">CH Mono</option>
+						<option value="CH 1">CH 1</option>
+						<option value="CH 2">CH 2</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="transform1-select" onchange="changeLanguageClass()" value="Amplitude" style="width: 100px; margin-right: 10px">
+						<option value="Amplitude">Amplitude</option>
+						<option value="Spectrum">Spectrum</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="proyection1-select" onchange="changeLanguageClass()" value="Value" style="width: 100px; margin-right: 10px">
+						<option value="Value">Value</option>
+					</select>
+				</div>				
+				<div><canvas id="ed2" class="variable-graphic" style="max-heigth: 17px" height="15" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas></div>
+				<div><input type="checkbox" id="ed2-check" value="" checked></div>
+			</div>
+			<div style="display: flex">
+				<div><input type="button" text="-"/></div>
+				<div class="separator">vc</div>
+				<div class="separator">
+					<select id="channel2-select" onchange="changeLanguageClass()" value="CH 2" style="width: 100px; margin-right: 10px">
+						<option value="CH Mono">CH Mono</option>
+						<option value="CH 1">CH 1</option>
+						<option value="CH 2">CH 2</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="transform2-select" onchange="changeLanguageClass()" value="Spectrum" style="width: 100px; margin-right: 10px">
+						<option value="Spectrum">Spectrum</option>
+						<option value="Amplitude">Amplitude</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="proyection2-select" onchange="changeLanguageClass()" value="Peak" style="width: 100px; margin-right: 10px">
+						<option value="Peak">Peak</option>
+						<option value="Peaks">Peaks</option>
+					</select>
+				</div>				
+				<div><canvas id="ed3" class="variable-graphic" style="max-heigth: 17px" height="15" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas></div>
+				<div><input type="checkbox" id="ed3-check" value="" checked></div>
+			</div>		
+			<div style="display: flex">
+				<div><input type="button" text="-"/></div>
+				<div class="separator">vd</div>
+				<div class="separator">
+					<select id="channel2-select" onchange="changeLanguageClass()" value="CH 2" style="width: 100px; margin-right: 10px">
+						<option value="CH Mono">CH Mono</option>
+						<option value="CH 1">CH 1</option>
+						<option value="CH 2">CH 2</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="transform2-select" onchange="changeLanguageClass()" value="Spectrum" style="width: 100px; margin-right: 10px">
+						<option value="Spectrum">Spectrum</option>
+						<option value="Amplitude">Amplitude</option>
+					</select>
+				</div>
+				<div class="separator">
+					<select id="proyection2-select" onchange="changeLanguageClass()" value="Peaks" style="width: 100px; margin-right: 10px">
+						<option value="Peaks">Peaks</option>
+						<option value="Peak">Peak</option>
+					</select>
+				</div>
+				<div><canvas id="ed4" class="variable-graphic" height="15" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas></div>
+				<div><input type="checkbox" id="ed4-check" value="" checked></div>
+			</div>				
+		</div>
+		<div>
+			<h3>Options</h3>
+			<div style="display: block">
+			<div>
+				<div style="display: flex">
+					<input type="checkbox" name="play-sound-check" value="" checked>Play sound</div>
+					<button id="reset-time" type="button" onclick="resetTime()">
+						<div style="display: flex">
+							<span class="icon-bar" ><i class="icon-stop"></i></span>
+							<p>Reset time</p>
+						</div>
+					</button>
+				</div>
+				<div style="padding-top: 10px">
+					<div style="display: flex">
+						<div>Time value</div>
+						<input type="text" value="0.0" onblur="setTime()" />
+					</div>	
+					<div style="display: flex">				
+						<div>Time delta</div>
+						<input type="text" value="0.1" onblur="setDeltaTime()"/>
+					</div>	
+				</div>
+				<div style="width: 100%">
+					<div>					
+						Max size
+						<input id="input-max-size" type="text" value="30" data-toggle="tooltip" data-placement="right" title="Maximum tree size"/>
+					</div>
+				</div>
+			</div>	
+		</div>
+		<input type="file" accept="audio/*;capture=microphone">
+	</div>
+	
+	<script src="webaudio-utils.js"></script>
+	
+	<script type="text/javascript">
+		var sourceNode;
+		var javascriptNode;
+		var analyser, analyser2;
+		
+		function allowDrop(ev) {
+			ev.preventDefault();
+		}
+
+		function resetTime() {
+			resetTimer();
+			resetMusic("http://gpexplorer.ddns.net/sample-randy.mp3");
+		}
+
+		function drag(ev) {
+			ev.dataTransfer.setData("Text", JSON.stringify(entitiesDictionary[ev.target.id]));
+		}
+		
+		function drop(ev) {
+			ev.preventDefault();
+			var result = JSON.parse(ev.dataTransfer.getData("Text"));
+			entitiesDictionary[ev.target.id] = result;
+			if (result=="default") alert("Default error");
+			initWebGLRGBAnimateSound(ev.target.id, result[1]);
+			drawEntityImageRGBAnimateSound();
+			setExpressionText(ev.target.id);
+		}
+		
+		function setupAudioNodes() {
+			javascriptNode = context.createScriptProcessor(4096, 1, 1);
+			javascriptNode.connect(context.destination);
+			analyser = createAnalyzer(0.0, 2048);
+			analyser2 = createAnalyzer(0.0, 2048);			
+			sourceNode = context.createBufferSource();
+			splitter = context.createChannelSplitter();
+			sourceNode.connect(splitter);
+			splitter.connect(analyser, 0, 0);
+			splitter.connect(analyser2, 1, 0);
+			analyser.connect(javascriptNode);
+			sourceNode.connect(context.destination);
+		} 
+		
+		function loadSoundFromUrl() {
+			loadSound("http://gpexplorer.ddns.net/sample-randy.mp3");
+		}
+		
+		setupAudioNodes();
+		loadSoundFromUrl();
+		
+		javascriptNode.onaudioprocess = function() {
+			processAndDrawAmplitude("ed1");
+			processAndDrawAmplitude("ed2");
+			processAndDrawSpectrumPeak("ed3");
+			processAndDrawSpectrumPeaks("ed4");
+			
+			if (document.getElementById("ed1-check").checked)
+				globalVa = timerValue();
+			else
+				globalVa = 0.0;
+				
+			if (document.getElementById("ed2-check").checked)
+				globalVb = variableValues["ed2"];
+			else
+				globalVb = 0.0;
+			
+			if (document.getElementById("ed3-check").checked)
+				globalVc = variableValues["ed3"];
+			else
+				globalVc = 0.0;
+				
+			if (document.getElementById("ed4-check").checked)
+				globalVd = variableValues["ed4"];
+			else
+				globalVd = 0.0;
+		}
+
+		function color(ctx) {
+			return '#000000';
+		}
+		
+		function processAndDrawAmplitude(id) { 
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var average = getAverageVolume(array);
+			var ctx = document.getElementById(id).getContext("2d");
+			var element = document.getElementById(id);
+			var w = element.width, h = element.height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			ctx.fillRect(0,0,average,h);
+			variableValues[id] = average;
+		}
+			
+		function processAndDrawSpectrum (id) {
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var element = document.getElementById(id);
+			var ctx = element.getContext("2d");
+			var w = element.width, h = element.height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			drawSpectrum(array, ctx, element);
+		}
+		
+		function processAndDrawSpectrumPeak (id) {
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var element = document.getElementById(id);
+			var ctx = element.getContext("2d");
+			var w = element.width, h = element.height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			drawSpectrumPeak(array, ctx, element, id);
+		}
+
+		function processAndDrawSpectrumPeaks (id) {
+			var array =  new Uint8Array(analyser.frequencyBinCount);
+			analyser.getByteFrequencyData(array);
+			var element = document.getElementById(id);
+			var ctx = element.getContext("2d");
+			var w = element.width, h = element.height;
+			ctx.clearRect(0, 0, w, h); 
+			ctx.fillStyle = color(ctx);
+			drawSpectrumPeaks(array, ctx, element, id);
+		}
+		
+		function drawSpectrum(array, ctx, element) {
+			var h = element.height;
+			for (var i = 0; i < (array.length); i++) { 
+				var value = array[i] * (h / 256);
+				ctx.fillRect(i, 0, 1, h-value);
+			}
+		}
+
+		function drawSpectrumPeak(array, ctx, element, id) {
+			var h = element.height;
+			var maxValue = 0, index = 0;
+			ctx.fillStyle = color();	
+			for (var i = 0; i < (array.length); i++ ) {
+				var value = array[i] * (h / 256);
+				ctx.fillRect(i, 0, 1, h-value);
+				if (value > maxValue) {
+					maxValue = value;
+					index = i;
+				}
+			}
+			
+			ctx.fillStyle = "#00FF00";	
+			ctx.fillRect(index, 0, 1, maxValue);
+			variableValues[id] = index;
+		}
+		
+		function drawSpectrumPeaks(array, ctx, element, id) {
+			var h = element.height, maxValue = 0, index = 0, count = 0;
+			ctx.fillStyle = color();	
+			for (var i = 0; i < (array.length); i++ ) {
+				var value = array[i] * (h / 256);
+				ctx.fillRect(i, 0, 1, h-value);
+				if (value > maxValue) {
+					maxValue = value;
+					index = i;
+				}
+			}
+			
+			ctx.fillStyle = "#00FF00";
+			for (var i = 0; i < (array.length); i++ ) {
+				var value = array[i] * (h / 256);
+				if (value == maxValue) {
+					ctx.fillRect(i, 0, 1, maxValue);
+					count++;
+				}
+			}
+			
+			variableValues[id] = count;
+		}
+		
+		var entitiesDictionary = {};
+		var parentCount = 1, childCount = 12;
+		var currentLanguage = "rgb-sound-vector";
+		var variableValues = {};
+		
+		function createFunctionGeneric(canvasId, arguments, message, set) {
+			$.ajax({
+				type : 'GET',
+				url : message,
+				data : arguments,
+				dataType : "text",
+				success : function(data) {
+					var result = data.split("|");
+					entitiesDictionary[canvasId] = result;
+					result[2] = "entity-rgb-animate";
+					initWebGLRGBAnimateSound(canvasId, result[1]);
+					drawEntityImageRGBAnimateSound();
+					if (set) setExpressionText(canvasId);
+				},
+				error : function(data) {
+					console.log('Call failed');
+				}
+			});
+		}
+		
+		function createFunctionCallCreateDefault(name) {
+			createFunctionGeneric(name, { language: "rgb-color-images-vector" }, "/messageCreateDefault");
+		}
+		
+		function createFunctionCallMutateOn(name, canvasId, set) {
+			var maxSize = document.getElementById("input-max-size").value;
+			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: maxSize, objectData: entitiesDictionary[name][0] }, "/messageMutate", set);
+		}
+		
+		function createFunctionCallCreateRandom(name, set) {
+			var maxSize = document.getElementById("input-max-size").value;
+			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: maxSize }, "/messageCreateRandom", set);
+		}
+		
+		function addParentCallBack(name) {
+			$("#" + name)
+				.click(function(evt) {
+					for (var i=0; i< childCount; i++) {
+						var canvasId = "child" + i.toString();
+						createFunctionCallMutateOn(name, canvasId, false);
+					}
+					setExpressionText(name);
+				});
+		}
+		
+		function addChildCallBack(name) {
+			$("#" + name)
+				.click(function(evt) {
+					for (var i=0; i< childCount; i++) {
+						var canvasId = "child" + i.toString();
+						if (name != canvasId)
+							createFunctionCallMutateOn(name, canvasId, false);
+						else
+							setExpressionText(canvasId);
+					}
+				});
+		}
+		
+		function setExpressionText(name) {
+			document.getElementById("inject-expression").innerHTML = entitiesDictionary[name][0];
+		}
+		
+		var startupDraw = function () {
+			var htmlCode = "";
+			for (var i=0; i< parentCount; i++)
+				createFunctionCallCreateRandom("parent" + i.toString(), true);
+			for (var i=0; i< childCount; i++)
+				createFunctionCallCreateRandom("child" + i.toString());
+			
+			setInterval(
+				function () {				
+					for (var i=0; i< childCount; i++) {
+						var id = "child" + i;
+						if (entitiesDictionary[id]) {
+							initWebGLRGBAnimateSound(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
+							drawEntityImageRGBAnimateSound();
+						}
+					}
+					
+					for (var i=0; i< parentCount; i++) {
+						var id = "parent" + i;
+						if (entitiesDictionary[id]) {
+							initWebGLRGBAnimateSound(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
+							drawEntityImageRGBAnimateSound();
+						}
+					}
+					
+					var id = "animation";
+					if (entitiesDictionary[id]) {
+						initWebGLRGBInterpolatedAnimate(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
+						drawEntityImageRGBInterpolatedAnimate();					
+					}
+				}, 
+				200);
+				
+				initializeContextMenuOn("child", "context_menu", menuSetCallback);
+				initializeContextMenuOn("parent", "context_menu", menuSetCallback);
+		};
+		
+		addParentCallBack("parent0");
+		addChildCallBack("child0");
+		addChildCallBack("child1");
+		addChildCallBack("child2");
+		addChildCallBack("child3");
+		addChildCallBack("child4");
+		addChildCallBack("child5");
+		addChildCallBack("child6");
+		addChildCallBack("child7");
+		addChildCallBack("child8");
+		addChildCallBack("child9");
+		addChildCallBack("child10");
+		addChildCallBack("child11");		
+	</script>
+	
+	<div id="context_menu" style="border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute; padding-left: 0px;">
+		<div><input type="button" value="Open" onclick="menuCallbackPrefix(globalSelectedIndex, 0)" style="width: 100px"/></div>
+		<div><input type="button" value="Like" onclick="menuCallbackPrefix(globalSelectedIndex, 1)" style="width: 100px"/></div>
+		<div><input type="button" value="Dislike" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
+		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 3)" style="width: 100px"/ disabled></div>
+	</div>
+</body>
+</html>

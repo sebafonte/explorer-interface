@@ -1,0 +1,22 @@
+{% extends 'main-documentation-layout.html' %}
+
+{% block documentation-body %}
+	<h4>Building problems</h4>
+	
+	<div>
+		<h5>Building tasks</h5>
+		<p>Using CAPI GUI problem building is done using configuration panes. When configured, the problem can be saved (as a tasks) or the entire environment including most available panes.</p>
+		<p>First we open a pane for building tasks and define the problem, language, algorithm, initial generation method, fitness-evaluation, etc. Some options get reset when an invalid combination has been detected, as well as filtering possible options. The task can be tested and then it can be evaluated using any other kind of planifications (using it from command interface with SO task scheduler by example).</p>
+		
+		<p>
+			Example use case video <a href="https://www.youtube.com/watch?v=IPCU2ciUmhE">here</a>:
+			<ul>
+				<li>Open search tasks pane</li>
+				<li>Select objective class (problem)</li>
+				<li>Select planifier</li>
+				<li>Create task and run</li>
+			</ul>
+		</p>
+		<br/>
+	</div>
+{% endblock %}

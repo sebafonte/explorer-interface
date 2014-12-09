@@ -125,6 +125,16 @@ function drawEntityImageRGB () {
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
 }
 
+// RGB Composite
+function initWebGLRGBComposite(canvas, entity) {
+    var canvas = document.getElementById(canvas);
+	initGL(canvas);
+	initBuffersRGB();
+	initShadersRGBComposite(entity)	
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.disable(gl.DEPTH_TEST);
+}
+
 // RGB Animation
 function initWebGLRGBAnimate(canvas, entity) {
     var canvas = document.getElementById(canvas);

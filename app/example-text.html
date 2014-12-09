@@ -1,0 +1,74 @@
+{% extends 'main-layout.html' %}
+
+<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Animation of rgb vectors example.">
+    <meta name="author" content="">
+	<meta name="keywords" content="lisp, rgb, texture generation, animation, webgl">
+
+	{% block head %}
+	{% parent %}
+	
+	{% endblock %}
+	</head>
+
+	<body onload="startupDraw()">
+		{% block content %}
+		{% parent %}
+			<div>
+				<canvas id="child0" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				
+				<canvas id="textureCanvas">I'm sorry your browser does not support the HTML5 canvas element.</canvas>
+			</div>
+		{% endblock %}			
+	</body>
+	
+	<script>
+		//gl = canvas.getContext("experimental-webgl");
+		var canvasTexture;
+
+		function initTexture() {
+			canvasTexture = gl.createTexture();
+			handleLoadedTexture(canvasTexture, document.getElementById('textureCanvas'));
+		}
+
+		function handleLoadedTexture(texture, textureCanvas) {
+			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+			gl.bindTexture(gl.TEXTURE_2D, texture);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureCanvas); // This is the important line!
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+			gl.generateMipmap(gl.TEXTURE_2D);
+			gl.bindTexture(gl.TEXTURE_2D, null);
+		}
+
+		var canvas = document.getElementById('textureCanvas');
+		var ctx = canvas.getContext('2d');
+		ctx.fillStyle = "#333333"; 	// This determines the text colour, it can take a hex value or rgba value (e.g. rgba(255,0,0,0.5))
+		ctx.textAlign = "center";	// This determines the alignment of text, e.g. left, center, right
+		ctx.textBaseline = "middle";	// This determines the baseline of the text, e.g. top, middle, bottom
+		ctx.font = "12px monospace";	// This determines the size of the text and the font family used	
+		ctx.fillText("HTML5 Rocks!", canvas.width/2, canvas.height/2);
+		
+		function getPowerOfTwo(value, pow) {
+			var pow = pow || 1;
+			while(pow<value) {
+				pow *= 2;
+			}
+			return pow;
+		}
+
+		var textToWrite = "HTML5 Rocks!";
+		var textSize = 12;
+		ctx.font = textSize+"px monospace"; 	// Set the font of the text before measuring the width!
+		var canvas.width = getPowerOfTwo(ctx.measureText(textToWrite).width);
+		var canvas.height = getPowerOfTwo(2*textSize);
+		
+		// Omitted: Set all properties of the text again (including font)
+		// Omitted: Draw the text
+		//var fontRenderer = new FontAnimation();
+		
+	</script>
+</html>

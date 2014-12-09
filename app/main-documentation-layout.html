@@ -1,0 +1,14 @@
+{% extends 'main-layout.html' %}
+
+{% block content %}
+{% parent %}
+	<div class="container" style="padding-top: 60px">
+		<div id="main-div">
+			<h2>Documentation</h2>
+			{% block documentation-body %}
+				<h4>Section</h4>
+			{% endblock %}
+			<br/>	
+		</div>
+	</div>
+{% endblock %}

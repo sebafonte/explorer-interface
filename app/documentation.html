@@ -1,0 +1,68 @@
+<title>{% block title %}Expressions explorer documentation{% endblock %}</title>
+
+{% extends 'main-layout.html' %}
+{% block content %}
+{% parent %}
+
+<div class="container" style="padding-top: 60px">
+<div>
+	<div id="main-div" style="max-width: 613px;">
+		<h2>Documentation</h2>
+		<br/>	
+		
+		<b>Table of contents</b>
+		<br/>
+		<ul>
+			<li><a href="documentation-introduction.html">Introduction</a></li>
+			<li><a href="documentation-usage-examples.html">Usage examples</a></li>
+			<li><a href="documentation-problems.html">Problems</a></li>
+			<ul>
+				<li><a href="documentation-building-problems.html">Building problems</a></li>
+				<li>Default problems</li>
+			</ul>
+			<li><a href="documentation-languages.html">Languages</a></li>
+			<ul>
+				<li><a href="documentation-tree-language.html">Tree language</a></li>
+				<li><a href="documentation-constants-strategy.html">Constant strategies</a></li>
+			</ul>
+			<li><a href="documentation-fitness-evaluation.html">Fitness evaluation</a></li>
+			<ul>
+				<li>Clark and Wright savings heuristic</li>
+			</ul>
+			
+			<li>Tasks</li>
+			<ul>
+				<li>Tasks model</li>	
+				<li>Scheduling tasks</li>
+			</ul>
+			<li>Experiments</li>
+			<ul>
+				<li>Building experiments</li>	
+			</ul>
+			<li>Distributed computing</li>
+			<ul>
+				<li>Network configuration</li>
+				<li>Options</li>
+			</ul>
+			<li>Graphical interface</li>
+			<ul>
+				<li>Experiment building panes</li>
+				<li>Search visualization</li>
+				<li><a href="documentation-explorer-panes.html">Explorer panes</a></li>
+				<li><a href="documentation-configuration-panes.html">Configuration panes</a></li>
+			</ul>
+			<li><a href="documentation-reports.html">Reporting results</a></li>
+		</ul>
+	</div>
+	
+	<br/>
+	<b>Development</b>
+	<br/>
+	<ul>
+		<li>Considerations</li>
+		<li>Usual extensions</li>
+		<li>Class documentation</li>
+	</ul>
+</div>
+
+{% endblock %}

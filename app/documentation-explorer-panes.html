@@ -1,0 +1,21 @@
+{% extends 'main-documentation-layout.html' %}
+
+{% block documentation-body %}
+	<h4>Explorer panes</h4>
+	<p></p>
+	<h5>Crossover pane</h5>
+	<p>Crossover pane has the intention to help visualize binary operations. It expect objects of the same specie dropped into his parents slot and user click of operation button.</p>
+	<br/>
+	
+	<h5>Mutation pane</h5>
+	<p>Mutation pane, actually works only for lisp-math-expression language, which is a free of grammar rules language used sometimes for symbolic regression. Here a "color vector" language uses it and can be used to see how mutations affect at a specific point of the tree. When clicking a node, children populates with new individuals with a new copy of the parent individuals with a new subtree in selected node.</p>
+	<br/>
+	
+	<h5>Buffer panes</h5>
+	<p>This buffer is just used to store temporal copies of objects you want. Images and expression list views available.
+		<div>
+			<a href="documentation-buffer-panes.PNG"><img src="tn-documentation-buffer-panes.PNG" width="103" height="103"></a>
+		<p>
+	</p>
+	<br/>
+{% endblock %}

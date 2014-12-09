@@ -22,19 +22,15 @@ function loadSound(url) {
 
 	request.onload = function() {
 		context.decodeAudioData(request.response, function(buffer) {
-			lastBuffer = buffer;
 			playSound(buffer);
 		}, onError);
 	}
 	request.send();
 }
 
-var lastBuffer; 
-
 function resetMusic(url) {
-	sourceNode.stop();
-	sourceNode.noteOn(0);
-	//playSound(lastBuffer);
+	sourceNode.stop(0);
+	sourceNode.start(0);
 	//loadSound(url);
 }
 
@@ -64,16 +60,39 @@ function getAverageVolume(array) {
 var volume;
   
 function gotStream(stream) {
-    var input = context.createMediaStreamSource(stream);
-    volume = context.createGainNode();
-    volume.gain.value = 0.8;
-    input.connect(volume);
-    volume.connect(context.destination);
+    var inputPoint = audioContext.createGain();
+    var audioInput = context.createMediaStreamSource(stream);
+	audioInput.connect(inputPoint);
+	analyser.connect(inputPoint); 	
 }
+
+/*
+function gotStream(stream) {
+    inputPoint = audioContext.createGain();
+
+    // Create an AudioNode from the stream.
+    realAudioInput = audioContext.createMediaStreamSource(stream);
+    audioInput = realAudioInput;
+    audioInput.connect(inputPoint);
+
+//    audioInput = convertToMono( input );
+
+    analyserNode = audioContext.createAnalyser();
+    analyserNode.fftSize = 2048;
+    inputPoint.connect( analyserNode );
+
+    audioRecorder = new Recorder( inputPoint );
+
+    zeroGain = audioContext.createGain();
+    zeroGain.gain.value = 0.0;
+    inputPoint.connect( zeroGain );
+    zeroGain.connect( audioContext.destination );
+    updateAnalysers();
+}*/
 
 function errorGotStream(e) {
 	console.log(e);
 }
 // one-off initialization
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
-navigator.getUserMedia( {video:false, audio:true}, gotStream, errorGotStream);
+//navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+//navigator.getUserMedia( {video:false, audio:true}, gotStream, errorGotStream);

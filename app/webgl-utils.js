@@ -84,6 +84,10 @@ var noiseShaderFunction =
 var diffuseShaderFunction =
 	"vec3 vecdiffuse(vec3 a, vec3 b, vec3 c) { vec3(mix(a.x, b.x, c.x), mix(a.y, b.y, c.y), mix(a.z, b.z, c.z)); }; ";
 
+var globalScale = 10.0;
+var globalXRef = 0.0;
+var globalYRef = 0.0;
+	
 // RGB
 var myFragmentShaderRGBSrc =
 	"precision mediump float; " + 
@@ -104,7 +108,8 @@ var myFragmentShaderRGBSrc =
 	"vec3 veccolormap(in vec3 a, in vec3 b, in vec3 c) { return createvector(a.x / 10.0, b.x / 10.0, c.x / 10.0); } " + 
 	"" + 
 	"void main(void) { " + 
-	"	float x = xx * 10.0, y = yy * 10.0; " + 	
+	" 	float scale = VALUESCALE; " + 
+	"	float x = VALUEXREF + xx * scale, y = VALUEYREF + yy * scale; " + 	
 	"	vec3 v = VALUE; " +
 	"	gl_FragColor = vec4(v.x, v.y, v.z, 1.0); " + 
 	"}";
@@ -114,7 +119,12 @@ function initShadersRGB(entity) {
 	gl.shaderSource(vertexShader, myVertexShaderSrc);
 	gl.compileShader(vertexShader);
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-	gl.shaderSource(fragmentShader, myFragmentShaderRGBSrc.replace("VALUE", entity.toLowerCase()));
+	var result = myFragmentShaderRGBSrc;
+	result = result.replace("VALUESCALE", globalScale.toFixed(2).toString());
+	result = result.replace("VALUEXREF", globalXRef.toFixed(2).toString());
+	result = result.replace("VALUEYREF", globalYRef.toFixed(2).toString());
+	result = result.replace("VALUE", entity.toLowerCase());
+	gl.shaderSource(fragmentShader, result);
 	gl.compileShader(fragmentShader);
 
 	shaderProgram = gl.createProgram();
@@ -199,13 +209,13 @@ var myVertexShaderVRPSrc =
 	"    	gl_PointSize = 1.0; " + 
 	"       gl_Position = uPMatrix * vec4(aVertexPosition, 1.0); " + 
 	"   }";
-
-var myFragmentShaderVRPSrc = 
+	
+var myFragmentShaderVRPSrc =         
 	"precision mediump float;" + 
 	"	void main(void) { " + 
 	"       gl_FragColor = vec4(1.0, 1.0, 0.0, 1.0); " + 
-	"   } ";
-
+	"   } ";	
+	
 function initShadersVRP() {
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderSrc);
@@ -280,7 +290,12 @@ function initShadersRGBAnimate(entity) {
 	gl.compileShader(vertexShader);
 
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-	gl.shaderSource(fragmentShader, myFragmentShaderRGBAnimateSrc.replace("VALUE", entity.toLowerCase()));
+	var result = myFragmentShaderRGBAnimateSrc;
+	result = result.replace("VALUESCALE", globalScale.toFixed(2).toString());
+	result = result.replace("VALUEXREF", globalXRef.toFixed(2).toString());
+	result = result.replace("VALUEYREF", globalYRef.toFixed(2).toString());
+	result = result.replace("VALUE", entity.toLowerCase());
+	gl.shaderSource(fragmentShader, result);
 	gl.compileShader(fragmentShader);
 
 	shaderProgram = gl.createProgram();
@@ -379,7 +394,7 @@ function initShadersRGBInterpolatedAnimate(entity) {
 		//["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
 		]; 
 	*/
-
+	
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderRGBAnimatedInterpolateSrc);
 	gl.compileShader(vertexShader);

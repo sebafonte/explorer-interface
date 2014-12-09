@@ -1,45 +1,24 @@
 {% extends 'main-layout.html' %}
+{% block head %}
+	<style>
+	</style>
+{% parent %}
+{% endblock %}
 
-<html lang="en"><head>    
-	<meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Progamming and metaheuristics blog.">
-    <meta name="author" content="">
-	<meta name="keywords" content="lisp, rgb, texture generation, genetic programming, webgl">
-	
-	{% block head %}
-		<style>
-			
-		</style>
-	{% parent %}
-	{% endblock %}
-	</head>
+{% block content %}
+{% parent %}
+	<div class="container" style="padding-top: 80px">
+		<h2>Blog articles</h2>
+		<br/>				
 
-	<body>
-		<div class="container">
-			{% block content %}
-			{% parent %}
-
-			<div class="container" style="padding-top: 80px">
-				<h2>Blog articles</h2>
-				<br/>				
-
-				<div class="accordion" id="accordion2">			
-					{% include "./blog-rgb-vectors-1.html" %}
-					{% include "./blog-opengl-dsl-1.html" %}
-					{% include "./blog-adf-1.html" %}
-					{% include "./blog-vrp-1.html" %}
-					{% include "./blog-design-note-1.html" %}
-					{% include "./blog-texture-deformation-1.html" %}
-					{% include "./blog-graphic-pane-1.html" %}
-				</div>
-			</div>
-			{% endblock %}
+		<div class="accordion" id="accordion2">			
+			{% include "./blog-rgb-vectors-1.html" %}
+			{% include "./blog-opengl-dsl-1.html" %}
+			{% include "./blog-adf-1.html" %}
+			{% include "./blog-vrp-1.html" %}
+			{% include "./blog-design-note-1.html" %}
+			{% include "./blog-texture-deformation-1.html" %}
+			{% include "./blog-graphic-pane-1.html" %}
 		</div>
-	</body>
-	
-	{% block footerscript %}
-	{% parent %}
-	{% endblock %}
-</html>
+	</div>
+{% endblock %}

@@ -1,198 +1,184 @@
 {% extends 'main-layout.html' %}
 
-<html lang="en"><head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-	<meta name="keywords" content="gallery, lisp, rgb, texture generation, webgl">
-	
-	{% block head %}
-	{% parent %}
-		<style type="text/css">
-		canvas {
-		padding-left: 40px; padding-top: 40px }
-		</style>
-	{% endblock %}
-  </head>
+{% block head %}
+{% parent %}
+	<style type="text/css">
+	canvas {
+	padding-left: 40px; padding-top: 40px }
+	</style>
+{% endblock %}
 
-	<body onload="startupDraw()">
-		{% block content %}
-		{% parent %}
-			
-		<div class="container" style="padding-top: 20px">
-			<div>
-				<div id="main-div" style="margin-top: 70px; max-width: 800px; ">
-					<div id="parents-div" class="view-container" style="margin-bottom: 5px">
-						<canvas id="gallery0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery4" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery5" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery6" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery7" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery8" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery9" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery10" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery11" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
-						<canvas id="gallery12" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery13" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>				
-						<canvas id="gallery14" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="gallery15" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
-					</div>
+<body onload="startupDraw()">
+	{% block content %}
+	{% parent %}
+		
+	<div class="container" style="padding-top: 20px">
+		<div>
+			<div id="main-div" style="margin-top: 70px; max-width: 800px; ">
+				<div id="parents-div" class="view-container" style="margin-bottom: 5px">
+					<canvas id="gallery0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery4" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery5" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery6" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery7" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery8" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery9" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery10" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery11" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
+					<canvas id="gallery12" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery13" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>				
+					<canvas id="gallery14" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="gallery15" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
 				</div>
 			</div>
 		</div>
-		
-		{% endblock %}
-	</body>
-
-	{% block mainscript %}
-	<div id="context_menu" style="border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute; padding-left: 0px;">
-		<div><input type="button" value="Open" onclick="menuCallbackPrefix(globalSelectedIndex, 0)" style="width: 100px"/></div>
-		<div><input type="button" value="Like" onclick="menuCallbackPrefix(globalSelectedIndex, 1)" style="width: 100px"/></div>
-		<div><input type="button" value="Dislike" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
-		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 3)" style="width: 100px"/ disabled></div>
 	</div>
 	
-	<script src="jquery-1.11.1.min.js"></script>
-	<script src="bootstrap.min.js"></script>
+	{% endblock %}
+</body>
+
+{% block mainscript %}
+<div id="context_menu" style="border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute; padding-left: 0px;">
+	<div><input type="button" value="Open" onclick="menuCallbackPrefix(globalSelectedIndex, 0)" style="width: 100px"/></div>
+	<div><input type="button" value="Like" onclick="menuCallbackPrefix(globalSelectedIndex, 1)" style="width: 100px"/></div>
+	<div><input type="button" value="Dislike" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
+	<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 3)" style="width: 100px"/ disabled></div>
+</div>
+
+<script src="jquery-1.11.1.min.js"></script>
+<script src="bootstrap.min.js"></script>
+
+<script>		
+	var galleryDictionary = {};
+	var gallerySize = 16;
 	
-	<script>		
-		var galleryDictionary = {};
-		var gallerySize = 16;
-		
-		function startupDraw () {			
-			for (var i=0; i< gallerySize; i++) {
-				var canvasId = "gallery" + i.toString();
-				createFunctionGeneric(canvasId, { index: i.toString() }, "/messageGalleryGetElement");
-			}
+	function startupDraw () {			
+		for (var i=0; i< gallerySize; i++) {
+			var canvasId = "gallery" + i.toString();
+			createFunctionGeneric(canvasId, { index: i.toString() }, "/messageGalleryGetElement");
 		}
+	}
 
-		function allowDrop(ev) {
-			ev.preventDefault();
-		}
+	function allowDrop(ev) {
+		ev.preventDefault();
+	}
 
-		function drag(ev) {
-			ev.dataTransfer.setData("Text", JSON.stringify(galleryDictionary[ev.target.id]));
-		}
+	function drag(ev) {
+		ev.dataTransfer.setData("Text", JSON.stringify(galleryDictionary[ev.target.id]));
+	}
+	
+	function drop(ev) {
+		ev.preventDefault();
+		var result = JSON.parse(ev.dataTransfer.getData("Text"));
+		galleryDictionary[ev.target.id] = result;
+		if (result=="default") alert("Default error");
+		var canvasId = ev.target.id;
 		
-		function drop(ev) {
-			ev.preventDefault();
-			var result = JSON.parse(ev.dataTransfer.getData("Text"));
-			galleryDictionary[ev.target.id] = result;
-			if (result=="default") alert("Default error");
-			var canvasId = ev.target.id;
-			
-			if (result[3].trim() == "entity-bw") {
-				initWebGLBW(canvasId, result[2]);
-				drawEntityImageBW();
-			}
-			else if (result[3].trim() == "entity-rgb") {
-				initWebGLRGB(canvasId, result[2]);
-				drawEntityImageRGB();
-			}
-			else if (result[3].trim() == "entity-rgb-animate") {
-				setInterval(
-					function () {				
-						initWebGLRGBAnimate(canvasId, result[2]);
-						drawEntityImageRGBAnimate();					
-					}, 
-					200);				
-			}	
+		if (result[3].trim() == "entity-bw") {
+			initWebGLBW(canvasId, result[2]);
+			drawEntityImageBW();
 		}
-		
-		function createFunctionGeneric(canvasId, arguments, message) {
-			$.ajax({
-				type : 'GET',
-				url : message,
-				data : arguments,
-				dataType : "text",
-				success : function(data) {
-					var result = data.split("|");
-					galleryDictionary[canvasId] = result;
-					
-					if (result[3].trim() == "entity-bw") {
-						initWebGLBW(canvasId, result[2]);
-						drawEntityImageBW();
-					}
-					else if (result[3].trim() == "entity-rgb") {
-						initWebGLRGB(canvasId, result[2]);
-						drawEntityImageRGB();
-					}
-					else if (result[3].trim() == "entity-rgb-animate") {
-						setInterval(
-							function () {				
-								initWebGLRGBAnimate(canvasId, result[2]);
-								drawEntityImageRGBAnimate();					
-							}, 
-							200);				
-					}					
-				},
-				error : function(data) {
-					console.log('Call failed');
+		else if (result[3].trim() == "entity-rgb") {
+			initWebGLRGB(canvasId, result[2]);
+			drawEntityImageRGB();
+		}
+		else if (result[3].trim() == "entity-rgb-animate") {
+			setInterval(
+				function () {				
+					initWebGLRGBAnimate(canvasId, result[2]);
+					drawEntityImageRGBAnimate();					
+				}, 
+				200);				
+		}	
+	}
+	
+	function createFunctionGeneric(canvasId, arguments, message) {
+		$.ajax({
+			type : 'GET',
+			url : message,
+			data : arguments,
+			dataType : "text",
+			success : function(data) {
+				var result = data.split("|");
+				galleryDictionary[canvasId] = result;
+				
+				if (result[3].trim() == "entity-bw") {
+					initWebGLBW(canvasId, result[2]);
+					drawEntityImageBW();
 				}
-			});
-		};
-		
-		function menuCallbackPrefix(name, index) {			
-			if (index==0) {
-				var url_safe_language = encodeURIComponent(galleryDictionary[name][3].trim());
-				var url_safe_a = galleryDictionary[name][0].trim();
-				var url_safe_b = galleryDictionary[name][1].trim();
-				var url_safe_c = galleryDictionary[name][2].trim();
-				var url = "http://gpexplorer.ddns.net/messageView?language=" + url_safe_a + "&a=" + url_safe_b + "&b=" + url_safe_c + "&c=" + url_safe_language;			
-				window.open (url, "Object inspect");
+				else if (result[3].trim() == "entity-rgb") {
+					initWebGLRGB(canvasId, result[2]);
+					drawEntityImageRGB();
+				}
+				else if (result[3].trim() == "entity-rgb-animate") {
+					setInterval(
+						function () {				
+							initWebGLRGBAnimate(canvasId, result[2]);
+							drawEntityImageRGBAnimate();					
+						}, 
+						200);				
+				}					
+			},
+			error : function(data) {
+				console.log('Call failed');
 			}
-			else if (index==1) {
-				$.ajax({
-						type : 'GET',
-						url : "/messageLike",
-						data : { language: galleryDictionary[name][3], a: galleryDictionary[name][0], b: galleryDictionary[name][1], c: galleryDictionary[name][2]},
-						dataType : "text",
-						success : function(data) { },
-						error : function(data) {
-							console.log('Like call failed');
-						}
-					});			
-			}
-			else if (index==2) {
-				$.ajax({
-						type : 'GET',
-						url : "/messageDislike",
-						data : { language: galleryDictionary[name][3], a: galleryDictionary[name][0], b: galleryDictionary[name][1], c: galleryDictionary[name][2]},
-						dataType : "text",
-						success : function(data) { },
-						error : function(data) {
-							console.log('Like call failed');
-						}
-					});			
-			}			
-			else if (index==3) {
-				$.ajax({
-						type : 'GET',
-						url : "/messageSend",
-						data : { language: entitiesDictionary[name][3], a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
-						dataType : "text",
-						success : function(data) { },
-						error : function(data) {
-							console.log('Send call failed');
-						}
-					});
-			}
-		}
-		
-	</script>
+		});
+	};
 	
-	<script type="text/javascript">
-		initializeContextMenuOn("gallery", "context_menu", menuSetCallback);
-	</script>	
-	{% endblock %}
+	function menuCallbackPrefix(name, index) {			
+		if (index==0) {
+			var url_safe_language = encodeURIComponent(galleryDictionary[name][3].trim());
+			var url_safe_a = galleryDictionary[name][0].trim();
+			var url_safe_b = galleryDictionary[name][1].trim();
+			var url_safe_c = galleryDictionary[name][2].trim();
+			var url = "http://gpexplorer.ddns.net/messageView?language=" + url_safe_a + "&a=" + url_safe_b + "&b=" + url_safe_c + "&c=" + url_safe_language;			
+			window.open (url, "Object inspect");
+		}
+		else if (index==1) {
+			$.ajax({
+					type : 'GET',
+					url : "/messageLike",
+					data : { language: galleryDictionary[name][3], a: galleryDictionary[name][0], b: galleryDictionary[name][1], c: galleryDictionary[name][2]},
+					dataType : "text",
+					success : function(data) { },
+					error : function(data) {
+						console.log('Like call failed');
+					}
+				});			
+		}
+		else if (index==2) {
+			$.ajax({
+					type : 'GET',
+					url : "/messageDislike",
+					data : { language: galleryDictionary[name][3], a: galleryDictionary[name][0], b: galleryDictionary[name][1], c: galleryDictionary[name][2]},
+					dataType : "text",
+					success : function(data) { },
+					error : function(data) {
+						console.log('Like call failed');
+					}
+				});			
+		}			
+		else if (index==3) {
+			$.ajax({
+					type : 'GET',
+					url : "/messageSend",
+					data : { language: entitiesDictionary[name][3], a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
+					dataType : "text",
+					success : function(data) { },
+					error : function(data) {
+						console.log('Send call failed');
+					}
+				});
+		}
+	}
+	
+</script>
 
+<script type="text/javascript">
+	initializeContextMenuOn("gallery", "context_menu", menuSetCallback);
+</script>	
+{% endblock %}
 
-	{% block footerscript %}
-	{% parent %}
-	{% endblock %}
-</html>

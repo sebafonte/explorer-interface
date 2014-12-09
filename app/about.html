@@ -1,45 +1,23 @@
 {% extends 'main-layout.html' %}
 
-<html lang="en"><head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-	<meta name="keywords" content="lisp, rgb, texture generation, genetic programming, webgl">
-	
-	{% block head %}
-	{% parent %}
-	{% endblock %}
-  </head>
+{% block content %}
+{% parent %}
 
-	<body>
-		<div class="container">
-			{% block content %}
-			{% parent %}
-			
-			<div class="container" style="padding-top: 80px">
-				<div id="main-div" style="max-width: 613px">
-					<h2>About</h2>
-					<br/>
-					<p>Reference site for Metaheuristic Explorer project at <a href="http://github.com/sebafonte">github.com/sebafonte</a>.</p>
-					<p>Here you will find documentation and examples about metaheuristics and pseudo random structure altering experiments (images, visual inspection of mutations, etc.).</p>
-				</div>
-				
-				<br/>
-				
-				<div id="main-div" style="max-width: 613px;">
-					<h2>Contact</h2>
-					<br/>
-					<p>Mail at <a href="mailto:sebafonte@gmail.com">sebafonte@gmail.com</a></p>
-				</div>
-			</div>
-			
-			{% endblock %}
-		</div>		
-	</body>
+<div class="container" style="padding-top: 80px">
+	<div id="main-div" style="max-width: 613px">
+		<h2>About</h2>
+		<br/>
+		<p>Reference site for Metaheuristic Explorer project at <a href="http://github.com/sebafonte">github.com/sebafonte</a>.</p>
+		<p>Here you will find documentation and examples about metaheuristics and pseudo random structure altering experiments (images, visual inspection of mutations, etc).</p>
+	</div>
 	
-	{% block footerscript %}
-	{% parent %}
-	{% endblock %}	
-</html>
+	<br/>
+	
+	<div id="main-div" style="max-width: 613px;">
+		<h2>Contact</h2>
+		<br/>
+		<p>Mail at <a href="mailto:sebafonte@gmail.com">sebafonte@gmail.com</a> and contribute if you love to code on Lisp or any metaheuristic.</p>
+	</div>
+</div>
+
+{% endblock %}

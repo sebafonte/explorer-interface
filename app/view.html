@@ -13,7 +13,7 @@
 		{% parent %}
 		{% endblock %}
 	</head>
-  
+
 	<body onload="startupDraw()" style="background-color: black"  onkeydown="myFunction()">
 		{% block content %}
 		{% parent %}
@@ -26,7 +26,7 @@
 			</div>
 		</div>
 		</div>
-		
+
 		{% endblock %}
 	</body>
 
@@ -40,7 +40,7 @@
 		<a href="/index.html">Send</a><br />
 	</div>
 	
-	<script>		
+	<script>
 		var entitiesDictionary = {parent0: ["#A#", "#B#", "#C#"]};
 		var currentLanguage = "#LANGUAGE#";
 
@@ -72,23 +72,22 @@
 			else if (result[2] == "entity-rgb-animate-interpolation") {
 				initWebGLRGBInterpolatedAnimate("parent0", entitiesDictionary["parent0"][1]);
 				drawEntityImageRGBInterpolatedAnimate();
-			}			
+			}
 		}
-		
+
 		window.onkeydown = myFunction;
-		
+
 		function takeOutFull() {
-		
 			var div = document.getElementById("cosita");
 			div.innerHTML =
 				"<div class=\"container\" style=\"padding-top: 60px\">" + 
 				"<div id=\"main-div\">" + 
 				"<input style=\"display: none\">" + 
-				"	<canvas id=\"parent0\" width=\"650\" height=\"650\" draggable=\"true\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event)\" onclick=\"makeFullscreen()\" style=\"width: 70%\" +  ></canvas>" + 
+				"	<canvas id=\"parent0\" width=\"{{ width }}\" height=\"{{ height }}\" draggable=\"true\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event)\" onclick=\"makeFullscreen()\" style=\"width: 70%\" +  ></canvas>" + 
 				"</input>" + 
 				"</div>" + 
 				"</div>";
-				
+
 			if (document.exitFullscreen) {
 			  document.exitFullscreen();
 			} else if (document.msExitFullscreen) {
@@ -97,21 +96,19 @@
 			  document.mozCancelFullScreen();
 			} else if (document.webkitExitFullscreen) {
 			  document.webkitExitFullscreen();
-			}				
+			}
 		} 
 		
 		function makeFullscreen() {
-			
 			var div = document.getElementById("cosita");
 			div.innerHTML =
 				"<div style=\"display: block\"> " + 
 				"<div id=\"divResult\" > " + 
-				"	<canvas id=\"parent0\" width=\"650\" height=\"650\" onclick=\"takeOutFull()\" draggable=\"true\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event)\" style=\"width: " + window.screen.availWidth + "px; height: " + window.screen.availHeight + "px\"></canvas> " + 
+				"	<canvas id=\"parent0\" width=\"{{ width }}\" height=\"{{ height }}\" onclick=\"takeOutFull()\" draggable=\"true\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event)\" style=\"width: " + window.screen.availWidth + "px; height: " + window.screen.availHeight + "px\"></canvas> " + 
 				"</div>" + 
 				"</div>";
-			
-			/*
-			document.addEventListener("webkitfullscreenchange", function(value) { 
+
+		/*	document.addEventListener("webkitfullscreenchange", function(value) { 
 				var div = document.getElementById("cosita");
 			
 				if (!(document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement !== null)) {
@@ -123,8 +120,8 @@
 						"</input>" + 
 						"</div>" + 
 						"</div>";
-						
-										var elem = document.getElementById("parent0");
+
+					var elem = document.getElementById("parent0");
 					if (elem.requestFullscreen) {				elem.requestFullscreen();		}
 					else if (elem.msRequestFullscreen) {		elem.msRequestFullscreen();		}
 					else if (elem.mozRequestFullScreen) {		elem.mozRequestFullScreen();	}
@@ -145,14 +142,14 @@
 					else if (elem.webkitRequestFullscreen) {	elem.webkitRequestFullscreen();	}	
 				}
 			}, false);  */
-			
+
 			var elem = document.getElementById("parent0");
 			if (elem.requestFullscreen) {				elem.requestFullscreen();		}
 			else if (elem.msRequestFullscreen) {		elem.msRequestFullscreen();		}
 			else if (elem.mozRequestFullScreen) {		elem.mozRequestFullScreen();	}
 			else if (elem.webkitRequestFullscreen) {	elem.webkitRequestFullscreen();	}
 		}
-		
+
 		function myFunction(event) {
 			if (event.ctrlKey) {
 				if (event.keyCode == 38) globalScale += 0.1;
@@ -173,24 +170,24 @@
 			}
 			else if (entitiesDictionary["parent0"][2] == "entity-rgb") {
 				initWebGLRGB("parent0", entitiesDictionary["parent0"][1]);
-				
+
 				setInterval(
-				function () {				
+				function () {
 					initWebGLRGB("parent0", entitiesDictionary["parent0"][1]);
 					drawEntityImageRGB();
 				}, 
-				50);	
+				50);
 			}
 			else if (entitiesDictionary["parent0"][2] == "entity-rgb-animate") {
 				initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1]);
 				setInterval(
-				function () {				
+				function () {
 					initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1]);
 					drawEntityImageRGBAnimate();
 				}, 
-				100);	
+				100);
 			}
-				
+
 			document.getElementById('parent0').onkeypress = function(event) {
 			  var char = getChar(event || window.event);
 			  if (!char) return; // special key
@@ -201,7 +198,7 @@
 		//initializeContextMenuOn("parent", "context_menu");
 	</script>
 	{% endblock %}
-	
+
 	{% block footerscript %}
 	{% parent %}
 	{% endblock %}

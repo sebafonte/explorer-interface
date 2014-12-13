@@ -41,18 +41,18 @@
 						</button>
 						<button id="stop-search" type="button" onclick="stopSearch()">
 						  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
-						</button>							
+						</button>
 					</div>
 				</div>
 				<div style="display: block">
 					<img id="image-1" src="1b.bmp" border="2" width="80" onclick="setImage(1)" height="20" />
-					<img id="image-1" src="2b.bmp" border="2" width="80" onclick="setImage(2)" height="20" />
+					<img id="image-2" src="2b.bmp" border="2" width="80" onclick="setImage(2)" height="20" />
 					<!--
-					<img id="image-1" src="3b.bmp" border="2" width="80" onclick="setImage(3)" height="20" />
-					<img id="image-1" src="4b.bmp" border="2" width="80" onclick="setImage(4)" height="20" />
-					<img id="image-1" src="5b.bmp" border="2" width="80" onclick="setImage(5)" height="20" />
-					<img id="image-1" src="6b.bmp" border="2" width="80" onclick="setImage(6)" height="20" />
-					<img id="image-1" src="7b.bmp" border="2" width="80" onclick="setImage(7)" height="20" />						
+					<img id="image-3" src="3b.bmp" border="2" width="80" onclick="setImage(3)" height="20" />
+					<img id="image-4" src="4b.bmp" border="2" width="80" onclick="setImage(4)" height="20" />
+					<img id="image-5" src="5b.bmp" border="2" width="80" onclick="setImage(5)" height="20" />
+					<img id="image-6" src="6b.bmp" border="2" width="80" onclick="setImage(6)" height="20" />
+					<img id="image-7" src="7b.bmp" border="2" width="80" onclick="setImage(7)" height="20" />						
 					-->
 				</div>
 			</div>
@@ -63,11 +63,11 @@
 
 	{% block mainscript %}
 	<script src="jquery-1.11.1.min.js"></script>
-	<script src="bootstrap.min.js"></script>	
+	<script src="bootstrap.min.js"></script>
 	<script src="server-interface.js"></script>
 	<script src="property-editors.js"></script>
 	
-	<script>		
+	<script>
 		var entities = {};
 		// Monitoring properties
 		var editableProperties = "(fitness-evaluator image-file)_" + 
@@ -84,12 +84,12 @@
 		var startupDraw = function () {	
 			//drawCanvas();
 		};
-		
+
 		function drawCanvas(index) {
 			initWebGLRGB(index, entities[index]);
 			drawEntityImageRGB();
 		}
-		
+
 		function initializeParameters(index) {
 			// Get default object template for rgb image similarity task
 			createFunctionGeneric(
@@ -101,7 +101,7 @@
 					registerObject(parentId + "default-properties", data);
 					// Create editors with values
 					var newdiv = document.createElement("div");
-					newdiv.id = parentId + "-editors";					
+					newdiv.id = parentId + "-editors";
 					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties, "width: 245px");
 					newdiv.className = "editors-default-class";
 					var container = document.getElementById(parentId + "-form");
@@ -109,10 +109,10 @@
 					// Draw
 					var canvas = document.getElementById(parentId);
 					initWebGLRGB(parentId, entities[parentId]);
-					drawEntityImageRGB();	
+					drawEntityImageRGB();
 				});
 		};
-		
+
 		function updateBestObject(parentId) {
 			createFunctionGeneric(
 				{ object: entities[parentId + "-task"], properties: "(" + replaceAll("_", " ", monitorProperties) + ")" },
@@ -142,7 +142,7 @@
 					}
 					else {
 						enableSearch(true);
-						alert(data);						
+						alert(data);
 					}
 				});
 		}
@@ -184,18 +184,30 @@
 		function resetSearch() {
 			initializeParameters(0);
 		}
-		
+
+		function setSelectedImage(value) {
+			for (var i=1; i< 3; i++) {
+				if (i == value) {
+					$("#image-" + i)[0].style.border = "2px solid blue";
+				}
+				else {
+					$("#image-" + i)[0].style.border = "0px solid blue";
+				}
+			}
+		}
+
 		function setImage(value) {
 			$("#editor-parent0-fitness-evaluator-image-file")[0].value = value + "b.bmp";
+			setSelectedImage(value);
 			stopSearch();
 			startSearch();
 		}
-				
+
 		resetSearch();
 		enableSearch(true);
-	</script>		
+	</script>
 	{% endblock %}
-	
+
 	{% block footerscript %}
 	{% parent %}
 	{% endblock %}

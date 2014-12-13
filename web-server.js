@@ -79,8 +79,6 @@ function getFile(filePath, res, page404, useViewsEngine){
     fs.exists(filePath,function(exists) {
 		if (exists){			
 			if (useViewsEngine) {
-				//var menu = swig.renderFile("app/navbar.html");
-				//var menu = swig.compileFile('app/navbar.html');
 				var result = swig.renderFile(filePath);
 				res.end(result);
 			}
@@ -328,13 +326,13 @@ function dislikeObject(res, language, a, b, c) {
 	res.end();
 }
 
-function viewObject(res, language, a, b, c) {
+function viewObject(res, language, a, b, c, h, w) {
 	var localFolder = __dirname + '/app';
-	var result = swig.renderFile(localFolder + "/view.html");
+	var result = swig.renderFile(localFolder + "/view.html", { height: (h == null) ? 650 : h, width: (w == null) ? 650 : w });
 	result = result.toString().replace("#A#", a);
 	result = result.replace("#B#", b);
 	result = result.replace("#C#", c);
-	result = result.replace("#LANGUAGE#", language);			
+	result = result.replace("#LANGUAGE#", language);
 	res.end(result);
 }
 
@@ -353,7 +351,7 @@ function setInterpolate(res, id) {
 				}
 				else
 					res.end("Interpolation not found");
-			}); 		
+			}); 
 		});
 }
 
@@ -369,42 +367,42 @@ function requestHandler(req, res) {
 	// #TEMP: incoming inspector
 	console.log(datePrint() + " : " + req.connection.remoteAddress + ": " + pathname + "{" + arguments.toString() + "}");
 	
-	if (pathname == "/messageLanguages")		
+	if (pathname == "/messageLanguages")
 		possibleLanguages(res);
-	else if (pathname == "/messageGallerySetElement")	
+	else if (pathname == "/messageGallerySetElement")
 		gallerySetElement(res, arguments.index, arguments.language, arguments.objectDataA, arguments.objectDataB);
-	else if (pathname == "/messageGalleryGetElement")	
+	else if (pathname == "/messageGalleryGetElement")
 		galleryGetElement(res, req, arguments.index);
 	else if (pathname == "/messageGetWithCriteria")
 		getWithCriteria(res, req, arguments);
-	else if (pathname == "/messageGalleryGetAll")	
+	else if (pathname == "/messageGalleryGetAll")
 		galleryGetAll(res, arguments.maxSize);
-	else if (pathname == "/messageGetDefault")	
-		getDefault(res, arguments.name, arguments.properties);	
-	else if (pathname == "/messageCreateDefault")	
+	else if (pathname == "/messageGetDefault")
+		getDefault(res, arguments.name, arguments.properties);
+	else if (pathname == "/messageCreateDefault")
 		createDefault(res, arguments.language);
 	else if (pathname == "/messageSaveInterpolation")
 		saveInterpolation(res, arguments.entities, arguments.interpolation);
 	else if (pathname == "/messageSaveEntitiesDictionary")
-		saveEntitiesDictionary(res, arguments.values, arguments.pane);		
+		saveEntitiesDictionary(res, arguments.values, arguments.pane);
 	else if (pathname == "/messageCreateTask")
 		createTask(res, arguments.name, arguments.properties, arguments.scheduler);
 	else if (pathname == "/messageDeleteTask")
 		deleteTask(res, arguments.name);
 	else if (pathname == "/messageGetPropertyValue")
 		getPropertyValue(res, arguments.object, arguments.properties);
-	else if (pathname == "/messageCreateRandom")	
+	else if (pathname == "/messageCreateRandom")
 		createRandom(res, arguments.language, arguments.maxSize);
-	else if (pathname == "/messageMutate")	
+	else if (pathname == "/messageMutate")
 		mutateFunctions(res, arguments.language, arguments.objectData, arguments.maxSize);
-	else if (pathname == "/messageMutateAddVar")	
+	else if (pathname == "/messageMutateAddVar")
 		mutateAddVarFunctions(res, arguments.language, arguments.objectData, arguments.maxSize);
 	else if (pathname == "/messageLike")
 		likeObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
 	else if (pathname == "/messageDislike")
 		dislikeObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
 	else if (pathname == "/messageView")
-		viewObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
+		viewObject(res, arguments.language, arguments.a, arguments.b, arguments.c, arguments.height, arguments.width);
 	else if (pathname == "/setInterpolation")
 		setInterpolate(res, arguments.entities);
 	else if (pathname == "/messageSend")
@@ -424,13 +422,16 @@ function requestHandler(req, res) {
 
 function handlerHook(req, res) {
 	var result;
-
-	try 
-	{
+	
+	req.setTimeout(3000, function () { 
+		console.debug("timeout"); 
+		res.end("timeout"); 
+		});
+	
+	try {
 		result = requestHandler(req, res);
 	}
-	catch(err)
-	{
+	catch(err) {
 		console.log("Error: " + err.message);
 		res.end("Error");
 	}

@@ -20,7 +20,7 @@
 	<body onload="startupDraw()">
 		{% block content %}
 		{% parent %}
-			
+
 		<div class="container" style="padding-top: 60px">
 			<div>
 				<div id="main-div" style="max-width: 720px; border: 1px solid lightgray; display: block">
@@ -42,17 +42,17 @@
 							</button>
 							<button id="stop-search" type="button" onclick="stopSearch()">
 							  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
-							</button>							
+							</button>
 						</div>
 					</div>
 					<div style="display: block">
 						<img id="image-1" src="1.bmp" border="2" width="80" onclick="setImage(1)" height="20" />
-						<img id="image-1" src="2.bmp" border="2" width="80" onclick="setImage(2)" height="20" />
-						<img id="image-1" src="3.bmp" border="2" width="80" onclick="setImage(3)" height="20" />
-						<img id="image-1" src="4.bmp" border="2" width="80" onclick="setImage(4)" height="20" />
-						<img id="image-1" src="5.bmp" border="2" width="80" onclick="setImage(5)" height="20" />
-						<img id="image-1" src="6.bmp" border="2" width="80" onclick="setImage(6)" height="20" />
-						<img id="image-1" src="7.bmp" border="2" width="80" onclick="setImage(7)" height="20" />						
+						<img id="image-2" src="2.bmp" border="2" width="80" onclick="setImage(2)" height="20" />
+						<img id="image-3" src="3.bmp" border="2" width="80" onclick="setImage(3)" height="20" />
+						<img id="image-4" src="4.bmp" border="2" width="80" onclick="setImage(4)" height="20" />
+						<img id="image-5" src="5.bmp" border="2" width="80" onclick="setImage(5)" height="20" />
+						<img id="image-6" src="6.bmp" border="2" width="80" onclick="setImage(6)" height="20" />
+						<img id="image-7" src="7.bmp" border="2" width="80" onclick="setImage(7)" height="20" />						
 					</div>
 				</div>
 			</div>
@@ -60,14 +60,14 @@
 		
 		{% endblock %}
 	</body>
-	
+
 	{% block mainscript %}
 	<script src="jquery-1.11.1.min.js"></script>
 	<script src="bootstrap.min.js"></script>
 	<script src="server-interface.js"></script>
 	<script src="property-editors.js"></script>
 
-	<script>		
+	<script>
 		var entities = {};
 		// Monitoring properties
 		var editableProperties = "(fitness-evaluator image-file)_" + 
@@ -89,7 +89,7 @@
 			initWebGLRGB(index, entities[index]);
 			drawEntityImageRGB();
 		}
-		
+
 		function initializeParameters(index) {
 			// Get default object template for rgb image similarity task
 			createFunctionGeneric(
@@ -101,7 +101,7 @@
 					registerObject(parentId + "default-properties", data);
 					// Create editors with values
 					var newdiv = document.createElement("div");
-					newdiv.id = parentId + "-editors";					
+					newdiv.id = parentId + "-editors";
 					newdiv.innerHTML = createEditorForProperties(parentId, data, allProperties, monitorProperties, "width: 245px");
 					newdiv.className = "editors-default-class";
 					var container = document.getElementById(parentId + "-form");
@@ -109,7 +109,7 @@
 					// Draw
 					var canvas = document.getElementById(parentId);
 					initWebGLRGB(parentId, entities[parentId]);
-					drawEntityImageRGB();	
+					drawEntityImageRGB();
 				});
 		};
 		
@@ -125,9 +125,9 @@
 		}
 
 		function startSearchParent(parentId) {
-			// Deshabilitamos la interface para seguir buscando
+			// Disable search buttons
 			enableSearch(false);
-			// Crea las tareas y guarda el identificador del servidor de estas
+			// Create tasks and save its id
 			createFunctionGeneric(
 				{ name: "default-image-task", properties: "(" + propertiesFromEditors(parentId, editableProperties) + ")" },
 				"/messageCreateTask",
@@ -136,13 +136,13 @@
 					if (split[0]=="Task started") {
 						// Register task identifier on server for configuration parentId
 						registerObject(parentId + "-task", split[1]);
-						// Setea un timer para refrescar su estalo localmente
+						// Timer for state refresh
 						var timer = setInterval(function() { /* clearInterval(entities[parentId + "-timer"]); */ updateBestObject(parentId); }, 1000);
 						registerObject(parentId + "-timer", timer);
 					}
 					else {
 						enableSearch(true);
-						alert(data);						
+						alert(data);
 					}
 				});
 		}
@@ -172,30 +172,42 @@
 				document.getElementById("stop-search").disabled = false; 
 			}
 		}
-		
+
 		function startSearch() {
 			startSearchParent("parent0");
 		}
-		
+
 		function stopSearch() {
 			stopSearchParent("parent0");
 		}
-		
+
 		function resetSearch() {
 			initializeParameters(0);
 		}
 		
+		function setSelectedImage(value) {
+			for (var i=1; i< 8; i++) {
+				if (i == value) {
+					$("#image-" + i)[0].style.border = "2px solid blue";
+				}
+				else {
+					$("#image-" + i)[0].style.border = "0px solid blue";
+				}
+			}
+		}
+
 		function setImage(value) {
 			$("#editor-parent0-fitness-evaluator-image-file")[0].value = value + ".bmp";
+			setSelectedImage(value);
 			stopSearch();
 			startSearch();
 		}
-				
+
 		resetSearch();
 		enableSearch(true);
-	</script>		
+	</script>
 	{% endblock %}
-	
+
 	{% block footerscript %}
 	{% parent %}
 	{% endblock %}

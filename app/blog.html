@@ -1,4 +1,6 @@
 {% extends 'main-layout.html' %}
+<title>{% block title %}Expressions explorer blog{% endblock %}</title>
+
 {% block head %}
 	<style>
 	</style>
@@ -7,11 +9,11 @@
 
 {% block content %}
 {% parent %}
-	<div class="container" style="padding-top: 80px">
+	<div class="container" style="padding-top: 60px">
 		<h2>Blog articles</h2>
-		<br/>				
+		<br/>
 
-		<div class="accordion" id="accordion2">			
+		<div class="accordion" id="accordion2">
 			{% include "./blog-rgb-vectors-1.html" %}
 			{% include "./blog-opengl-dsl-1.html" %}
 			{% include "./blog-adf-1.html" %}

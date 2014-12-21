@@ -1,11 +1,11 @@
 <div class="accordion-group" style="border: none">
-			<div class="accordion-heading">
-			<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-			<h4>Subroutine extraction & compression notes</h4>
-			</a>
-			</div>
-			<div id="collapseOne" class="accordion-body collapse">
-			<div class="accordion-inner">
+	<div class="accordion-heading">
+		<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+		<h4>Subroutine extraction & compression notes</h4>
+		</a>
+	</div>
+	<div id="collapseOne" class="accordion-body collapse">
+		<div class="accordion-inner">
 <p>As a first approach to ADFs, implemented some compression operators (and some other objects to support them). Long time ago i wanted to implement something like a GLiB compression operators experiment i have seen <a href="../../Resources/Angeline+Pollack--1994--CoevolvingHigh-LevelRepresentations.pdf">here</a><a href="#"></a>. </p>
 <h4>Details</h4>
 <ul>
@@ -17,7 +17,15 @@
   <li>ADFs are still not supported, but now it´s more clear where to implement them.</li>
 </ul>
 <h4>Example by images</h4>
-<p><a href="srt-1.png"><img src="tmb-srt-1.png" alt="" width="180" height="144" hspace="2" vspace="2"></a><a href="srt-2.png"><img src="tmb-srt-2.png" alt="" width="180" height="144" hspace="2" vspace="2"></a><a href="srt-3.png"><img src="tmb-srt-3.png" alt="" width="180" height="144" hspace="2" vspace="2"></a></p>
+<p>
+	<a href="srt-1.png">
+		<img src="tmb-srt-1.png" alt="" width="180" height="144" hspace="2" vspace="2" data-toggle="modal" data-target="#imageModal" onclick="setImage('srt-1.png')"></a>
+	<a href="srt-2.png">
+		<img src="tmb-srt-2.png" alt="" width="180" height="144" hspace="2" vspace="2" data-toggle="modal" data-target="#imageModal" onclick="setImage('srt-2.png')" />
+	</a>
+	<a href="srt-3.png"/>
+		<img src="tmb-srt-3.png" alt="" width="180" height="144" hspace="2" vspace="2" data-toggle="modal" data-target="#imageModal" onclick="setImage('srt-3.png')"/></a>
+	</p>
 <ol>
   <li>Class diagram for complete set of compression objects, with: 
     <ol>
@@ -55,6 +63,6 @@
   <li><a href="../../Resources/Angeline+Pollack--1994--CoevolvingHigh-LevelRepresentations.pdf">Coevolving High-Level Representations</a> - Peter J. Angeline and Jordan B. Pollack</li>
   <li><a href="../../Resources/10.1.1.15.5594.pdf">Genetic Programming and Emergent Intelligence</a> - Peter J. Angeline</li>
 </ul>
-			</div>
-			</div>
-			</div>
+		</div>
+	</div>
+</div>

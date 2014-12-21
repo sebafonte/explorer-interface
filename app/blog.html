@@ -11,9 +11,9 @@
 {% parent %}
 	<div class="container" style="padding-top: 60px">
 		<h2>Blog articles</h2>
-		<br/>
+		<br/>				
 
-		<div class="accordion" id="accordion2">
+		<div class="accordion" id="accordion2">			
 			{% include "./blog-rgb-vectors-1.html" %}
 			{% include "./blog-opengl-dsl-1.html" %}
 			{% include "./blog-adf-1.html" %}
@@ -22,5 +22,26 @@
 			{% include "./blog-texture-deformation-1.html" %}
 			{% include "./blog-graphic-pane-1.html" %}
 		</div>
+
+		<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" style="margin-right: 0%; width: 40%">
+		  <div class="modal-dialog">
+			<div class="modal-content">
+			  <div id="modal-container" class="modal-body" style="max-height: 100%; max-width: 100%">
+				<img id="modal-image" src="">
+			  </div>
+			</div>
+		  </div>
+		</div>
 	</div>
+{% endblock %}
+
+{% block mainscript %}
+{% parent %}
+	<script>
+		function setImage(value) {
+			var x = window.screen.height - 50;
+			var y = window.screen.width - 50;
+			document.getElementById("modal-container").innerHTML = "<img id=\"modal-image\" src=\"" + value + "\" width=\"100%\">";
+		}
+	</script>
 {% endblock %}

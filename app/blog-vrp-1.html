@@ -8,7 +8,7 @@
 		<div class="accordion-inner">
 		<p>Recently implemented an example of the Clark &amp; Wright savings algorithm (parallel and sequential version) prototype, been looking for some test examples, and just found <a href="http://www.hha.dk/~ath/MAN_SC_MODELS/note_cw_savings.pdf">this one</a>. I have to optimize a whole lot of things, but at least i know that parallel example works. </p>
 		<p>This <a href="DVRP-CW-sequential-560-GW.rar">example</a> is a graphical representation of the parallel version for <a href="560-modificaiton.txt">a problem instance</a> taken from Golden &amp; Wasil 2005 instances for DVRP:</p>
-		<p><a href="testing-clark-and-wright-generation.PNG"><img src="tn_testing-clark-and-wright-generation.PNG" width="180" height="144"></a></p>
+		<p><a href="testing-clark-and-wright-generation.PNG"><img src="tn_testing-clark-and-wright-generation.PNG" width="180" height="144"  data-toggle="modal" data-target="#imageModal" onclick="setImage('testing-clark-and-wright-generation.PNG')"></a></p>
 		<p>These are the two mini monsters i created at the night, i expect to wake up to refactorize  and optimize this code:</p>
 		<pre style="font-size: 11px">
 (defun clark-and-wright-sequential (evaluator)

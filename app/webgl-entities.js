@@ -115,6 +115,17 @@ function initBuffersRGB() {
 }
 
 function drawEntityImageRGB () { 
+	// #ADDED
+	globalVa = timerValue();
+	var location = gl.getUniformLocation(shaderProgram, "va");
+    gl.uniform1f(location, globalVa);	
+	location = gl.getUniformLocation(shaderProgram, "vb");
+    gl.uniform1f(location, globalVb);	
+	location = gl.getUniformLocation(shaderProgram, "vc");
+    gl.uniform1f(location, globalVc);	
+	location = gl.getUniformLocation(shaderProgram, "vd");
+	gl.uniform1f(location, globalVd);
+	
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 	mat4.identity(mvMatrix);
@@ -158,8 +169,18 @@ function timerValue() {
 }
 
 function drawEntityImageRGBAnimate () {
-	var location = gl.getUniformLocation(shaderProgram, "time");
+	globalVa = timerValue();
+	var location = gl.getUniformLocation(shaderProgram, "va");
+    gl.uniform1f(location, globalVa);	
+	location = gl.getUniformLocation(shaderProgram, "vb");
+    gl.uniform1f(location, globalVb);	
+	location = gl.getUniformLocation(shaderProgram, "vc");
+    gl.uniform1f(location, globalVc);	
+	location = gl.getUniformLocation(shaderProgram, "vd");
+	gl.uniform1f(location, globalVd);
+	location = gl.getUniformLocation(shaderProgram, "time");
     gl.uniform1f(location, timerValue());	
+	
 	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
 	mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
 	mat4.identity(mvMatrix);

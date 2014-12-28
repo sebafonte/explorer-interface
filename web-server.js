@@ -174,10 +174,19 @@ function datePrint() {
 }
  
 function crossoverFunctions(res, language, objectDataA, objectDataB, maxSize) {
+	
+try {
 	genericGPExplorerMessage(res, 
 	function(socket) {
 		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-crossover) :content (list (quote " + language + ") (quote " + objectDataA + ") (quote " + objectDataB + ") " + maxSize + "))\n");
 	});	
+
+} 
+catch (ex) {
+
+	console.log("PUTA MADRE 2");
+	callback(ex);
+}
 };
 
 function createTask(res, name, properties, scheduler) {
@@ -328,11 +337,11 @@ function dislikeObject(res, language, a, b, c) {
 
 function viewObject(res, language, a, b, c, h, w) {
 	var localFolder = __dirname + '/app';
-	var result = swig.renderFile(localFolder + "/view.html", { height: (h == null) ? 650 : h, width: (w == null) ? 650 : w });
+	var result = swig.renderFile(localFolder + "/view.html", { height: (h == null) ? 1024 : h, width: (w == null) ? 1024 : w });
 	result = result.toString().replace("#A#", a);
 	result = result.replace("#B#", b);
 	result = result.replace("#C#", c);
-	result = result.replace("#LANGUAGE#", language);
+	result = result.replace("#LANGUAGE#", language);			
 	res.end(result);
 }
 
@@ -351,7 +360,7 @@ function setInterpolate(res, id) {
 				}
 				else
 					res.end("Interpolation not found");
-			}); 
+			}); 		
 		});
 }
 
@@ -367,35 +376,35 @@ function requestHandler(req, res) {
 	// #TEMP: incoming inspector
 	console.log(datePrint() + " : " + req.connection.remoteAddress + ": " + pathname + "{" + arguments.toString() + "}");
 	
-	if (pathname == "/messageLanguages")
+	if (pathname == "/messageLanguages")		
 		possibleLanguages(res);
-	else if (pathname == "/messageGallerySetElement")
+	else if (pathname == "/messageGallerySetElement")	
 		gallerySetElement(res, arguments.index, arguments.language, arguments.objectDataA, arguments.objectDataB);
-	else if (pathname == "/messageGalleryGetElement")
+	else if (pathname == "/messageGalleryGetElement")	
 		galleryGetElement(res, req, arguments.index);
 	else if (pathname == "/messageGetWithCriteria")
 		getWithCriteria(res, req, arguments);
-	else if (pathname == "/messageGalleryGetAll")
+	else if (pathname == "/messageGalleryGetAll")	
 		galleryGetAll(res, arguments.maxSize);
-	else if (pathname == "/messageGetDefault")
-		getDefault(res, arguments.name, arguments.properties);
-	else if (pathname == "/messageCreateDefault")
+	else if (pathname == "/messageGetDefault")	
+		getDefault(res, arguments.name, arguments.properties);	
+	else if (pathname == "/messageCreateDefault")	
 		createDefault(res, arguments.language);
 	else if (pathname == "/messageSaveInterpolation")
 		saveInterpolation(res, arguments.entities, arguments.interpolation);
 	else if (pathname == "/messageSaveEntitiesDictionary")
-		saveEntitiesDictionary(res, arguments.values, arguments.pane);
+		saveEntitiesDictionary(res, arguments.values, arguments.pane);		
 	else if (pathname == "/messageCreateTask")
 		createTask(res, arguments.name, arguments.properties, arguments.scheduler);
 	else if (pathname == "/messageDeleteTask")
 		deleteTask(res, arguments.name);
 	else if (pathname == "/messageGetPropertyValue")
 		getPropertyValue(res, arguments.object, arguments.properties);
-	else if (pathname == "/messageCreateRandom")
+	else if (pathname == "/messageCreateRandom")	
 		createRandom(res, arguments.language, arguments.maxSize);
-	else if (pathname == "/messageMutate")
+	else if (pathname == "/messageMutate")	
 		mutateFunctions(res, arguments.language, arguments.objectData, arguments.maxSize);
-	else if (pathname == "/messageMutateAddVar")
+	else if (pathname == "/messageMutateAddVar")	
 		mutateAddVarFunctions(res, arguments.language, arguments.objectData, arguments.maxSize);
 	else if (pathname == "/messageLike")
 		likeObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
@@ -440,6 +449,12 @@ function handlerHook(req, res) {
 }
 
 initializeDatabase();
-
-http.createServer(handlerHook)
-.listen(80);
+  
+try {
+	http.createServer(handlerHook)
+		.listen(80);
+} 
+catch (ex) {
+	console.log("PUTA MADRE");
+	callback(ex);
+}

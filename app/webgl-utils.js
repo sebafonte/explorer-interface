@@ -93,6 +93,12 @@ var myFragmentShaderRGBSrc =
 	"precision mediump float; " + 
 	"varying float xx; " + 
 	"varying float yy; " + 
+	// #ADDED
+	"uniform float time; " + 
+	"uniform float va; " + 
+	"uniform float vb; " + 
+	"uniform float vc; " + 
+	"uniform float vd; " + 	
 	"" + 
 	"vec3 veccos(in vec3 a) { return vec3(cos(a.x), cos(a.y), cos(a.z)); } " + 
 	"vec3 vecsin(in vec3 a) { return vec3(sin(a.x), sin(a.y), sin(a.z)); } " + 
@@ -262,6 +268,11 @@ var myFragmentShaderRGBAnimateSrc =
 	"uniform float time; " + 
 	"varying float xx; " + 
 	"varying float yy; " + 
+	// #ADDED:
+	"uniform float va; " + 
+	"uniform float vb; " + 
+	"uniform float vc; " + 
+	"uniform float vd; " + 	
 	"" + 
 	"vec3 veccos(in vec3 a) { return vec3(cos(a.x), cos(a.y), cos(a.z)); } " + 
 	"vec3 vecsin(in vec3 a) { return vec3(sin(a.x), sin(a.y), sin(a.z)); } " + 
@@ -361,40 +372,6 @@ var myFragmentShaderRGBAnimateInterpolateSrc =
 	"}";
 	
 function initShadersRGBInterpolatedAnimate(entity) {
-/*
-	#TODO: Test and verify why this does not work uncomenting it all
-	entity = 
-	[
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(X,X,0.3243)", "entity-rgb"],
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		//["CREATEVECTOR(0.4705,0.2033,Y)", "entity-rgb"], 
-		]; 
-	*/
-	
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderRGBAnimatedInterpolateSrc);
 	gl.compileShader(vertexShader);
@@ -459,6 +436,7 @@ var myVertexShaderRGBAnimatedSoundSrc =
 
 var myFragmentShaderRGBAnimateSoundSrc =
 	"precision mediump float; " + 
+	"uniform float time; " + 
 	"uniform float va; " + 
 	"uniform float vb; " + 
 	"uniform float vc; " + 

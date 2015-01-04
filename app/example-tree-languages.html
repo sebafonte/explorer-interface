@@ -52,7 +52,7 @@
 											</select>
 										</div>
 									</div>			
-									<div style="display: flex">
+									<div style="display: flex">									
 										<div style="margin-left: 5px">
 											Max time
 											<input id="max-time" type="text" value="1" data-toggle="tooltip" data-placement="right" title="Maximum time desired for each image" disabled/>
@@ -82,14 +82,14 @@
 		<div><input type="button" value="Dislike" onclick="menuCallbackPrefix(globalSelectedIndex, 2)" style="width: 100px"/></div>
 		<div><input type="button" value="Send" onclick="menuCallbackPrefix(globalSelectedIndex, 3)" style="width: 100px"/ disabled></div>
 	</div>
-
-	<script>
+		
+	<script>		
 		var entitiesDictionary = {};
 		var childCount = 12, parentCount = 4;
 		var currentLanguage = document.getElementById("languages-select").value;
 		
 	
-		function menuCallbackPrefix(name, index) {
+		function menuCallbackPrefix(name, index) {			
 			if (index==0) {
 				var url_safe_language = encodeURIComponent(currentLanguage);
 				var url_safe_a = encodeURIComponent(entitiesDictionary[name][0]);
@@ -108,7 +108,7 @@
 						error : function(data) {
 							console.log('Like call failed');
 						}
-					});	
+					});			
 			}
 			else if (index==2) {
 				$.ajax({
@@ -123,7 +123,7 @@
 					});
 			}
 		}
-
+		
 		function operate() {
 			for (var i=0; i< childCount; i++) {
 				var canvasId = "child" + i.toString();
@@ -139,7 +139,7 @@
 						canvasId);
 			}
 		}
-
+						
 		var changeLanguageClass = function () {
 			currentLanguage = document.getElementById("languages-select").value;
 		}
@@ -147,11 +147,11 @@
 		function allowDrop(ev) {
 			ev.preventDefault();
 		}
-
+		
 		function drag(ev) {
 			ev.dataTransfer.setData("Text", JSON.stringify(entitiesDictionary[ev.target.id]));
 		}
-
+		
 		function drop(ev) {
 			ev.preventDefault();
 			var result = JSON.parse(ev.dataTransfer.getData("Text"));
@@ -160,33 +160,33 @@
 			initWebGLBW(ev.target.id, result[1], result[2]);
 			drawEntityImageBW();
 		}
-
+		
 		function defaultError () {
 			alert("Default error");
 		}
-
+		
 		var startupDraw = function () {
 			var htmlCode = "";
 			for (var i=0; i< parentCount; i++) {
 				var canvasId = "parent" + i.toString();
 				createFunctionCallCreateDefault(canvasId);
-			}
+			}	
 		}
-
+		
 		function createFunctionCallCreateDefault(name) {
 			createFunctionGeneric(name, { language: currentLanguage }, "/messageCreateDefault");
 		}
-
+		
 		function createFunctionCallCreateRandom(name) {
 			var maxSize = document.getElementById("input-max-size").value;
 			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: maxSize }, "/messageCreateRandom");
 		}
-
+		
 		function createFunctionCallMutateOn(name, canvasId) {
 			var maxSize = document.getElementById("input-max-size").value;
 			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: maxSize, objectData: entitiesDictionary[name][0] }, "/messageMutate");
 		}
-
+		
 		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
 			var maxSize = document.getElementById("input-max-size").value;
 			createFunctionGeneric(
@@ -194,7 +194,7 @@
 				{ language: currentLanguage, maxSize: maxSize, objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
 				"/messageCrossover");
 		}
-
+		
 		function createFunctionGeneric(canvasId, arguments, message) {
 			$.ajax({
 					type : 'GET',
@@ -218,7 +218,7 @@
 				}
 			});
 		}
-
+		
 		function addParentCallBack(name) {
 			$("#" + name)
 				.click(function(evt) {
@@ -228,8 +228,8 @@
 					}
 				});
 		}
-
-		function initializeLanguages() {
+		
+		function initializeLanguages() {			
 			$.ajax({
 				type : 'GET',
 				url : "/messageLanguages",
@@ -247,7 +247,7 @@
 				}
 			});
 		}
-
+		
 		initializeLanguages(); 
 		addParentCallBack("parent0");
 		addParentCallBack("parent1");
@@ -257,7 +257,7 @@
 		initializeContextMenuOn("parent", "context_menu", menuSetCallback);
 	</script>
 	{% endblock %}
-
+	
 	{% block footerscript %}
 	{% parent %}
 	{% endblock %}

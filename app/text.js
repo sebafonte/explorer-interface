@@ -1,12 +1,12 @@
 
-var canvasSize = 64;
+var canvasSize = 128;
 var characterTextures = {};
 var squareVertexPositionBuffer;
 var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
 var shaderProgram;
+var textLines = 4, textColumns = 4;
 var gl;
-var textLines = 20, textColumns = 20;
 
 
 // Initialization
@@ -30,12 +30,17 @@ function initGLText() {
 function createTexture(ctx, character, canvas) {
 	ctx.fillStyle = "#FFFFFF"; 
 	ctx.fillRect(0, 0, canvasSize, canvasSize);
-	ctx.fillStyle = "#00FF00"; 
-	ctx.fillRect(1, 1, canvasSize - 2, canvasSize - 2);
+	//ctx.fillStyle = "#00FF00"; 
+	//ctx.fillRect(1, 1, canvasSize - 2, canvasSize - 2);
 	ctx.fillStyle = "#000000"; 
 	// #TODO: Remove 7 and 9 hardcodes for 64 pixels value, they should become 0 when finished
-	ctx.fillText(character, 9, canvasSize - 7);
-	ctx.font = canvasSize + "px Verdana";
+	ctx.font = canvasSize + 5 + "px Verdana";
+	ctx.fillText(character, 9, canvasSize - 15);
+	
+	//ctx.fillStyle = "#000000"; 
+	//ctx.font = canvasSize + 15 + "px Verdana";
+	//ctx.fillText(character, 9, canvasSize - 7);
+		
 	characterTextures[character] = gl.createTexture();
     handleLoadedTexture(characterTextures[character], canvas);
 }
@@ -48,12 +53,6 @@ function handleLoadedTexture(texture, textureCanvas) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
     gl.generateMipmap(gl.TEXTURE_2D);
     gl.bindTexture(gl.TEXTURE_2D, null);
-}
-
-function getPowerOfTwo(value, pow) {
-	var pow = pow || 1;
-	while(pow<value) { pow *= 2; }
-	return pow;
 }
 
 function setMatrixUniforms() {
@@ -70,7 +69,7 @@ function drawText(text, baseX, baseY, size) {
 		setMatrixUniforms();
 		renderCharacter(text[i], x, baseY, size);
 		mat4.translate(mvMatrix, [size, 0.0, 0.0]);
-	}
+	}	
 }
 
 function renderCharacter(character, x, y, size) {

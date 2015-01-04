@@ -3,6 +3,7 @@
 		<title>WebGL text</title>
 		<script src="glMatrix-0.9.5.min.js"></script>
 		<script src="text.js"></script>
+		<script src="jquery-1.11.1.min.js"></script>
 	</head>
 	
 	<body onload="startupDraw()">
@@ -16,18 +17,14 @@
 			initWebGL(canvas);
 			initGLText("Verdana");
 			draw();
-			setInterval(
-				function () {				
-					draw();			
-				}, 
-				20);			
+			setInterval( function () { draw(); }, 20);			
 		};
 		
 		function initWebGL(canvas) {
 			initGL(canvas);
 			initBuffers();
 			initShaders();
-			gl.clearColor(0.0, 0.0, 1.0, 1.0);
+			gl.clearColor(0.0, 0.0, 0.0, 1.0);
 			gl.disable(gl.DEPTH_TEST);
 		}
 			
@@ -71,8 +68,9 @@
 			*/
 			"		if (textureColor.r + textureColor.g + textureColor.b < 0.6) " + 
 			" 			gl_FragColor = vec4(v.x, v.y, v.z, 1.0); " + 
-			"		else " + 
-			" 			gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0); " + 
+			"		else {" + 
+			"		vec4 vb = vec4(VALUEBORDER, 1.0); " + 
+			" 		gl_FragColor = vb; }" + 
 			"	} " +  
 			" 	else " + 
 			"		gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);" + 
@@ -126,6 +124,14 @@
 		var globalYRef = 0.0;
 		var indexTexture = 0;
 		var indexFont = 0;
+		var entities = 
+			["vecdiv(vecsin(createvector(0.6607,0.3364,0.4570)),vecadd(vecabs(vecsubstract(vecsin(vecsin(createvector(x,y,y))),veccos(vecabs(vecabs(createvector(y,x,x)))))),vecabs(vecabs(vecsin(createvector(x,y,y))))))",
+			 "vecmultiply(createvector(y,0.3843,0.1653),vecadd(veccos(vecsqr(vecadd(vecadd(createvector(y,y,x),vecsqr(veccos(createvector(x,x,y)))),vecsqr(vectan(createvector(x,x,x)))))),vectan(vectan(vecmultiply(vecsin(createvector(x,y,y)),vecsin(vecabs(createvector(y,x,x))))))))",
+			 "vecsin(vecadd(vecsin(vectan(vectan(vecmultiply(vecsin(createvector(x,y,y)),veccos(vecabs(createvector(y,x,x))))))),createvector(0.9249,0.3733,0.7626)))",
+			 "vecadd(vecmultiply(vecmultiply(veccos(createvector(x,y,y)),vecsin(vectan(createvector(y,y,x)))),vecsin(vecsin(vectan(createvector(0.4360,x,x))))),vecsin(veccolormap(createvector(x,0.1213,0.3265),createvector(x,y,0.1465),createvector(0.6646,0.6055,x))))",
+			 "vecdiv(vecsin(createvector(time,y,0.2655)),vecadd(vecabs(vecsubstract(vecsin(createvector(x,time,0.3301)),veccos(vecabs(vecabs(createvector(y,x,x)))))),vecabs(vecabs(vecsin(createvector(x,y,y))))))"
+			 ];
+		var entityBorder = "vec3(1.0, 0.0, 0.0)";
 		
 		function initShaders() {
 			var entities = 
@@ -142,6 +148,7 @@
 			result = result.replace("VALUEXREF", globalXRef.toFixed(2).toString());
 			result = result.replace("VALUEYREF", globalYRef.toFixed(2).toString());
 			result = result.replace("VALUE", entity.toLowerCase());
+			result = result.replace("VALUEBORDER", entityBorder.toLowerCase());
 		
 			var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 			gl.shaderSource(vertexShader, myVertexShaderSrc);
@@ -220,12 +227,56 @@
 			drawText("PVM is back sucker!", 0.5, 2.0 + testa, 1.0);
 		//	testa+=0.05;
 		}	
+
+		function changeData(data) {
+			var result = [];
+			result.push(data[1]);
+			result.push(data[2]);
+			return result;
+		}
+
+		function mutateTexture () {
+			$.ajax({
+				type : 'GET',
+				url : "/messageGetWithCriteria",
+				data : { language: "rgb-color-images-vector", c: "entity-rgb" },
+				dataType : "text",
+				success : function(data) {
+					var result = data.split("|");
+					result = changeData(result);
+					entities[entities.length] = result[1];
+					indexTexture = entities.length-1;
+					initShaders();
+				},
+				error : function(data) {
+					console.log('Call failed');
+				}
+			});
+		}
+		
+		function mutateBorderTexture () {
+			$.ajax({
+				type : 'GET',
+				url : "/messageGetWithCriteria",
+				data : { language: "rgb-color-images-vector", c: "entity-rgb" },
+				dataType : "text",
+				success : function(data) {
+					var result = data.split("|");
+					result = changeData(result);
+					entityBorder = result[1];
+					initShaders();
+				},
+				error : function(data) {
+					console.log('Call failed');
+				}
+			});
+		}
 		
 		function handleKeyDown(event) {
 			if (event.keyCode == 38) indexTexture++;
 			if (event.keyCode == 40) indexTexture--;
-			if (event.keyCode == 39) indexFont++;;
-			if (event.keyCode == 37) indexFont--;
+			if (event.keyCode == 39) mutateTexture();
+			if (event.keyCode == 37) mutateBorderTexture();
 			initShaders();
 		}
 		

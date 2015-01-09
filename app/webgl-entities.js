@@ -90,6 +90,73 @@ function drawEntityVRP (pointsBuffer, canvas) {
 	gl.drawArrays(gl.POINTS, 0, citiesVertexPositionBuffer.numItems);	
 }
 
+// Text logo
+var texta;
+
+function initTextLogoWebGL(canvas, entity) {
+	var canvas = document.getElementById(parentId);
+	initGL(canvas);
+	initBuffersTextLogo();
+	initShadersTextLogo(entity);
+	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	gl.disable(gl.DEPTH_TEST);
+}
+
+function initBuffersTextLogo() {
+	squareVertexPositionBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+	vertices = [
+		 1.0,  1.0,  0.0,
+		 0.0,  1.0,  0.0,
+		 1.0,  0.0,  0.0,
+		 0.0,  0.0,  0.0
+	];				
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+	squareVertexPositionBuffer.itemSize = 3;
+	squareVertexPositionBuffer.numItems = 4;		
+}
+		
+var testa = 0.0;
+function drawEntityTextLogo () { 
+	var textLines = 3, textColumns = 3;
+	
+	// Set blend mode for drawing text
+	gl.enable(gl.BLEND);
+	gl.blendEquation(gl.FUNC_ADD);
+	gl.blendFunc(gl.ONE_MINUS_CONSTANT_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+	// Prepare to draw text
+	gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+	mat4.identity(pMatrix);
+	mat4.ortho(0, textLines, 0, textColumns, 0.1, 100.0, pMatrix);
+	mat4.identity(mvMatrix);
+	mat4.translate(mvMatrix, [0.0, 0.0, -1.0]);
+	
+	globalVa = timerValue();
+	var location = gl.getUniformLocation(shaderProgram, "va");
+	gl.uniform1f(location, globalVa);	
+	location = gl.getUniformLocation(shaderProgram, "vb");
+	gl.uniform1f(location, globalVb);	
+	location = gl.getUniformLocation(shaderProgram, "vc");
+	gl.uniform1f(location, globalVc);	
+	location = gl.getUniformLocation(shaderProgram, "vd");
+	gl.uniform1f(location, globalVd);
+	location = gl.getUniformLocation(shaderProgram, "time");
+	gl.uniform1f(location, timerValue());
+	location = gl.getUniformLocation(shaderProgram, "wiggleAmount");
+	gl.uniform1f(location, 0.02);
+	
+	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+	gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
+	gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+	gl.activeTexture(gl.TEXTURE0);
+	
+	// Draw text
+	drawText("PVM", 0.0, 2.0 + testa, 1.0);
+}	
+
 // RGB Vector
 function initWebGLRGB(canvas, entity) {
     var canvas = document.getElementById(canvas);

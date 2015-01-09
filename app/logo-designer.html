@@ -20,6 +20,9 @@
 		<div class="container" style="padding-top: 60px; width: 1042px">
 			<div id="main-div" style="border-left: 1px solid lightgray; display: flex">
 				<div style="width: 620px">
+					<div id="divTextureCanvas" style="display: none">
+						<canvas id="textureCanvas" width="512" height="512" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					</div>
 					<div id="container-parents-div" class="view-container" style="margin-bottom: 5px; display">
 						<canvas id="parent0" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						<canvas id="parent1" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>			
@@ -45,25 +48,12 @@
 							<canvas id="child9" width="120" height="120" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						</div>
 					</div>
-					<input type="submit" value="Randomize" onclick="randomize()" style="width: 100%; background-color: #5cb85c"/>
-					<div id="container-animation-div" class="view-container" style="margin-top: 10px">
-						<canvas style="padding-left: 190px" id="animation" width="240" height="240" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					</div>
 				</div>
 				<div id="parameters-div" class="view-container" style="border: 1px solid lightgray;">
 					<form>
 						<div>
 							<div style="margin-top: 10px; padding-left: 5px; padding-right: 5px">
 								<div style="display: table">
-									<div>
-										Object
-										<select id="languages-select" onchange="changeLanguageClass()" value="rgb-color-images-vector" style="width: 260px; margin-right: 10px">
-											<option value="rgb-color-images-vector-time">rgb-color-images-vector-time</option>
-											<option value="rgb-color-images-vector">rgb-color-images-vector</option>											
-											<option value="lisp-math-function-xy">lisp-math-function-xy</option>
-											<option value="lisp-math-function-x">lisp-math-function-x</option>
-										</select>
-									</div>
 									<div style="display: flex">
 										<div style="display: block">
 											<div style="padding: 10px; border: 1px solid lightgray; max-width: 170px;">
@@ -72,7 +62,6 @@
 													<button id="start-time" type="button" onclick="startTime()">
 														<span class="icon-bar" style="height: 18px"><i class="icon-play"></i></span>
 													</button>
-													
 													<button id="stop-time" type="button" onclick="stopTime()">
 														<span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
 													</button>
@@ -95,20 +84,6 @@
 													</div>	
 												</div>
 											</div>
-											<div style="padding: 10px; border: 1px solid lightgray; max-width: 170px;">
-												<h6>Interpolator</h6>
-												<div>
-													<select id="languages-select" onchange="changeLanguageClass()" value="rgb-color-images-vector" style="margin-right: 10px; max-width: 160px">
-														<option value="lisp-math-function-x">default</option>
-													</select>
-												</div>
-												<div style="padding-top: 10px">
-													<div style="display: flex">				
-														<div>Delta</div>
-														<input type="text" value="0.1" onblur="setDeltaTime()" style="width: 100px" />
-													</div>	
-												</div>
-											</div>		
 										</div>												
 										<div style="padding: 10px; border: 1px solid lightgray; width: 160px;">
 											<div style="max-width: 100px;">
@@ -137,7 +112,7 @@
 										</div>
 										Inyect with directed crossover
 										<div>
-											<textarea id="inject-expression"class="form-control" rows="3" style="width: 100%" data-toggle="tooltip" data-placement="right" title="Expression to be inyected used directed crossover cfg. Add here expressions with subtrees you want to be inserted randomly.">(createvector time time time)</textarea>
+											<textarea id="inject-expression"class="form-control" rows="3" style="width: 95%" data-toggle="tooltip" data-placement="right" title="Expression to be inyected used directed crossover cfg. Add here expressions with subtrees you want to be inserted randomly.">(createvector time time time)</textarea>
 										</div>
 										<input type="button" value="Inject" onclick="inject()" style="width: 100%; background-color: #5cb85c"/>
 									</div>
@@ -154,11 +129,12 @@
 	{% block mainscript %}
 	<script src="jquery-1.11.1.min.js"></script>
 	<script src="bootstrap.min.js"></script>	
+	<script src="text.js"></script>	
 	
 	<script>		
 		var entitiesDictionary = {};
 		var parentCount = 5, childCount = 10;
-		var currentLanguage = "lisp-math-function-xy";
+		var currentLanguage = "rgb-color-images-vector-time";
 				
 		function operate() {
 			for (var i=0; i< childCount; i++) {
@@ -209,7 +185,7 @@
 			entitiesDictionary[ev.target.id] = result;
 			if (result=="default") alert("Default error");
 			initWebGLTextLogo(ev.target.id, result[1]);
-			drawEntityImageTextLogo();
+			drawEntityTextLogo();
 		}
 				
 		var startupDraw = function () {
@@ -218,32 +194,32 @@
 				createFunctionCallCreateRandom("parent" + i.toString());
 			for (var i=0; i< childCount; i++)
 				createFunctionCallCreateRandom("child" + i.toString());
-			
+				
 			setInterval(
 				function () {				
 					for (var i=0; i< childCount; i++) {
 						var id = "child" + i;
 						if (entitiesDictionary[id]) {
-							initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
-							drawEntityImageTextLogo();
+							initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][3]);
+							drawEntityTextLogo();
 						}
 					}
 					
 					for (var i=0; i< parentCount; i++) {
 						var id = "parent" + i;
 						if (entitiesDictionary[id]) {
-							initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
-							drawEntityImageTextLogo();
+							initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][3]);
+							drawEntityTextLogo();
 						}
 					}
 					
 					var id = "animation";
 					if (entitiesDictionary[id]) {
-						initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][2]);
-						drawEntityImageTextLogo();					
+						initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][3]);
+						drawEntityTextLogo();					
 					}
 				}, 
-				100);
+				100); 
 		};
 		
 		function createFunctionCallCreateDefault(name) {
@@ -274,6 +250,19 @@
 		}
 		
 		function createFunctionGeneric(canvasId, arguments, message) {
+			var myRequest = new XMLHttpRequest();
+			myRequest.open("GET", message, false);
+			myRequest.send(arguments);
+			var result = data.split("|");
+			entitiesDictionary[canvasId] = result;
+			result[2] = "entity-text-logo";
+			
+			void open("http://gpexplorer.ddns.net", message, false);
+			result = data.split("|");
+			entitiesDictionary[canvasId] = entitiesDictionary[canvasId].concat(result);
+			initWebGLTextLogo(canvasId, entitiesDictionary[canvasId][1], entitiesDictionary[canvasId][3]);
+			drawEntityTextLogo();
+		
 			$.ajax({
 					type : 'GET',
 					url : message,
@@ -290,19 +279,18 @@
 							dataType : "text",
 							success : function(data) {
 								var result = data.split("|");
-								entitiesDictionary[canvasId].append(result);
+								entitiesDictionary[canvasId] = entitiesDictionary[canvasId].concat(result);
 								initWebGLTextLogo(canvasId, result[1], result[3]);
-								drawEntityImageTextLogo();
+								drawEntityTextLogo();
 							},
 							error : function(data) {
 								console.log('Call failed');
 							}
-						},
+						});
+					},
 					error : function(data) {
 						console.log('Call failed');
 					}
-				});
-
 			});
 		}
 		
@@ -314,24 +302,6 @@
 						createFunctionCallMutateOn(name, canvasId);
 					}
 				});
-		}
-		
-		function initializeLanguages() {			
-			$.ajax({
-				type : 'GET',
-				url : "/messageLanguages",
-				dataType : "text",
-				success : function(data) {
-					var htmlCode = "";
-					var values = data.split(" ");
-					for (var i=0; i< values.length; i++)
-						htmlCode += "<option value=\"" + values[i] + "\">" + values[i] + "</option>";
-					document.getElementById("languages-select").innerHtml = htmlCode;
-				},
-				error : function(data) {
-					console.log('Call failed');
-				}
-			});
 		}
 		
 		function menuCallbackPrefix(name, index) {			
@@ -347,7 +317,7 @@
 				$.ajax({
 						type : 'GET',
 						url : "/messageLike",
-						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2]},
+						data : { language: currentLanguage, a: entitiesDictionary[name][0], b: entitiesDictionary[name][1], c: entitiesDictionary[name][2] },
 						dataType : "text",
 						success : function(data) { },
 						error : function(data) {
@@ -401,7 +371,6 @@
 			globalTime = document.getElementByID("set-time");
 		}
 		
-		initializeLanguages(); 
 		addParentCallBack("parent0");
 		addParentCallBack("parent1");		
 		addParentCallBack("parent2");

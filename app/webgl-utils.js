@@ -87,7 +87,7 @@ var diffuseShaderFunction =
 var globalScale = 10.0;
 var globalXRef = 0.0;
 var globalYRef = 0.0;
-	
+
 // RGB
 var myFragmentShaderRGBSrc =
 	"precision mediump float; " + 
@@ -147,6 +147,116 @@ function initShadersRGB(entity) {
 	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 	shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
 	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+}
+
+// Text logo 
+var myFragmentShaderTextLogoSrc =	
+	"precision mediump float; " + 
+	"varying vec2 vTextureCoord; " +
+	"uniform sampler2D uSampler; " +
+	"uniform highp float wiggleAmount; " + 
+	"" + 
+	"uniform float time; " + 
+	"varying float xx; " + 
+	"varying float yy; " + 
+	"uniform float va; " + 
+	"uniform float vb; " + 
+	"uniform float vc; " + 
+	"uniform float vd; " + 
+	"vec3 veccos(in vec3 a) { return vec3(cos(a.x), cos(a.y), cos(a.z)); } " + 
+	"vec3 vecsin(in vec3 a) { return vec3(sin(a.x), sin(a.y), sin(a.z)); } " + 
+	"vec3 vectan(in vec3 a) { return vec3(tan(a.x), tan(a.y), tan(a.z)); } " + 
+	"vec3 vecabs(in vec3 a) { return vec3(abs(a.x), abs(a.y), abs(a.z)); } " + 
+	"vec3 vecsqr(in vec3 a) { return vec3(a.x * a.x, a.y * a.y, a.z * a.z); } " + 
+	"vec3 vecadd(in vec3 a, in vec3 b) { return vec3(a.x + b.x, a.y + b.y, a.z + b.z); } " + 
+	"vec3 vecsubstract(in vec3 a, in vec3 b) { return vec3(a.x - b.x, a.y - b.y, a.z - b.z); } " + 
+	"vec3 vecmultiply(in vec3 a, in vec3 b) { return vec3(a.x * b.x, a.y * b.y, a.z * b.z); } " + 
+	"vec3 vecdiv(in vec3 a, in vec3 b) { return vec3(a.x / b.x, a.y / b.y, a.z / b.z); } " + 
+	"vec3 createvector(in float a, in float b, in float c) { return vec3(a, b, c); } " + 
+	"vec3 veccolormap(in vec3 a, in vec3 b, in vec3 c) { return createvector(a.x / 10.0, b.x / 10.0, c.x / 10.0); } " + 			
+	"" + 
+	"void main(void) { " + 
+	"	highp vec2 wiggledTexCoord = vTextureCoord; " + 
+	//"	wiggledTexCoord.s += sin(time * 4.0 + 4.0 * 3.141592653589 * wiggledTexCoord.t) * wiggleAmount; " + 
+	//"	wiggledTexCoord.t += sin(time * 4.0 + 4.0 * 3.141592653589 * wiggledTexCoord.s) * wiggleAmount; " + 
+	"	wiggledTexCoord.s += VALUEPA; " + 
+	"	wiggledTexCoord.t += VALUEPB; " + 
+	"   vec4 textureColor = texture2D(uSampler, vec2(wiggledTexCoord.s, wiggledTexCoord.t)); " + 
+	"	if (textureColor.r < 0.6) {" + 
+	"		float x = wiggledTexCoord.s * 10.0, y = wiggledTexCoord.t * 10.0;" + 
+	"		vec3 v = VALUE; " + 
+	"" + 
+	"		float fillBorder = 0.0; " + 
+	"		if (texture2D(uSampler, vec2(wiggledTexCoord.s, wiggledTexCoord.t)).r > 0.0) fillBorder = 1.0; " + 
+	"" + 
+	"		if (fillBorder < 0.01) " + 
+	" 			gl_FragColor = vec4(v.x, v.y, v.z, 1.0); " + 
+	"		else { " + 
+	"			vec4 vb = vec4(VALUEBORDER, 1.0); " + 
+	" 			gl_FragColor = vb; }" + 
+	"	} " + 
+	" 	else " + 
+	//"		gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);" + 
+	"		gl_FragColor = vec4(VALUEBORDER, 1.0);" + 
+	"}" ;
+				
+var myVertexShaderTextLogoSrc =  		
+	"attribute vec3 aVertexPosition; " + 
+	"attribute vec2 aTextureCoord; " + 
+	"uniform mat4 uMVMatrix; " + 
+	"uniform mat4 uPMatrix; " + 
+	"uniform mat3 uNMatrix; " + 
+	"varying vec2 vTextureCoord; " + 
+	"varying vec3 vLightWeighting; " + 
+	"" + 
+	"void main(void) { " + 
+	"	gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0); " + 
+	"	vTextureCoord = aTextureCoord; " + 
+	"	vLightWeighting = vec3(1.0, 1.0, 1.0); " + 
+	"}";
+
+function initShadersTextLogo(canvas, entityPartA, entityPartB) {
+	var entityBorder = entityPartA;
+	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+	gl.shaderSource(vertexShader, myVertexShaderTextLogoSrc);
+	gl.compileShader(vertexShader);
+	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+	var result = myFragmentShaderTextLogoSrc;
+	result = result.replace("VALUESCALE", globalScale.toFixed(2).toString());
+	result = result.replace("VALUEXREF", globalXRef.toFixed(2).toString());
+	result = result.replace("VALUEYREF", globalYRef.toFixed(2).toString());
+	result = result.replace("VALUEPA", entityPartA.toLowerCase());
+	result = result.replace("VALUEPB", entityPartB.toLowerCase());
+	result = result.replace("VALUEBORDER", entityBorder.toLowerCase());
+	gl.shaderSource(fragmentShader, result);
+	gl.compileShader(fragmentShader);
+	shaderProgram = gl.createProgram();
+	gl.attachShader(shaderProgram, vertexShader);
+	gl.attachShader(shaderProgram, fragmentShader);
+	gl.linkProgram(shaderProgram);
+
+	if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+		console.log("Could not initialise shaders.");
+	}
+
+	gl.useProgram(shaderProgram);
+	shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+	gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+	shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+	gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+	shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+	shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
+	shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");
+	shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+	shaderProgram.wiggleAmount = gl.getUniformLocation(shaderProgram, "wiggleAmount");
+}
+
+function initWebGLTextLogo(canvas, entityPartA, entityPartB) {
+	var canvas = document.getElementById(canvas);
+	initGL(canvas);
+	initShadersTextLogo(canvas, entityPartA, entityPartB);
+	initBuffersTextLogo(entity);
+	initGLText("Verdana");
 }
 
 
@@ -268,7 +378,6 @@ var myFragmentShaderRGBAnimateSrc =
 	"uniform float time; " + 
 	"varying float xx; " + 
 	"varying float yy; " + 
-	// #ADDED:
 	"uniform float va; " + 
 	"uniform float vb; " + 
 	"uniform float vc; " + 

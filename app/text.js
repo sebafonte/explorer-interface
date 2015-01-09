@@ -5,42 +5,35 @@ var squareVertexPositionBuffer;
 var mvMatrix = mat4.create();
 var pMatrix = mat4.create();
 var shaderProgram;
-var textLines = 4, textColumns = 4;
 var gl;
 
 
 // Initialization
-function initGL() {
+function initGL(canvas) {
 	gl = canvas.getContext("experimental-webgl");
 }
 
-function initGLText() {
+function initGLText(font) {
 	var canvas = document.getElementById('textureCanvas');
 	var ctx = canvas.getContext('2d');
 	canvas.width = canvasSize;
 	canvas.height = canvasSize;
 	
 	// #TODO: Fix, this line should not be necessary
-	createTexture(ctx, " ", canvas);
+	createTexture(ctx, " ", canvas, font);
 	for (var i=0; i< 256; i++) {
-		createTexture(ctx, String.fromCharCode(i), canvas);
+		createTexture(ctx, String.fromCharCode(i), canvas, font);
 	}
 }
 
-function createTexture(ctx, character, canvas) {
+function createTexture(ctx, character, canvas, font) {
 	ctx.fillStyle = "#FFFFFF"; 
 	ctx.fillRect(0, 0, canvasSize, canvasSize);
-	//ctx.fillStyle = "#00FF00"; 
-	//ctx.fillRect(1, 1, canvasSize - 2, canvasSize - 2);
 	ctx.fillStyle = "#000000"; 
 	// #TODO: Remove 7 and 9 hardcodes for 64 pixels value, they should become 0 when finished
-	ctx.font = canvasSize + 5 + "px Verdana";
+	ctx.font = canvasSize + 5 + "px " + font;
 	ctx.fillText(character, 9, canvasSize - 15);
-	
-	//ctx.fillStyle = "#000000"; 
-	//ctx.font = canvasSize + 15 + "px Verdana";
-	//ctx.fillText(character, 9, canvasSize - 7);
-		
+			
 	characterTextures[character] = gl.createTexture();
     handleLoadedTexture(characterTextures[character], canvas);
 }

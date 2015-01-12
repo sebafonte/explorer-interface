@@ -32,7 +32,6 @@
 					</div>
 					<div style="display: flex">
 						<input type="submit" value="Operate" onclick="operate()" style="width: 100%; background-color: #5cb85c"/>
-						<!--<input type="submit" value="Add time var" onclick="operateAddVar()" style="width: 50%; background-color: #5cb85c"/>-->
 					</div>
 					<div id="container-children-div" class="view-container" style="margin-bottom: 5px; display">
 						<div>
@@ -130,6 +129,7 @@
 	<script src="jquery-1.11.1.min.js"></script>
 	<script src="bootstrap.min.js"></script>	
 	<script src="text.js"></script>	
+	<script src="js-utils.js"></script>
 	
 	<script>		
 		var entitiesDictionary = {};
@@ -164,13 +164,6 @@
 			}
 		}
 		
-		function operateAddVar() {
-			for (var i=0; i< childCount; i++)
-				createFunctionCallMutateAddVarOn( 
-					"parent" + Math.floor(Math.random() * parentCount).toString(),
-					canvasId);
-		}
-
 		function allowDrop(ev) {
 			ev.preventDefault();
 		}
@@ -228,36 +221,48 @@
 		
 		function createFunctionCallCreateRandom(name) {
 			var maxSize = document.getElementById("input-max-size").value;
-			createFunctionGeneric(name,	{ language: currentLanguage, maxSize: maxSize }, "/messageCreateRandom");
+			createFunctionGeneric(name,	{ functions: "nil", constants: "default-fixed-set-numerical-1", variables: "x y time", maxSize: maxSize }, 
+				"/messageCreateRandomUsingCfgLispLanguage");
 		}
 		
 		function createFunctionCallMutateOn(name, canvasId) {
 			var maxSize = document.getElementById("input-max-size").value;
-			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: maxSize, objectData: entitiesDictionary[name][0] }, "/messageMutate");
+			createFunctionGeneric(canvasId,	{ functions: "nil", constants: "default-fixed-set-numerical-1", variables: "x y time", maxSize: maxSize, objectData: entitiesDictionary[name][0] }, 
+				"/messageMutateUsingCfgLispLanguage");
 		}
-		
-		function createFunctionCallMutateAddVarOn(name, canvasId) {
-			var maxSize = document.getElementById("input-max-size").value;
-			createFunctionGeneric(canvasId,	{ language: currentLanguage, maxSize: maxSize, objectData: entitiesDictionary[name][0] }, "/messageMutateAddVar");
-		}
-		
+				
 		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
 			var maxSize = document.getElementById("input-max-size").value;
 			createFunctionGeneric(
 				canvasId,
-				{ language: currentLanguage, maxSize: maxSize, objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
-				"/messageCrossover");
+				{ functions: "nil", constants: "default-fixed-set-numerical-1", variables: "x y time", maxSize: maxSize, objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
+				"/messageCrossoverUsingCfgLispLanguage");
 		}
 		
 		function createFunctionGeneric(canvasId, arguments, message) {
 			var myRequest = new XMLHttpRequest();
-			myRequest.open("GET", message, false);
-			myRequest.send(arguments);
+			var data;
+			myRequest.open("GET", message + buildParameterList(arguments), false);
+			myRequest.onreadystatechange = function() {
+				if(myRequest.readyState == 4 && myRequest.status == 200) {
+					alert(myRequest.responseText);
+					data = myRequest.responseText;
+				}
+			}
+			myRequest.send();
+			
 			var result = data.split("|");
 			entitiesDictionary[canvasId] = result;
 			result[2] = "entity-text-logo";
+			myRequest.open("GET", message + buildParameterList(arguments), false);
+			myRequest.onreadystatechange = function() {
+				if(myRequest.readyState == 4 && myRequest.status == 200) {
+					alert(myRequest.responseText);
+					data = myRequest.responseText;
+				}
+			}
+			myRequest.send();
 			
-			void open("http://gpexplorer.ddns.net", message, false);
 			result = data.split("|");
 			entitiesDictionary[canvasId] = entitiesDictionary[canvasId].concat(result);
 			initWebGLTextLogo(canvasId, entitiesDictionary[canvasId][1], entitiesDictionary[canvasId][3]);
@@ -284,12 +289,12 @@
 								drawEntityTextLogo();
 							},
 							error : function(data) {
-								console.log('Call failed');
+								console.log('Second call failed');
 							}
 						});
 					},
 					error : function(data) {
-						console.log('Call failed');
+						console.log('First call failed');
 					}
 			});
 		}

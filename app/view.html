@@ -188,8 +188,9 @@
 					function () {				
 						initWebGLRGB("parent0", entitiesDictionary["parent0"][1]);
 						drawEntityImageRGB();
+						moveFrame();
 					}, 
-					50);
+					30);
 			}
 			else if (entitiesDictionary["parent0"][2] == "entity-rgb-animate") {
 				initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1]);
@@ -197,8 +198,9 @@
 					function () {				
 						initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1]);
 						drawEntityImageRGBAnimate();
+						moveFrame();
 					}, 
-					100);	
+					30);	
 			}
 				
 			document.getElementById('parent0').onkeypress = function(event) {
@@ -208,6 +210,10 @@
 			  return false;
 			}
 		};
+		
+		function moveFrame() {
+			//globalXRef += 0.04;
+		}
 		
 		function registerPositionInImage() {
 			history.pushState(null, "page 2", '/foo.html');

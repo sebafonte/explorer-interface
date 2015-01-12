@@ -1,4 +1,4 @@
-//step 1) require the modules we need
+//Require the modules we need
 var
 http = require('http'),
 path = require('path'),
@@ -21,7 +21,7 @@ swig.setDefaults({ cache: false });
 
 // Command execution function
 function run_cmd(cmd, args, cb) {
-	var spawn = require('child_process').spawn
+	var spawn = require('child_process').spawn;
 	var child = spawn(cmd, args);
 	var me = this;
 	child.stdout.on('data', function(me, data) {
@@ -116,6 +116,7 @@ function setFile(filePath, data, res) {
 
 function genericGPExplorerMessage(res, connectFunction) {
 	var socket = net.createConnection("20000", "127.0.0.1");
+	//var socket = net.createConnection("20000", "192.168.0.13");
 	
 	socket
 		.on('data', function(data) {
@@ -131,6 +132,32 @@ function createRandom(res, language, maxSize) {
 	genericGPExplorerMessage(res, 
 		function(socket) {
 			socket.write("(make-instance 'tcp-message :name (quote message-web-interface-create-random) :content (list (quote " + language + ") " + maxSize + "))\n");
+		});
+}
+
+function createRandomUsingCfgLispLanguage (res, functions, constants, variables, maxSize) {
+	console.log(functions);
+	console.log(constants);
+	console.log(variables);
+	console.log(maxSize);
+	
+	genericGPExplorerMessage(res, 
+		function(socket) {
+		socket.write("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote " + functions + ") (quote " + constants + ") (quote (list " + variables + "))" + maxSize + "))\n");
+		});
+}
+
+function mutateUsingCfgLispLanguage (res, functions, constants, variables, objectData) {
+	genericGPExplorerMessage(res, 
+		function(socket) {
+			socket.write("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote " + functions + ") (quote " + constants + ") (quote (list " + variables + "))" + maxSize + "(quote " + objectData + ")))\n");
+		});
+}
+
+function crossoverUsingCfgLispLanguage (res, functions, constants, variables, objectDataA, objectDataB) {
+	genericGPExplorerMessage(res, 
+		function(socket) {
+			socket.write("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote " + functions + ") (quote " + constants + ") (quote (list " + variables + "))" + maxSize + " (quote " + objectDataA + ") (quote " + objectDataB + ")))\n");
 		});
 }
 
@@ -173,21 +200,20 @@ function datePrint() {
 	return new Date(Date.now()).toISOString();
 }
  
-function crossoverFunctions(res, language, objectDataA, objectDataB, maxSize) {
-	
-try {
-	genericGPExplorerMessage(res, 
-	function(socket) {
-		socket.write("(make-instance 'tcp-message :name (quote message-web-interface-crossover) :content (list (quote " + language + ") (quote " + objectDataA + ") (quote " + objectDataB + ") " + maxSize + "))\n");
-	});	
+function crossoverFunctions(res, language, objectDataA, objectDataB, maxSize) {		
+	try {
+		genericGPExplorerMessage(res, 
+		function(socket) {
+			socket.write("(make-instance 'tcp-message :name (quote message-web-interface-crossover) :content (list (quote " + language + ") (quote " + objectDataA + ") (quote " + objectDataB + ") " + maxSize + "))\n");
+		});	
 
-} 
-catch (ex) {
+	} 
+	catch (ex) {
 
-	console.log("PUTA MADRE 2");
-	callback(ex);
+		console.log("PUTA MADRE 2");
+		callback(ex);
+	}
 }
-};
 
 function createTask(res, name, properties, scheduler) {
 	genericGPExplorerMessage(res, 
@@ -224,7 +250,6 @@ function galleryGetAll(res, maxSize) {
 function galleryGetElement(res, req, index) {
 	Like.find(function(err, likes) {
 		var value = Math.random() * likes.length;
-	  //var result = Like.find().limit(-1).skip(value).next();
 		var result = likes[Math.floor(value)];
 		if (result != null)	
 			res.end(result.language + " | " + result.a + " | " + result.b + " | " + result.c);
@@ -304,10 +329,6 @@ function initializeDatabase() {
 		entities: String});
 	
 	RgbInterpolation = db.model('rgbinterpolation', rgbInterpolationSchema);
-	
-/*	Like.find(function(err, likes) {
-		for (var i in likes) likes[i].remove();
-	}); */
 }
 
 function likeObject(res, language, a, b, c) {
@@ -401,7 +422,13 @@ function requestHandler(req, res) {
 	else if (pathname == "/messageGetPropertyValue")
 		getPropertyValue(res, arguments.object, arguments.properties);
 	else if (pathname == "/messageCreateRandom")	
-		createRandom(res, arguments.language, arguments.maxSize);
+		createRandom(res, arguments.functions, arguments.variables, arguments.constants, arguments.maxSize);
+	else if (pathname == "/messageCreateRandomUsingCfgLispLanguage")	
+		createRandomUsingCfgLispLanguage(res, arguments.functions, arguments.variables, arguments.constants, arguments.maxSize);		
+	else if (pathname == "/messageMutateUsingCfgLispLanguage")
+		mutateUsingCfgLispLanguage(res, arguments.functions, arguments.variables, arguments.constants, arguments.maxSize, arguments.objectData);		
+	else if (pathname == "/messageCrossoverUsingCfgLispLanguage")
+		crossoverUsingCfgLispLanguage(res, arguments.language, arguments.maxSize, arguments.objectDataA, arguments.objectDataB);
 	else if (pathname == "/messageMutate")	
 		mutateFunctions(res, arguments.language, arguments.objectData, arguments.maxSize);
 	else if (pathname == "/messageMutateAddVar")	
@@ -435,7 +462,7 @@ function handlerHook(req, res) {
 	req.setTimeout(3000, function () { 
 		console.debug("timeout"); 
 		res.end("timeout"); 
-		});
+	});
 	
 	try {
 		result = requestHandler(req, res);

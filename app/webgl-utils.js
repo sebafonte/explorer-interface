@@ -185,10 +185,8 @@ var myFragmentShaderTextLogoSrc =
 	"	if (textureColor.r < 0.6) {" + 
 	"		float x = wiggledTexCoord.s * 10.0, y = wiggledTexCoord.t * 10.0;" + 
 	"		vec3 v = VALUE; " + 
-	"" + 
 	"		float fillBorder = 0.0; " + 
 	"		if (texture2D(uSampler, vec2(wiggledTexCoord.s, wiggledTexCoord.t)).r > 0.0) fillBorder = 1.0; " + 
-	"" + 
 	"		if (fillBorder < 0.01) " + 
 	" 			gl_FragColor = vec4(v.x, v.y, v.z, 1.0); " + 
 	"		else { " + 
@@ -216,11 +214,15 @@ var myVertexShaderTextLogoSrc =
 	"}";
 
 function initShadersTextLogo(canvas, entityPartA, entityPartB) {
-	var entityBorder = entityPartA;
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, myVertexShaderTextLogoSrc);
 	gl.compileShader(vertexShader);
 	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+	
+	var entities = ["vecdiv(createvector(y,0.4960,x),vecsubstract(createvector(x,y,x),vecdiv(createvector(0.6722,x,x),vecdiv(veccos(vecsqr(createvector(y,y,y))),vecdiv(vectan(vecsubstract(vectan(createvector(y,x,x)),vectan(createvector(x,y,y)))),vecabs(vecsin(vecsqr(createvector(x,x,x)))))))))"];
+	var entityBorder = "vecsubstract(createvector(0.4348,0.3668,0.7623),vecdiv(vecsin(createvector(y,x,x)),vecadd(veccos(vecabs(createvector(x,x,x))),vecadd(vectan(createvector(y,x,x)),vectan(createvector(x,y,y)))))) ";
+
+	var entity = entities[Math.abs(indexTexture) % entities.length];
 	var result = myFragmentShaderTextLogoSrc;
 	result = result.replace("VALUESCALE", globalScale.toFixed(2).toString());
 	result = result.replace("VALUEXREF", globalXRef.toFixed(2).toString());
@@ -228,6 +230,7 @@ function initShadersTextLogo(canvas, entityPartA, entityPartB) {
 	result = result.replace("VALUEPA", entityPartA.toLowerCase());
 	result = result.replace("VALUEPB", entityPartB.toLowerCase());
 	result = result.replace("VALUEBORDER", entityBorder.toLowerCase());
+	result = result.replace("VALUE", entities[0].toLowerCase());
 	gl.shaderSource(fragmentShader, result);
 	gl.compileShader(fragmentShader);
 	shaderProgram = gl.createProgram();
@@ -258,7 +261,6 @@ function initWebGLTextLogo(canvas, entityPartA, entityPartB) {
 	initBuffersTextLogo(entity);
 	initGLText("Verdana");
 }
-
 
 // RGB
 var myFragmentShaderRGBCompositeSrc =

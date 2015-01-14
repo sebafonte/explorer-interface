@@ -193,23 +193,29 @@
 					for (var i=0; i< childCount; i++) {
 						var id = "child" + i;
 						if (entitiesDictionary[id]) {
-							initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][3]);
-							drawEntityTextLogo();
+							if (entitiesDictionary[id].length > 3) {	
+								initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][4]);
+								drawEntityTextLogo();
+							}
 						}
 					}
 					
 					for (var i=0; i< parentCount; i++) {
 						var id = "parent" + i;
 						if (entitiesDictionary[id]) {
-							initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][3]);
+							if (entitiesDictionary[id].length > 3) {	
+							initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][4]);
 							drawEntityTextLogo();
+							}
 						}
 					}
 					
 					var id = "animation";
 					if (entitiesDictionary[id]) {
-						initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][3]);
+						if (ntitiesDictionary[id].length > 3) {	
+						initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][4]);
 						drawEntityTextLogo();					
+						}
 					}
 				}, 
 				100); 
@@ -240,34 +246,7 @@
 		}
 		
 		function createFunctionGeneric(canvasId, arguments, message) {
-			var myRequest = new XMLHttpRequest();
-			var data;
-			myRequest.open("GET", message + buildParameterList(arguments), false);
-			myRequest.onreadystatechange = function() {
-				if(myRequest.readyState == 4 && myRequest.status == 200) {
-					alert(myRequest.responseText);
-					data = myRequest.responseText;
-				}
-			}
-			myRequest.send();
-			
-			var result = data.split("|");
-			entitiesDictionary[canvasId] = result;
-			result[2] = "entity-text-logo";
-			myRequest.open("GET", message + buildParameterList(arguments), false);
-			myRequest.onreadystatechange = function() {
-				if(myRequest.readyState == 4 && myRequest.status == 200) {
-					alert(myRequest.responseText);
-					data = myRequest.responseText;
-				}
-			}
-			myRequest.send();
-			
-			result = data.split("|");
-			entitiesDictionary[canvasId] = entitiesDictionary[canvasId].concat(result);
-			initWebGLTextLogo(canvasId, entitiesDictionary[canvasId][1], entitiesDictionary[canvasId][3]);
-			drawEntityTextLogo();
-		
+			var originalArguments = arguments;
 			$.ajax({
 					type : 'GET',
 					url : message,
@@ -280,12 +259,13 @@
 						$.ajax({
 							type : 'GET',
 							url : message,
-							data : arguments,
+							data : originalArguments,
 							dataType : "text",
 							success : function(data) {
 								var result = data.split("|");
-								entitiesDictionary[canvasId] = entitiesDictionary[canvasId].concat(result);
-								initWebGLTextLogo(canvasId, result[1], result[3]);
+								entitiesDictionary[canvasId].push(result[0]);
+								entitiesDictionary[canvasId].push(result[1]);
+								initWebGLTextLogo(canvasId, entitiesDictionary[canvasId][1], entitiesDictionary[canvasId][4]);
 								drawEntityTextLogo();
 							},
 							error : function(data) {

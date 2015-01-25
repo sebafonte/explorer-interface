@@ -1,11 +1,11 @@
 //Require the modules we need
 var
-http = require('http'),
-path = require('path'),
-fs = require('fs'),
-net = require('net'),
-url = require('url'),
-querystring = require('querystring');
+	http = require('http'),
+	path = require('path'),
+	fs = require('fs'),
+	net = require('net'),
+	url = require('url'),
+	querystring = require('querystring');
 
 // Configuration
 http.globalAgent.maxSockets = 20;
@@ -116,13 +116,14 @@ function setFile(filePath, data, res) {
 
 function genericGPExplorerMessage(res, connectFunction) {
 	var socket = net.createConnection("20000", "127.0.0.1");
-	//var socket = net.createConnection("20000", "192.168.0.13");
 	
 	socket
 		.on('data', function(data) {
 			socket.destroy();
 			res.end(data);
+			console.log("Result data: " + data);
 		})
+		.on('error', function (e) { console.log(e.toString()); })
 		.on('connect', function () { connectFunction(socket); })
 		.on('end', function() {})
 		.on('close', function(data) { });
@@ -135,35 +136,37 @@ function createRandom(res, language, maxSize) {
 		});
 }
 
-function createRandomUsingCfgLispLanguage (res, functions, constants, variables, maxSize) {
-	console.log(functions);
-	console.log(constants);
-	console.log(variables);
-	console.log(maxSize);
-	
+function createRandomUsingCfgLispLanguage (res, functions, variables, constants, maxSize) {
 	genericGPExplorerMessage(res, 
 		function(socket) {
-		socket.write("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote " + functions + ") (quote " + constants + ") (quote (list " + variables + "))" + maxSize + "))\n");
+			var variablesDescription = variables.split(" ").map(function (x) { return "(quote " + x + ") "; } ).join(" ");
+			console.log("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote nil) (quote " + constants + ") (list " + variablesDescription + ") " + maxSize + "))\n");
+			socket.write("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote nil) (quote " + constants + ") (list " + variablesDescription + ") " + maxSize + "))\n");
 		});
 }
 
-function mutateUsingCfgLispLanguage (res, functions, constants, variables, objectData) {
+function mutateUsingCfgLispLanguage (res, functions, constants, variables, objectData, maxSize) {
 	genericGPExplorerMessage(res, 
 		function(socket) {
-			socket.write("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote " + functions + ") (quote " + constants + ") (quote (list " + variables + "))" + maxSize + "(quote " + objectData + ")))\n");
+			var variablesDescription = variables.split(" ").map(function (x) { return "(quote " + x + ") "; } ).join(" ");
+			console.log("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote " + functions + ") (quote " + constants + ") (list " + variablesDescription + ") " + maxSize + " (quote " + objectData + ")))\n");
+			socket.write("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote " + functions + ") (quote " + constants + ") (list " + variablesDescription + ") " + maxSize + " (quote " + objectData + ")))\n");
 		});
 }
 
-function crossoverUsingCfgLispLanguage (res, functions, constants, variables, objectDataA, objectDataB) {
+function crossoverUsingCfgLispLanguage (res, functions, language, constants, variables, maxSize, objectDataA, objectDataB) {
 	genericGPExplorerMessage(res, 
 		function(socket) {
-			socket.write("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote " + functions + ") (quote " + constants + ") (quote (list " + variables + "))" + maxSize + " (quote " + objectDataA + ") (quote " + objectDataB + ")))\n");
+			var variablesDescription = variables.split(" ").map(function (x) { return "(quote " + x + ") "; } ).join(" ");
+			console.log("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote " + functions + ") (quote " + constants + ") (list " + variablesDescription + ") " + maxSize + " (quote " + objectDataA + ") (quote " + objectDataB + ")))\n");
+			socket.write("(make-instance 'tcp-message :name (quote message-create-random-lisp-cfg-language) :content (list (quote " + functions + ") (quote " + constants + ") (list " + variablesDescription + ") " + maxSize + " (quote " + objectDataA + ") (quote " + objectDataB + ")))\n");
 		});
 }
 
 function getDefault(res, name, properties) {
 	genericGPExplorerMessage(res, 
 		function(socket) {
+			console.log("(make-instance 'tcp-message :name (quote message-web-interface-get-default) :content (list (quote " + name + ") (quote " + properties + ")))\n");
 			socket.write("(make-instance 'tcp-message :name (quote message-web-interface-get-default) :content (list (quote " + name + ") (quote " + properties + ")))\n");
 		});
 }
@@ -245,7 +248,7 @@ function galleryGetAll(res, maxSize) {
 			page404 = localFolder + "\\" + '404.html';
 		getFile((localFolder + fileName), res, page404);
 	}
-};
+}
 
 function galleryGetElement(res, req, index) {
 	Like.find(function(err, likes) {
@@ -256,7 +259,7 @@ function galleryGetElement(res, req, index) {
 		else
 			res.end("none");
 	}); 
-};
+}
 
 function getWithCriteria(res, req, arguments) {
 	var a = Like.find({ language: arguments.language }, function(err, likes) {
@@ -268,7 +271,7 @@ function getWithCriteria(res, req, arguments) {
 		else
 			res.end("none");
 	}); 
-};
+}
 
 function saveInterpolation(res, entities, interpolation) {
 	var id = uuid.v1();
@@ -356,12 +359,14 @@ function dislikeObject(res, language, a, b, c) {
 	res.end();
 }
 
-function viewObject(res, language, a, b, c, h, w) {
+function viewObject(res, language, a, b, c, d, e, h, w) {
 	var localFolder = __dirname + '/app';
 	var result = swig.renderFile(localFolder + "/view.html", { height: (h == null) ? 1024 : h, width: (w == null) ? 1024 : w });
 	result = result.toString().replace("#A#", a);
 	result = result.replace("#B#", b);
 	result = result.replace("#C#", c);
+	result = result.replace("#D#", d);
+	result = result.replace("#E#", e);
 	result = result.replace("#LANGUAGE#", language);			
 	res.end(result);
 }
@@ -426,9 +431,9 @@ function requestHandler(req, res) {
 	else if (pathname == "/messageCreateRandomUsingCfgLispLanguage")	
 		createRandomUsingCfgLispLanguage(res, arguments.functions, arguments.variables, arguments.constants, arguments.maxSize);		
 	else if (pathname == "/messageMutateUsingCfgLispLanguage")
-		mutateUsingCfgLispLanguage(res, arguments.functions, arguments.variables, arguments.constants, arguments.maxSize, arguments.objectData);		
+		mutateUsingCfgLispLanguage(res, arguments.functions, arguments.constants, arguments.variables, arguments.objectData, arguments.maxSize);		
 	else if (pathname == "/messageCrossoverUsingCfgLispLanguage")
-		crossoverUsingCfgLispLanguage(res, arguments.language, arguments.maxSize, arguments.objectDataA, arguments.objectDataB);
+		crossoverUsingCfgLispLanguage(res, arguments.functions, arguments.language, arguments.constants, arguments.variables, arguments.maxSize, arguments.objectDataA, arguments.objectDataB);
 	else if (pathname == "/messageMutate")	
 		mutateFunctions(res, arguments.language, arguments.objectData, arguments.maxSize);
 	else if (pathname == "/messageMutateAddVar")	
@@ -438,7 +443,7 @@ function requestHandler(req, res) {
 	else if (pathname == "/messageDislike")
 		dislikeObject(res, arguments.language, arguments.a, arguments.b, arguments.c);
 	else if (pathname == "/messageView")
-		viewObject(res, arguments.language, arguments.a, arguments.b, arguments.c, arguments.height, arguments.width);
+		viewObject(res, arguments.language, arguments.a, arguments.b, arguments.c, arguments.d, arguments.e, arguments.height, arguments.width);
 	else if (pathname == "/setInterpolation")
 		setInterpolate(res, arguments.entities);
 	else if (pathname == "/messageSend")
@@ -454,7 +459,7 @@ function requestHandler(req, res) {
 		var parts = fileName.split(".");
 		getFile((localFolder + fileName), res, page404, (parts[parts.length-1] == "html"));
 	}
-};
+}
 
 function handlerHook(req, res) {
 	var result;
@@ -482,6 +487,6 @@ try {
 		.listen(80);
 } 
 catch (ex) {
-	console.log("PUTA MADRE");
+	console.log(ex.toString());
 	callback(ex);
 }

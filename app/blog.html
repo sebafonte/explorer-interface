@@ -12,8 +12,8 @@
 	<div class="container" style="padding-top: 60px">
 		<h2>Blog articles</h2>
 		<br/>				
-
 		<div class="accordion" id="accordion2">			
+			{% include "./blog-text-logo-1.html" %}
 			{% include "./blog-rgb-vectors-1.html" %}
 			{% include "./blog-opengl-dsl-1.html" %}
 			{% include "./blog-adf-1.html" %}
@@ -42,6 +42,14 @@
 			var x = window.screen.height - 50;
 			var y = window.screen.width - 50;
 			document.getElementById("modal-container").innerHTML = "<img id=\"modal-image\" src=\"" + value + "\" width=\"100%\">";
+		}
+		
+		function setImageWithLink(value, text, link) {
+			var x = window.screen.height - 50;
+			var y = window.screen.width - 50;
+			var innerHtml = "<img id=\"modal-image\" src=\"" + value + "\" width=\"100%\">" + 
+							"<p>" + text + "<a href=" + link + ">here.</a></p>";
+			document.getElementById("modal-container").innerHTML = innerHtml;
 		}
 	</script>
 {% endblock %}

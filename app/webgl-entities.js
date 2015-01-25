@@ -2,6 +2,11 @@
 // Init functions
 var squareVertexPositionBuffer;
 
+// Text logo
+var glContexts = {};
+var shaderPrograms = {};
+
+
 function initWebGLBW(canvas, entity) {
     var canvas = document.getElementById(canvas);
 	initGL(canvas);
@@ -90,19 +95,30 @@ function drawEntityVRP (pointsBuffer, canvas) {
 	gl.drawArrays(gl.POINTS, 0, citiesVertexPositionBuffer.numItems);	
 }
 
-// Text logo
-var texta;
-
-function initTextLogoWebGL(canvas, entity) {
-	var canvas = document.getElementById(parentId);
-	initGL(canvas);
-	initBuffersTextLogo();
-	initShadersTextLogo(entity);
-	gl.clearColor(0.0, 0.0, 0.0, 1.0);
-	gl.disable(gl.DEPTH_TEST);
+function initGLTextLogo(canvas, canvasName) {
+	try {
+		glContexts[canvasName] = canvas.getContext("experimental-webgl");
+		glContexts[canvasName].viewportWidth = canvas.width;
+		glContexts[canvasName].viewportHeight = canvas.height;
+	} 
+	catch (e) {
+	}
+	if (!glContexts[canvasName]) {
+		alert("Could not initialise WebGL");
+	}
 }
 
-function initBuffersTextLogo() {
+function initWebGLTextLogo(canvasName, entityPartA, entityPartB) {
+	var canvas = document.getElementById(canvasName);
+	initGLTextLogo(canvas, canvasName);
+	var gl = glContexts[canvasName];
+	initShadersTextLogo(canvas, entityPartA, entityPartB);
+	initBuffersTextLogo(canvasName);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+}
+
+function initBuffersTextLogo(canvasName) {
+	var gl = glContexts[canvasName];
 	squareVertexPositionBuffer = gl.createBuffer();
 	gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
 	vertices = [
@@ -115,10 +131,11 @@ function initBuffersTextLogo() {
 	squareVertexPositionBuffer.itemSize = 3;
 	squareVertexPositionBuffer.numItems = 4;		
 }
-		
-var testa = 0.0;
-function drawEntityTextLogo () { 
+
+function drawEntityTextLogo (canvasName) { 
+	var gl = glContexts[canvasName];
 	var textLines = 3, textColumns = 3;
+	var shaderProgram = shaderPrograms[canvasName];
 	
 	// Set blend mode for drawing text
 	gl.enable(gl.BLEND);
@@ -154,7 +171,8 @@ function drawEntityTextLogo () {
 	gl.activeTexture(gl.TEXTURE0);
 	
 	// Draw text
-	drawText("PVM", 0.0, 2.0 + testa, 1.0);
+	drawText("PVM", 0.0, 1.0, 1.0, canvasName); 
+	drawText("PVM", 0.0, 2.0, 1.0, canvasName); 
 }	
 
 // RGB Vector
@@ -295,7 +313,7 @@ function updateInterpolationValues(count) {
 
 function drawEntityImageRGBInterpolatedAnimate () {
 	var valueAA = (timerValue() - lastUpdate) / timeFrame;
-	
+
 	var location = gl.getUniformLocation(shaderProgram, "indexA");
     gl.uniform1f(location, indexA);	
 	location = gl.getUniformLocation(shaderProgram, "indexB");

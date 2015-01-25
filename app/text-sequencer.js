@@ -1,45 +1,45 @@
-// sequencer
+
+// Sequencer
 function TextSequencer () {
 	this.parts = {};
-	
-	this.render = function () {};
 	this.addPart = function (part) {};
 }
 
-function PartShadderEffect() {
-	this.framentShaderSource = ;
+this.render = function () {
+	
+};
+
+// Text effects and properties
+function TextEffect() {
+
 }
 
 function MovementEffect() {
-
 }
 
 function DisplacementEffect() {
-
+	this.prototype = MovementEffect;
 }
 
 function FromOutsideEffect() {
-
+	this.prototype = MovementEffect;
 }
 
-// part
-function TextPart() {
-	this.font = ;
-	this.size = ;
-	this.color = ;
-	this.shaderEffect = ;
-	this.movementEffect = ;
-	this.text = "";
+function Centered () {
+	this.prototype = MovementEffect;
+	this.execute = function () {};
 }
 
-// init
-var sequencer = new TextSequencer();
-sequencer.addPart(new TextPart(font, effect, color));
-sequencer.addPart(new TextPart(font, effect, color));
-sequencer.addPart(new TextPart(font, effect, color));
+function Fader () {
+	var start, end;
+}
 
-// loop
-{
-var time = getTime();
-sequencer.draw(time);
+// Part
+function TextObject(font, text, shader, color, movement) {
+	this.font = font;
+	this.size = 25;
+	this.color = color;
+	this.shaderEffect = shader;
+	this.movementEffect = movement;
+	this.text = text;
 }

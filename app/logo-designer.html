@@ -64,7 +64,6 @@
 													<button id="stop-time" type="button" onclick="stopTime()">
 														<span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
 													</button>
-													
 													<button id="reset-time" type="button" onclick="resetTime()" style="width: 100px; height: 24px; margin-top: 1px">
 														<div style="display: flex">
 															<span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
@@ -111,7 +110,7 @@
 										</div>
 										Inyect with directed crossover
 										<div>
-											<textarea id="inject-expression"class="form-control" rows="3" style="width: 95%" data-toggle="tooltip" data-placement="right" title="Expression to be inyected used directed crossover cfg. Add here expressions with subtrees you want to be inserted randomly.">(createvector time time time)</textarea>
+											<textarea id="inject-expression"class="form-control" rows="3" style="width: 95%" data-toggle="tooltip" data-placement="right" title="Expression to be inyected used directed crossover cfg. Add here expressions with subtrees you want to be inserted randomly.">(+ x time)</textarea>
 										</div>
 										<input type="button" value="Inject" onclick="inject()" style="width: 100%; background-color: #5cb85c"/>
 									</div>
@@ -155,12 +154,14 @@
 		function inject() {
 			for (var i=0; i< childCount; i++) {
 				var parentCanvasId = "parent" + Math.floor((Math.random() * parentCount)).toString();
-				var maxSize = document.getElementById("input-max-size").value;
 				var expression = document.getElementById("inject-expression").value;
-				createFunctionGeneric(
+				var maxSize = document.getElementById("input-max-size").value;
+				var index = (Math.floor(Math.random() * 10) % 2) * 3;
+				createFunctionGenericOne(
 					"child" + i.toString(),
-					{ language: currentLanguage, maxSize: maxSize, objectDataA: expression, objectDataB: entitiesDictionary[parentCanvasId][0]},
-					"/messageCrossover");
+					{ functions: "nil", constants: "default-ephemeral-0-1d", variables: "x y time", maxSize: maxSize, objectDataA: expression, objectDataB: entitiesDictionary[parentCanvasId][index]},
+					"/messageCrossoverUsingCfgLispLanguage",
+					index);
 			}
 		}
 		
@@ -177,25 +178,32 @@
 			var result = JSON.parse(ev.dataTransfer.getData("Text"));
 			entitiesDictionary[ev.target.id] = result;
 			if (result=="default") alert("Default error");
-			initWebGLTextLogo(ev.target.id, result[1]);
-			drawEntityTextLogo();
+			initAndDraw(ev.target.id);
 		}
 				
 		var startupDraw = function () {
 			var htmlCode = "";
-			for (var i=0; i< parentCount; i++)
-				createFunctionCallCreateRandom("parent" + i.toString());
-			for (var i=0; i< childCount; i++)
+			for (var i=0; i< parentCount; i++) {
+				var canvas = document.getElementById("parent" + i.toString());
+				initGLForText(canvas);
+				initGLText("parent" + i.toString(), "Verdana");
+				createDefaultLogo("parent" + i.toString());
+			}
+			
+			for (var i=0; i< childCount; i++) {
+				var canvas = document.getElementById("child" + i.toString());
+				initGLForText(canvas);
+				initGLText("child" + i.toString(), "Verdana");
 				createFunctionCallCreateRandom("child" + i.toString());
+			}
 				
 			setInterval(
 				function () {				
 					for (var i=0; i< childCount; i++) {
 						var id = "child" + i;
 						if (entitiesDictionary[id]) {
-							if (entitiesDictionary[id].length > 3) {	
-								initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][4]);
-								drawEntityTextLogo();
+							if (entitiesDictionary[id]) {	
+								initAndDraw(id);
 							}
 						}
 					}
@@ -203,26 +211,28 @@
 					for (var i=0; i< parentCount; i++) {
 						var id = "parent" + i;
 						if (entitiesDictionary[id]) {
-							if (entitiesDictionary[id].length > 3) {	
-							initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][4]);
-							drawEntityTextLogo();
+							if (entitiesDictionary[id]) {	
+								initAndDraw(id);
 							}
 						}
 					}
-					
-					var id = "animation";
-					if (entitiesDictionary[id]) {
-						if (ntitiesDictionary[id].length > 3) {	
-						initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][4]);
-						drawEntityTextLogo();					
-						}
-					}
 				}, 
-				100); 
+				200); 
 		};
 		
-		function createFunctionCallCreateDefault(name) {
-			createFunctionGeneric(name, { language: currentLanguage }, "/messageCreateDefault");
+		function initAndDraw(id) {
+			initWebGLTextLogo(id, entitiesDictionary[id][1], entitiesDictionary[id][4]);
+			drawEntityTextLogo(id);		
+		}
+
+		function createDefaultLogo(canvasId) {
+			if (entitiesDictionary[canvasId] == null) entitiesDictionary[canvasId] = {};
+			entitiesDictionary[canvasId][0] = "(* (sin (+ (* time 4.0)) (* 4.0 3.141592653589 y)) 0.02)";
+			entitiesDictionary[canvasId][1] = "sin(time * 4.0 + 4.0 * 3.141592653589 * y) * 0.02";
+			entitiesDictionary[canvasId][2] = "entity-text-logo";
+			entitiesDictionary[canvasId][3] = "(* (sin (+ (* time 4.0)) (* 4.0 3.141592653589 x)) 0.02)";
+			entitiesDictionary[canvasId][4] = "sin(time * 4.0 + 4.0 * 3.141592653589 * x) * 0.02";
+			initAndDraw(canvasId);
 		}
 		
 		function createFunctionCallCreateRandom(name) {
@@ -233,16 +243,21 @@
 		
 		function createFunctionCallMutateOn(name, canvasId) {
 			var maxSize = document.getElementById("input-max-size").value;
-			createFunctionGeneric(canvasId,	{ functions: "nil", constants: "default-fixed-set-numerical-1", variables: "x y time", maxSize: maxSize, objectData: entitiesDictionary[name][0] }, 
-				"/messageMutateUsingCfgLispLanguage");
+			var index = (Math.floor(Math.random() * 10) % 2) * 3;
+			createFunctionGenericOne(canvasId,	
+				{ functions: "nil", constants: "default-fixed-set-numerical-1", variables: "x y time", maxSize: maxSize, objectData: entitiesDictionary[name][index + 0] }, 
+				"/messageMutateUsingCfgLispLanguage",
+				index);
 		}
 				
 		function createFunctionCallCrossoverOn(nameA, nameB, canvasId) {
 			var maxSize = document.getElementById("input-max-size").value;
-			createFunctionGeneric(
+			var index = (Math.floor(Math.random() * 10) % 2) * 3;
+			createFunctionGenericOne(
 				canvasId,
-				{ functions: "nil", constants: "default-fixed-set-numerical-1", variables: "x y time", maxSize: maxSize, objectDataA: entitiesDictionary[nameA][0], objectDataB: entitiesDictionary[nameB][0]},
-				"/messageCrossoverUsingCfgLispLanguage");
+				{ functions: "nil", constants: "default-fixed-set-numerical-1", variables: "x y time", maxSize: maxSize, objectDataA: entitiesDictionary[nameA][index + 0], objectDataB: entitiesDictionary[nameB][0]},
+				"/messageCrossoverUsingCfgLispLanguage",
+				index);
 		}
 		
 		function createFunctionGeneric(canvasId, arguments, message) {
@@ -257,16 +272,14 @@
 						entitiesDictionary[canvasId] = result;
 						result[2] = "entity-text-logo";
 						$.ajax({
-							type : 'GET',
-							url : message,
+							type : 'GET',url : message,
 							data : originalArguments,
 							dataType : "text",
 							success : function(data) {
 								var result = data.split("|");
 								entitiesDictionary[canvasId].push(result[0]);
 								entitiesDictionary[canvasId].push(result[1]);
-								initWebGLTextLogo(canvasId, entitiesDictionary[canvasId][1], entitiesDictionary[canvasId][4]);
-								drawEntityTextLogo();
+								initAndDraw(canvasId);
 							},
 							error : function(data) {
 								console.log('Second call failed');
@@ -275,6 +288,25 @@
 					},
 					error : function(data) {
 						console.log('First call failed');
+					}
+			});
+		}
+		
+		function createFunctionGenericOne(canvasId, arguments, message, index) {
+			var originalArguments = arguments;
+			$.ajax({
+					type : 'GET',
+					url : message,
+					data : arguments,
+					dataType : "text",
+					success : function(data) {
+						var result = data.split("|");
+						entitiesDictionary[canvasId][index] = result[0];
+						entitiesDictionary[canvasId][index+1] = result[1];
+						initAndDraw(canvasId);
+					},
+					error : function(data) {
+						console.log('Call failed');
 					}
 			});
 		}
@@ -295,7 +327,9 @@
 				var url_safe_a = encodeURIComponent(entitiesDictionary[name][0]);
 				var url_safe_b = encodeURIComponent(entitiesDictionary[name][1]);
 				var url_safe_c = encodeURIComponent(entitiesDictionary[name][2]);
-				var url = "/messageView?language=" + url_safe_language + "&a=" + url_safe_a + "&b=" + url_safe_b + "&c=" + url_safe_c;				
+				var url_safe_d = encodeURIComponent(entitiesDictionary[name][3]);
+				var url_safe_e = encodeURIComponent(entitiesDictionary[name][4]);
+				var url = "/messageView?language=" + url_safe_language + "&a=" + url_safe_a + "&b=" + url_safe_b + "&c=" + url_safe_c + "&d=" + url_safe_d + "&e=" + url_safe_e;
 				window.open (url, "Object inspect");
 			}
 			else if (index==1) {

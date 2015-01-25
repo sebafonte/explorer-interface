@@ -9,24 +9,21 @@ var gl;
 
 
 // Initialization
-function initGL(canvas) {
-	gl = canvas.getContext("experimental-webgl");
-}
-
-function initGLText(font) {
+function initGLText(canvasName, font) {
 	var canvas = document.getElementById('textureCanvas');
 	var ctx = canvas.getContext('2d');
 	canvas.width = canvasSize;
 	canvas.height = canvasSize;
 	
 	// #TODO: Fix, this line should not be necessary
-	createTexture(ctx, " ", canvas, font);
+	createTexture(ctx, " ", canvas, font, canvasName);
 	for (var i=0; i< 256; i++) {
-		createTexture(ctx, String.fromCharCode(i), canvas, font);
+		createTexture(ctx, String.fromCharCode(i), canvas, font, canvasName);
 	}
 }
 
-function createTexture(ctx, character, canvas, font) {
+function createTexture(ctx, character, canvas, font, canvasName) {
+	var gl = glContexts[canvasName];
 	ctx.fillStyle = "#FFFFFF"; 
 	ctx.fillRect(0, 0, canvasSize, canvasSize);
 	ctx.fillStyle = "#000000"; 
@@ -34,11 +31,13 @@ function createTexture(ctx, character, canvas, font) {
 	ctx.font = canvasSize + 5 + "px " + font;
 	ctx.fillText(character, 9, canvasSize - 15);
 			
-	characterTextures[character] = gl.createTexture();
-    handleLoadedTexture(characterTextures[character], canvas);
+	if (characterTextures[canvasName] == null) { characterTextures[canvasName] = {}; }
+	characterTextures[canvasName][character] = gl.createTexture();
+    handleLoadedTexture(characterTextures[canvasName][character], canvas, canvasName);
 }
 
-function handleLoadedTexture(texture, textureCanvas) {
+function handleLoadedTexture(texture, textureCanvas, canvasName) {
+	var gl = glContexts[canvasName];
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
     gl.bindTexture(gl.TEXTURE_2D, texture);
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureCanvas); 
@@ -48,25 +47,29 @@ function handleLoadedTexture(texture, textureCanvas) {
     gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
-function setMatrixUniforms() {
+function setMatrixUniformsText(canvasName) {
+	var shaderProgram = shaderPrograms[canvasName];
+	var gl = glContexts[canvasName];
 	gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
 	gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
 }
 
 // Drawing
-function drawText(text, baseX, baseY, size) {
+function drawText(text, baseX, baseY, size, canvasName) {
 	var x = baseX;
 	mat4.translate(mvMatrix, [baseX, baseY, 0.0]);
-	setMatrixUniforms();
+	setMatrixUniformsText(canvasName);
 	for (var i=0; i< text.length; i++) {
-		setMatrixUniforms();
-		renderCharacter(text[i], x, baseY, size);
+		setMatrixUniformsText(canvasName);
+		renderCharacter(text[i], x, baseY, size, canvasName);
 		mat4.translate(mvMatrix, [size, 0.0, 0.0]);
 	}	
 }
 
-function renderCharacter(character, x, y, size) {
-	gl.bindTexture(gl.TEXTURE_2D, characterTextures[character]);
+function renderCharacter(character, x, y, size, canvasName) {
+	var gl = glContexts[canvasName];
+	var shaderProgram = shaderPrograms[canvasName];
+	gl.bindTexture(gl.TEXTURE_2D, characterTextures[canvasName][character]);
 	gl.uniform1i(shaderProgram.samplerUniform, 0);
 	gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
 }

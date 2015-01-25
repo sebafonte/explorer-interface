@@ -1,0 +1,24 @@
+<div class="accordion-group" style="border: none">
+	<div class="accordion-heading">
+	<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTextLogo">
+	<h4>Evolving texture coordinates on font textures</h4>
+	</a>
+	</div>
+	<div id="collapseTextLogo" class="accordion-body collapse">
+		<div class="accordion-inner">
+		<h5>Motivation</h5>
+		<p>Needed some logo for a crack-tro like presentation and wanted to make something using just WebGL, some default fonts and some expressions for texture coordinate.</p>
+		<h5>Playing</h5>
+		<p>Started from a initial example (first image) and started to change simple f(x,y,time) functions with my usual mutation interface. Mutation apply a lot of change and it's very hard to evolve, looking why. No fitness evaluation or search algorithm used, just tree random mutations and crossover operations. See example <a href="logo-designer.html">here</a>.</p>
+		<p>Here are some examples of final logos for some art group:</p>
+		<p>
+			<a href="pvm-logo-0.png"><img src="tmb-pvm-logo-0.png" alt="" width="103" height="103" hspace="2" vspace="2" data-toggle="modal" data-target="#imageModal" onclick="setImageWithLink('pvm-logo-0.png', 'See animated logo ', 'messageView?language=rgb-color-images-vector-time&a=(*%20(sin%20(%2B%20(*%20time%204.0))%20(*%204.0%203.141592653589%20y))%200.02)&b=sin(time%20*%204.0%20%2B%204.0%20*%203.141592653589%20*%20y)%20*%200.02&c=entity-text-logo&d=(*%20(sin%20(%2B%20(*%20time%204.0))%20(*%204.0%203.141592653589%20x))%200.02)&e=sin(time%20*%204.0%20%2B%204.0%20*%203.141592653589%20*%20x)%20*%200.02')"></a>
+			<a href="pvm-logo-1.png"><img src="tmb-pvm-logo-1.png" alt="" width="103" height="103" hspace="2" vspace="2" data-toggle="modal" data-target="#imageModal" onclick="setImageWithLink('pvm-logo-1.png', 'See animated logo ', 'messageView?language=rgb-color-images-vector-time&a=6%20&b=%206.0000&c=entity-text-logo&d=(-%20(%2F-%20(%2F-%20X%208)%20(COS%20(*%20TIME%20Y)))%20(-%20Y%20Y))%20&e=%20(DIVIDEPROTECTED(DIVIDEPROTECTED(X%2C8.0000)%2CCOS((TIME*Y)))-(Y-Y))')"></a>
+			<a href="pvm-logo-2.png"><img src="tmb-pvm-logo-2.png" alt="" width="103" height="103" hspace="2" vspace="2" data-toggle="modal" data-target="#imageModal" onclick="setImageWithLink('pvm-logo-2.png', 'See animated logo ', 'messageView?language=rgb-color-images-vector-time&a=3%20&b=%203.0000&c=entity-text-logo&d=(ABS%20(COS%20(SIN%20(%2F-%203%20(%2F-%20(COS%20Y)%20(%2B%20(-%20Y%20(-%20(-%20(-%20(SQR%20(%2F-%207%20(SQR%20(COS%20TIME))))%20Y)%20(COS%20X))%20(COS%201)))%20(%2B%20(COS%20(SIN%20X))%200)))))))%20&e=%20ABS(COS(SIN(DIVIDEPROTECTED(3.0000%2CDIVIDEPROTECTED(COS(Y)%2C((Y-(((SQR(DIVIDEPROTECTED(7.0000%2CSQR(COS(TIME))))-Y)-COS(X))-COS(1.0000)))%2B(COS(SIN(X))%2B0.0000)))))))')"></a>
+			<a href="pvm-logo-3.png"><img src="tmb-pvm-logo-3.png" alt="" width="103" height="103" hspace="2" vspace="2" data-toggle="modal" data-target="#imageModal" onclick="setImageWithLink('pvm-logo-3.png', 'See animated logo ', 'messageView?language=rgb-color-images-vector-time&a=8%20&b=%208.0000&c=entity-text-logo&d=(*%20(*%20(SIN%20(%2F-%207%20(*%20(%2B%20X%20(-%20(ABS%20(ABS%20(%2B%20TIME%20(SQR%20(%2B%201%20(COS%20(COS%20(SQR%20(%2F-%20(*%201%20Y)%20(*%20(SIN%20(ABS%209))%20X))))))))))%20TIME))%206)))%20Y)%206)%20&e=%20((SIN(DIVIDEPROTECTED(7.0000%2C((X%2B(ABS(ABS((TIME%2BSQR((1.0000%2BCOS(COS(SQR(DIVIDEPROTECTED((1.0000*Y)%2C(SIN(ABS(9.0000))*X))))))))))-TIME))*6.0000)))*Y)*6.0000)')"></a>
+			<a href="pvm-logo-4.png"><img src="tmb-pvm-logo-4.png" alt="" width="103" height="103" hspace="2" vspace="2" data-toggle="modal" data-target="#imageModal" onclick="setImageWithLink('pvm-logo-4.png', 'See animated logo ', 'messageView?language=rgb-color-images-vector-time&a=7%20&b=%207.0000&c=entity-text-logo&d=(%2B%20(*%20(SQR%20(COS%20(%2B%20(COS%20(ABS%20TIME))%20(-%20(ABS%20(SIN%20(COS%208)))%20(%2F-%209%20Y)))))%20Y)%20TIME)%20&e=%20((SQR(COS((COS(ABS(TIME))%2B(ABS(SIN(COS(8.0000)))-DIVIDEPROTECTED(9.0000%2CY)))))*Y)%2BTIME)')"></a>
+			<a href="pvm-logo-5.png"><img src="tmb-pvm-logo-5.png" alt="" width="103" height="103" hspace="2" vspace="2" data-toggle="modal" data-target="#imageModal" onclick="setImageWithLink('pvm-logo-5.png', 'See animated logo ', 'messageView?language=rgb-color-images-vector-time&a=(%2F-%20(%2F-%20(*%20(%2F-%20TIME%20(-%20(-%20(SIN%207)%20Y)%20X))%205)%20(SQR%20TIME))%20TIME)%20&b=%20DIVIDEPROTECTED(DIVIDEPROTECTED((DIVIDEPROTECTED(TIME%2C((SIN(7.0000)-Y)-X))*5.0000)%2CSQR(TIME))%2CTIME)&c=entity-text-logo&d=2%20&e=%202.0000')"></a>
+		</p>
+		</div>
+	</div>
+</div>	

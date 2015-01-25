@@ -18,15 +18,20 @@
 	<body onload="startupDraw()" style="background-color: black"  onkeydown="handleKeyDown()">
 		{% block content %}
 		{% parent %}
-		<div id="cosita">
-		<div class="container" style="padding-top: 60px">
-			<div id="main-div">
-			<input style="display: none">
-				<canvas id="parent0" width="650" height="650" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="makeFullscreen()" style="width: 70%" ></canvas>
-			</input>
-			<p>Click on image for fullscreen, arrows and ctrl+arrows to control.</p>
+		<div>
+			<div id="divTextureCanvas" style="display: none">
+				<canvas id="textureCanvas" width="512" height="512" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 			</div>
-		</div>
+			<div id="cosita">
+				<div class="container" style="padding-top: 60px">
+					<div id="main-div">
+					<input style="display: none">
+						<canvas id="parent0" width="650" height="650" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)" onclick="makeFullscreen()" style="width: 70%" ></canvas>
+					</input>
+					<p>Click on image for fullscreen, arrows and ctrl+arrows to control.</p>
+					</div>
+				</div>
+			</div>
 		</div>
 		
 		{% endblock %}
@@ -35,7 +40,8 @@
 	{% block mainscript %}
 	<script src="jquery-1.11.1.min.js"></script>
 	<script src="bootstrap.min.js"></script>	
-	<script src="mousecapture.js"></script>	
+	<script src="text.js"></script>	
+	<!--<script src="mousecapture.js"></script>-->
 	
 	<div id="context_menu" style="width:150px;border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute;line-height:30px; padding-left: 10px">
 		<a href="/view.html">Open</a><br />
@@ -44,7 +50,7 @@
 	</div>
 	
 	<script>		
-		var entitiesDictionary = {parent0: ["#A#", "#B#", "#C#"]};
+		var entitiesDictionary = {parent0: ["#A#", "#B#", "#C#", "#D#", "#E#"]};
 		var currentLanguage = "#LANGUAGE#";
 
 		function allowDrop(ev) {
@@ -61,21 +67,32 @@
 			entitiesDictionary[ev.target.id] = result;
 			
 			if (result[2] == "entity-bw") {
+				initGL(canvas);
 				initWebGLBW(ev.target.id, result[1]);
-				drawEntityImageBW();
+				drawEntityImageBW(ev.target.id);
 			}
 			else if (result[2] == "entity-rgb") {
+				initGL(canvas);
 				initWebGLRGB(ev.target.id, result[1]);
-				drawEntityImageRGB();
+				drawEntityImageRGB(ev.target.id);
 			}
 			else if (result[2] == "entity-rgb-animate") {
+				initGL(canvas);
 				initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1]);
-				drawEntityImageRGBAnimate();
+				drawEntityImageRGBAnimate(ev.target.id);
 			}
 			else if (result[2] == "entity-rgb-animate-interpolation") {
+				initGL(canvas);
 				initWebGLRGBInterpolatedAnimate("parent0", entitiesDictionary["parent0"][1]);
-				drawEntityImageRGBInterpolatedAnimate();
+				drawEntityImageRGBInterpolatedAnimate(ev.target.id);
 			}			
+			else if (result[2] == "entity-text-logo") {
+				var canvas = document.getElementById("parent0");
+				initGLTextLogo(canvas, "parent0");
+				initGLText("parent0", "Verdana");
+				initWebGLTextLogo("parent0", entitiesDictionary[id][1], entitiesDictionary[id][4]);
+				drawEntityTextLogo("parent0");				
+			}
 		}
 		
 		window.onkeydown = handleKeyDown;
@@ -91,7 +108,7 @@
 				"<p>Click on image for fullscreen, arrows and ctrl+arrows to control.</p>" +
 				"</div>" + 
 				"</div>";
-				
+			
 			if (document.exitFullscreen) {
 			  document.exitFullscreen();
 			} else if (document.msExitFullscreen) {
@@ -101,6 +118,10 @@
 			} else if (document.webkitExitFullscreen) {
 			  document.webkitExitFullscreen();
 			}				
+			
+			var elem = document.getElementById("parent0");
+			initGLTextLogo(elem, "parent0");
+			initGLText("parent0", "Verdana");	
 		} 
 		
 		function makeFullscreen() {
@@ -112,42 +133,9 @@
 				"</div>" + 
 				"</div>";
 
-		/*	document.addEventListener("webkitfullscreenchange", function(value) { 
-				var div = document.getElementById("cosita");
-			
-				if (!(document.webkitIsFullScreen || document.mozFullScreen || document.msFullscreenElement !== null)) {
-					div.innerHTML =
-						"<div class=\"container\" style=\"padding-top: 60px\">" + 
-						"<div id=\"main-div\">" + 
-						"<input style=\"display: none\">" + 
-						"	<canvas id=\"parent0\" width=\"650\" height=\"650\" draggable=\"true\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event)\" onclick=\"makeFullscreen()\" style=\"width: 70%\" +  ></canvas>" + 
-						"</input>" + 
-						"</div>" + 
-						"</div>";
-						
-					var elem = document.getElementById("parent0");
-					if (elem.requestFullscreen) {				elem.requestFullscreen();		}
-					else if (elem.msRequestFullscreen) {		elem.msRequestFullscreen();		}
-					else if (elem.mozRequestFullScreen) {		elem.mozRequestFullScreen();	}
-					else if (elem.webkitRequestFullscreen) {	elem.webkitRequestFullscreen();	}	
-				}
-				else {
-					div.innerHTML =
-					"<div style=\"display: block\"> " + 
-					"<div id=\"divResult\" > " + 
-					"	<canvas id=\"parent0\" width=\"650\" height=\"650\" onclick=\"takeOutFull()\" draggable=\"true\" ondragstart=\"drag(event)\" ondragover=\"allowDrop(event)\" ondrop=\"drop(event)\" style=\"width: " + window.screen.availWidth + "px; height: " + window.screen.availHeight + "px\"></canvas> " + 
-					"</div>" + 
-					"</div>";
-					
-					var elem = document.getElementById("parent0");
-					if (elem.requestFullscreen) {				elem.requestFullscreen();		}
-					else if (elem.msRequestFullscreen) {		elem.msRequestFullscreen();		}
-					else if (elem.mozRequestFullScreen) {		elem.mozRequestFullScreen();	}
-					else if (elem.webkitRequestFullscreen) {	elem.webkitRequestFullscreen();	}	
-				}
-			}, false);  */
-
 			var elem = document.getElementById("parent0");
+			initGLTextLogo(elem, "parent0");
+			initGLText("parent0", "Verdana");			
 			if (elem.requestFullscreen) {				elem.requestFullscreen();		}
 			else if (elem.msRequestFullscreen) {		elem.msRequestFullscreen();		}
 			else if (elem.mozRequestFullScreen) {		elem.mozRequestFullScreen();	}
@@ -176,10 +164,10 @@
 			}
 		}
 			
-		var startupDraw = function () {
+		var startupDraw = function () {			
 			if (entitiesDictionary["parent0"][2] == "entity-bw") {
 				initWebGLBW("parent0", entitiesDictionary["parent0"][1]);
-				drawEntityImageBW();
+				drawEntityImageBW("parent0");
 			}
 			else if (entitiesDictionary["parent0"][2] == "entity-rgb") {
 				initWebGLRGB("parent0", entitiesDictionary["parent0"][1]);
@@ -187,7 +175,7 @@
 				setInterval(
 					function () {				
 						initWebGLRGB("parent0", entitiesDictionary["parent0"][1]);
-						drawEntityImageRGB();
+						drawEntityImageRGB("parent0");
 						moveFrame();
 					}, 
 					30);
@@ -197,10 +185,23 @@
 				setInterval(
 					function () {				
 						initWebGLRGBAnimate("parent0", entitiesDictionary["parent0"][1]);
-						drawEntityImageRGBAnimate();
+						drawEntityImageRGBAnimate("parent0");
 						moveFrame();
 					}, 
 					30);	
+			}
+			else if (entitiesDictionary["parent0"][2] == "entity-text-logo") {
+				var canvas = document.getElementById("parent0");
+				initGLTextLogo(canvas, "parent0");
+				initGLText("parent0", "Verdana");
+
+				setInterval(
+					function () {		
+						initWebGLTextLogo("parent0", entitiesDictionary["parent0"][1], entitiesDictionary["parent0"][4]);
+						drawEntityTextLogo("parent0");				
+						moveFrame();
+					}, 
+				30);						
 			}
 				
 			document.getElementById('parent0').onkeypress = function(event) {

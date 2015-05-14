@@ -76,7 +76,9 @@ function renderContentsFromFile(filePath, res, page404, returnCallback){
 }
 
 function getFile(filePath, res, page404, useViewsEngine){
-    fs.exists(filePath,function(exists) {
+    console.log("Requested: " + filePath);
+	
+	fs.exists(filePath,function(exists) {
 		if (exists){			
 			if (useViewsEngine) {
 				var result = swig.renderFile(filePath);
@@ -453,12 +455,29 @@ function requestHandler(req, res) {
 	else if (pathname == "/messageCommand")		
 		createImage(res, arguments.language, arguments.command);
 	else {
+		console.log("URL : " + req.url);
 		var fileName = path.basename(req.url) || 'index.html',
-			localFolder = __dirname + '/app/',
-			page404 = localFolder + '404.html';
+			localFolder = __dirname + '/app',
+			page404 = localFolder + '/404.html';
 		var parts = fileName.split(".");
+		fileName = replaceAllOn(req.url, "/", "\\");
+		if (req.url == "/" || req.url == "") fileName = '/index.html';
+		console.log("File name: " + fileName);
 		getFile((localFolder + fileName), res, page404, (parts[parts.length-1] == "html"));
 	}
+}
+
+function replaceAllOn(string, source, target) {
+	var result = source;
+	var newResult = string.replace(source, target);
+	
+	while (result != newResult) 
+	{
+		result = newResult;
+		newResult = newResult.replace(source, target);
+	} 
+	
+	return newResult;
 }
 
 function handlerHook(req, res) {

@@ -222,11 +222,11 @@ function drawEntityImageRGB () {
 }
 
 // RGB Composite
-function initWebGLRGBComposite(canvas, entity) {
+function initWebGLRGBComposite(canvas, entity, a, b, c) {
     var canvas = document.getElementById(canvas);
 	initGL(canvas);
 	initBuffersRGB();
-	initShadersRGBComposite(entity)	
+	initShadersRGBComposite(entity, a, b, c)	
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.disable(gl.DEPTH_TEST);
 }

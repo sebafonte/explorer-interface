@@ -50,7 +50,12 @@
 	</div>
 	
 	<script>		
-		var entitiesDictionary = {parent0: ["#A#", "#B#", "#C#", "#D#", "#E#"]};
+		var entitiesDictionary = {
+			parent0: ["#A#", "#B#", "#C#", "#D#", "#E#"],
+			"subA": "VECSUBSTRACT(VECTAN(CREATEVECTOR(0.4826,0.3995,0.1524)),VECMULTIPLY(VECCOS(VECSQR(VECTAN(VECDIV(VECCOS(VECDIV(VECSIN(CREATEVECTOR(X,Y,Y)),VECSIN(CREATEVECTOR(Y,X,X)))),VECSIN(CREATEVECTOR(Y,X,X)))))),VECTAN(VECTAN(VECMULTIPLY(VECCOS(CREATEVECTOR(0.9051,Y,0.5575)),VECSIN(VECABS(CREATEVECTOR(Y,X,X))))))))",
+			"subB": "VECCOS(VECADD(CREATEVECTOR(X,0.0687,0.0793),VECDIV(VECCOS(VECCOS(VECSQR(VECSUBSTRACT(VECSUBSTRACT(CREATEVECTOR(X,X,X),CREATEVECTOR(0.3837,0.2638,0.3757)),CREATEVECTOR(X,Y,X))))),VECSUBSTRACT(VECCOS(CREATEVECTOR(X,Y,Y)),VECCOS(VECABS(CREATEVECTOR(Y,X,X)))))))",
+			"subC": "VECDIV(CREATEVECTOR(Y,Y,Y),VECADD(VECABS(CREATEVECTOR(X,0.9347,Y)),VECSUBSTRACT(CREATEVECTOR(0.6904,X,0.8712),VECADD(CREATEVECTOR(0.6295,Y,Y),VECSQR(VECADD(VECTAN(CREATEVECTOR(Y,X,X)),VECTAN(CREATEVECTOR(X,Y,Y))))))))"
+		};
 		var currentLanguage = "#LANGUAGE#";
 
 		function allowDrop(ev) {
@@ -75,6 +80,12 @@
 				initGL(canvas);
 				initWebGLRGB(ev.target.id, result[1]);
 				drawEntityImageRGB(ev.target.id);
+			}
+			else if (result[2] == "entity-rgb-composite") {
+				initGL(canvas);
+				var subA = entitiesDictionary["subA"], subB = entitiesDictionary["subB"], subC = entitiesDictionary["subC"];
+				initWebGLRGBComposite(ev.target.id, result[1], subA, subB, subC);
+				drawEntityImageRGBComposite(ev.target.id);
 			}
 			else if (result[2] == "entity-rgb-animate") {
 				initGL(canvas);
@@ -176,6 +187,18 @@
 					function () {				
 						initWebGLRGB("parent0", entitiesDictionary["parent0"][1]);
 						drawEntityImageRGB("parent0");
+						moveFrame();
+					}, 
+					30);
+			}
+			else if (entitiesDictionary["parent0"][2] == "entity-rgb-composite") {
+				var subA = entitiesDictionary["subA"], subB = entitiesDictionary["subB"], subC = entitiesDictionary["subC"];
+				initWebGLRGBComposite("parent0", entitiesDictionary["parent0"][1], subA, subB, subC);
+
+				setInterval(
+					function () {
+						initWebGLRGBComposite("parent0", entitiesDictionary["parent0"][1], subA, subB, subC);
+						drawEntityImageRGBComposite("parent0");
 						moveFrame();
 					}, 
 					30);

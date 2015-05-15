@@ -31,9 +31,9 @@
 							<canvas id="parent2" width="100" height="100" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						</div>
 						<div>
-							<canvas id="sub0" width="100" height="100" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-							<canvas id="sub1" width="100" height="100" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-							<canvas id="sub2" width="100" height="100" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="sub0" width="50" height="50" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="sub1" width="50" height="50" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+							<canvas id="sub2" width="50" height="50" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 						</div>
 					</div>
 					<input type="submit" value="Operate" onclick="operate()" style="width: 100%; background-color: #5cb85c"/>
@@ -113,7 +113,7 @@
 			"subB": "VECCOS(VECADD(CREATEVECTOR(X,0.0687,0.0793),VECDIV(VECCOS(VECCOS(VECSQR(VECSUBSTRACT(VECSUBSTRACT(CREATEVECTOR(X,X,X),CREATEVECTOR(0.3837,0.2638,0.3757)),CREATEVECTOR(X,Y,X))))),VECSUBSTRACT(VECCOS(CREATEVECTOR(X,Y,Y)),VECCOS(VECABS(CREATEVECTOR(Y,X,X)))))))",
 			"subC": "VECDIV(CREATEVECTOR(Y,Y,Y),VECADD(VECABS(CREATEVECTOR(X,0.9347,Y)),VECSUBSTRACT(CREATEVECTOR(0.6904,X,0.8712),VECADD(CREATEVECTOR(0.6295,Y,Y),VECSQR(VECADD(VECTAN(CREATEVECTOR(Y,X,X)),VECTAN(CREATEVECTOR(X,Y,Y))))))))"
 		};
-		var childCount = 12, parentCount = 4;
+		var childCount = 10, parentCount = 4;
 		var currentLanguage = document.getElementById("languages-select").value;
 		
 		function operate() {
@@ -218,12 +218,17 @@
 					dataType : "text",
 					success : function(data) {
 						var result = data.split("|");
-						if (message == "/messageGetWithCriteria") result = changeData(result);
-						entitiesDictionary[canvasId] = result;
-						entitiesDictionary[canvasId][2] = "entity-rgb-composite";
-						var subA = entitiesDictionary["subA"], subB = entitiesDictionary["subB"], subC = entitiesDictionary["subC"];
-						initWebGLRGBComposite(canvasId, result[1], subA, subB, subC);
-						drawEntityImageRGBComposite();
+						if (result[1] != null) {
+							if (message == "/messageGetWithCriteria") result = changeData(result);
+							entitiesDictionary[canvasId] = result;
+							entitiesDictionary[canvasId][2] = "entity-rgb-composite";
+							var subA = entitiesDictionary["subA"], subB = entitiesDictionary["subB"], subC = entitiesDictionary["subC"];
+							initWebGLRGBComposite(canvasId, result[1], subA, subB, subC);
+							drawEntityImageRGBComposite();
+						}
+						else if (result[0] == "none") {
+							console.log("none found");
+						}
 					},
 					error : function(data) {
 						console.log('Call failed');

@@ -10,18 +10,25 @@
 		<title>{% block title %}Expressions explorer{% endblock %}</title>
 
 	  {% block head %}
+		<style>
+			.navbar .nav>li>a:focus, .navbar .nav>li>a:hover {
+			  color: #B953FF;
+			  text-decoration: none;
+			  background-color: transparent;
+			}
+		</style>
 		<script src="jquery-1.11.1.min.js"></script>
 		<link href="bootstrap.min.css" rel="stylesheet">
 		<link href="site.css" rel="stylesheet">
 		<script src="csi.min.js"></script>
-		<script src="utils.js"></script>		
-		<script src="glMatrix-0.9.5.min.js"></script>
-		<script src="webgl-utils.js"></script>
-		<script src="webgl-entities.js"></script>
+		<script src="utils.min.js"></script>
 	  {% endblock %}
 	</head>
 
-	<body onload="startupDraw()">
+		{% block body %}
+		<body>
+		{% endblock %}
+		
 		{% block content %}
 		<div class="navbar navbar-default navbar-fixed-top" role="navigation" style="background-color: indigo">
 			<div class="container">
@@ -62,10 +69,6 @@
 	{% block mainscript %}
 		<script src="jquery-1.11.1.min.js"></script>
 		<script src="bootstrap.min.js"></script>
-	
-		<script>
-		function startupDraw () {}
-		</script>
 	{% endblock %}
 
 	{% block footerscript %}
@@ -74,7 +77,6 @@
 	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
 	  ga('create', 'UA-54522358-1', 'auto');
 	  ga('send', 'pageview');
 	</script>

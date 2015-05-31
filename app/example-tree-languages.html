@@ -1,78 +1,74 @@
-{% extends 'main-layout.html' %}
+{% extends 'webgl-layout.html' %}
 
-<html lang="en">
-	<body onload="startupDraw()">
-		{% block content %}
-		{% parent %}
-
-		<div class="container" style="padding-top: 60px">
-			<div>
-				<div id="main-div" style="max-width: 615px; border: 1px solid lightgray">
-					<div id="container-pdiv" class="view-container" style="margin-bottom: 5px">
-					<div>
-						<canvas id="parent0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="parent3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						</div>
+{% block content %}
+{% parent %}
+	<div class="container" style="padding-top: 60px">
+		<div>
+			<div id="main-div" style="max-width: 615px; border: 1px solid lightgray">
+				<div id="container-pdiv" class="view-container" style="margin-bottom: 5px">
+				<div>
+					<canvas id="parent0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="parent1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="parent2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="parent3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 					</div>
-					<input type="submit" value="Operate" onclick="operate()" style="width: 100%; background-color: #5cb85c"/>
-					<div id="container-cdiv" class="view-container" style="margin-top: 10px">
-						<canvas id="child0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child4" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child5" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child6" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child7" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
-						<canvas id="child8" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child9" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>				
-						<canvas id="child10" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child11" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
-					</div>
-					<div id="comments-div" class="view-container">
-						<form>
-							<div>
-								<div style="margin-top: 20px; padding-left: 15px">
-									<div style="display: flex">
-										<div>
-											Object
-											<select id="languages-select" onchange="changeLanguageClass()" value="lisp-math-function-xy" data-toggle="tooltip" data-placement="right" title="Images language" disabled>
-												<option value="lisp-math-function-xy">lisp-math-function-xy</option>
-												<option value="lisp-math-function-x">lisp-math-function-x</option>
-												<option value="rgb-color-images-vector">rgb-color-images-vector</option>
-											</select>
-										</div>
-										<div style="padding-left: 10px">
-											Objective
-											<select id="fitness-select" data-toggle="tooltip" data-placement="right" title="Fitness weight function" disabled>
-												<option value="Function xy">None</option>
-												<option value="Function x">Colorfull</option>
-											</select>
-										</div>
-									</div>			
-									<div style="display: flex">									
-										<div style="margin-left: 5px">
-											Max time
-											<input id="max-time" type="text" value="1" data-toggle="tooltip" data-placement="right" title="Maximum time desired for each image" disabled/>
-										</div>
-										<div style="margin-left: 20px">
-											Max size
-											<input id="input-max-size" type="text" value="20" data-toggle="tooltip" data-placement="right" title="Maximum tree size" disabled/>
-										</div>
+				</div>
+				<input type="submit" value="Operate" onclick="operate()" style="width: 100%; background-color: #5cb85c"/>
+				<div id="container-cdiv" class="view-container" style="margin-top: 10px">
+					<canvas id="child0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child4" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child5" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child6" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child7" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
+					<canvas id="child8" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child9" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>				
+					<canvas id="child10" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child11" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
+				</div>
+				<div id="comments-div" class="view-container">
+					<form>
+						<div>
+							<div style="margin-top: 20px; padding-left: 15px">
+								<div style="display: flex">
+									<div>
+										Object
+										<select id="languages-select" onchange="changeLanguageClass()" value="lisp-math-function-xy" data-toggle="tooltip" data-placement="right" title="Images language" disabled>
+											<option value="lisp-math-function-xy">lisp-math-function-xy</option>
+											<option value="lisp-math-function-x">lisp-math-function-x</option>
+											<option value="rgb-color-images-vector">rgb-color-images-vector</option>
+										</select>
+									</div>
+									<div style="padding-left: 10px">
+										Objective
+										<select id="fitness-select" data-toggle="tooltip" data-placement="right" title="Fitness weight function" disabled>
+											<option value="Function xy">None</option>
+											<option value="Function x">Colorfull</option>
+										</select>
+									</div>
+								</div>			
+								<div style="display: flex">									
+									<div style="margin-left: 5px">
+										Max time
+										<input id="max-time" type="text" value="1" data-toggle="tooltip" data-placement="right" title="Maximum time desired for each image" disabled/>
+									</div>
+									<div style="margin-left: 20px">
+										Max size
+										<input id="input-max-size" type="text" value="20" data-toggle="tooltip" data-placement="right" title="Maximum tree size" disabled/>
 									</div>
 								</div>
 							</div>
-						</form>
-					</div>
+						</div>
+					</form>
 				</div>
 			</div>
 		</div>
-		{% endblock %}
-	</body>
+	</div>
+{% endblock %}
 
-	{% block mainscript %}
+{% block mainscript %}
 	<script src="jquery-1.11.1.min.js"></script>
 	<script src="bootstrap.min.js"></script>
 
@@ -256,9 +252,4 @@
 		initializeContextMenuOn("child", "context_menu", menuSetCallback);
 		initializeContextMenuOn("parent", "context_menu", menuSetCallback);
 	</script>
-	{% endblock %}
-	
-	{% block footerscript %}
-	{% parent %}
-	{% endblock %}
-</html>
+{% endblock %}

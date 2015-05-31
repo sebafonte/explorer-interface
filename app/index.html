@@ -1,82 +1,67 @@
 {% extends 'main-layout.html' %}
 
-<html lang="en"><head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-	<meta name="keywords" content="lisp, rgb, texture generation, webgl">
-	
-	{% block head %}
-	{% parent %}
-	{% endblock %}
-  </head>
+{% block head %}
+{% parent %}
+	<script src="//cdn.webglstats.com/stat.js" defer="defer" async="async"></script>
+{% endblock %}
 
+{% block body %}
 	<body>
-		<div class="container">
-			{% block content %}
-			{% parent %}
-			
-			<div class="container" style="padding-top: 60px">
-			<div>
-				<div id="main-div" style="max-width: 613px;">
-				
-				<h2>GPExplorer</h2>
-				<br/>
-				<h4>A Lisp based evolutionary computation research system</h4>
-				
-				<p>GPExplorer has been designed using OOP and Lisp facilities for expressions evaluation. Experimental configurations are represented as "tasks" and then executed with some kind of scheduling, maybe adjust search algorithm parameters during the run.</p>
-					<br />
-					<b>Features</b>
+{% endblock %}
 
-					<b>General features</b>
-					<ul>
-						<li>Objects for:</li>
-						<ul>
-							<li>Search algorithm objects for representing different EC configurations</li>
-							<li>Representing problems</li>
-							<li>Constants strategy (fixed / ephemeral)</li>
-							<li>Fitness evaluation</li>
-							<li>Other heuristics (CW savings heuristic, etc.)</li>
-						</ul>
-						<li>Park Miller random numbers generator</li>
-						<li>Serialization for multi-image over a TCP connection for multiprocessing</li>
-						<li>GUI for Windows 7 or superior</li>
-						<li>Text reporting utility</li>
-						<li>Objects for multiobjective optimization methods</li>
-					</ul>
+{% block content %}
+{% parent %}
+	<div class="container" style="padding-top: 60px">
+	<div>
+		<div id="main-div" style="max-width: 613px;">
+		
+		<h2>GPExplorer</h2>
+		<br/>
+		<h4>A Lisp based evolutionary computation research system</h4>
+		
+		<p>GPExplorer has been designed using OOP and Lisp facilities for expressions evaluation. Experimental configurations are represented as "tasks" and then executed with some kind of scheduling, maybe adjust search algorithm parameters during the run.</p>
+			<br />
+			<b>Features</b>
 
-					<b>EC features</b>
-					<ul>
-						<li>NSGA-2 implementation (need test and results report)</li>
-						<li>Main evolutionary algorithm variants (generational, steady state)</li>
-					</ul>
-						
-					<b>GP Tree features</b>
-					<ul>
-						<li>Implementation for ADF or SRT {REVIEW, TEST}</li>
-						<li>Grammatical evolution and a set of general tree operators</li>
-						<li>Examples (6/11-mux, function regression, etc.)</li>
-					</ul>
-					
-					<b>Other features</b>
-					<ul>
-					<li>Linear ordering using lists representation (example) {REVIEW, TEST}</li>
-					</ul>
-					<br />
-					<p>
-					Currently, site is divided in two parts, one with graphical interfaces used for build some internal examples; and the other for GP live search examples on our ad-hoc cloud server. 
-					</p>
-					<br/>
-				</div>
-			</div>
+			<b>General features</b>
+			<ul>
+				<li>Objects for:</li>
+				<ul>
+					<li>Search algorithm objects for representing different EC configurations</li>
+					<li>Representing problems</li>
+					<li>Constants strategy (fixed / ephemeral)</li>
+					<li>Fitness evaluation</li>
+					<li>Other heuristics (CW savings heuristic, etc.)</li>
+				</ul>
+				<li>Park Miller random numbers generator</li>
+				<li>Serialization for multi-image over a TCP connection for multiprocessing</li>
+				<li>GUI for Windows 7 or superior</li>
+				<li>Text reporting utility</li>
+				<li>Objects for multiobjective optimization methods</li>
+			</ul>
+
+			<b>EC features</b>
+			<ul>
+				<li>NSGA-2 implementation (need test and results report)</li>
+				<li>Main evolutionary algorithm variants (generational, steady state)</li>
+			</ul>
+				
+			<b>GP Tree features</b>
+			<ul>
+				<li>Implementation for ADF or SRT {REVIEW, TEST}</li>
+				<li>Grammatical evolution and a set of general tree operators</li>
+				<li>Examples (6/11-mux, function regression, etc.)</li>
+			</ul>
 			
-			{% endblock %}
+			<b>Other features</b>
+			<ul>
+			<li>Linear ordering using lists representation (example) {REVIEW, TEST}</li>
+			</ul>
+			<br />
+			<p>
+			Currently, site is divided in two parts, one with graphical interfaces used for build some internal examples; and the other for GP live search examples on our ad-hoc cloud server. 
+			</p>
+			<br/>
 		</div>
-	</body>
-	
-	{% block footerscript %}
-	{% parent %}
-	{% endblock %}	
-</html>
+	</div>
+{% endblock %}

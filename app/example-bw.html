@@ -1,68 +1,56 @@
-{% extends 'main-layout.html' %}
+{% extends 'webgl-layout.html' %}
 
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-	<meta name="keywords" content="lisp vrp vehicle routing webgl">
+{% block head %}
+{% parent %}
+	<style>
+		.editors-default-class {display: table-caption; margin-top: 20px; padding-left: 15px; }
+	</style>
+{% endblock %}
 
-	{% block head %}
-	{% parent %}
-		<style>
-			.editors-default-class {display: table-caption; margin-top: 20px; padding-left: 15px; }
-		</style>
-	{% endblock %}
-  </head>
-
-	<body onload="startupDraw()">
-		{% block content %}
-		{% parent %}
-			
-		<div class="container" style="padding-top: 60px">
-			<h3>Black and white language representation search example</h3>
-			<div id="main-div" style="max-width: 720px; border: 1px solid lightgray; display: block">
+{% block content %}
+{% parent %}
+	
+<div class="container" style="padding-top: 60px">
+	<h3>Black and white language representation search example</h3>
+	<div id="main-div" style="max-width: 720px; border: 1px solid lightgray; display: block">
+		<div>
+			<div style="display: flex; border: 1px solid black; ">
 				<div>
-					<div style="display: flex; border: 1px solid black; ">
-						<div>
-							<canvas style="border: 1px solid black;" id="parent0" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						</div>
-
-						<div id="parent0-data" class="view-container">
-							<form id="parent0-form">
-							<!-- editors parent 0 -->
-							</form>
-						</div>
-					</div>
-					<div>
-						<button id="start-search" type="button" onclick="startSearch()">
-						  <span class="icon-bar" style="height: 18px"><i class="icon-play"></i></span>
-						</button>
-						<button id="stop-search" type="button" onclick="stopSearch()">
-						  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
-						</button>							
-					</div>
+					<canvas style="border: 1px solid black;" id="parent0" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 				</div>
-				<div style="display: block">
-					<img id="image-1" src="1b.bmp" border="2" width="80" onclick="setImage(1)" height="20" />
-					<img id="image-2" src="2b.bmp" border="2" width="80" onclick="setImage(2)" height="20" />
-					<!--
-					<img id="image-1" src="3b.bmp" border="2" width="80" onclick="setImage(3)" height="20" />
-					<img id="image-1" src="4b.bmp" border="2" width="80" onclick="setImage(4)" height="20" />
-					<img id="image-1" src="5b.bmp" border="2" width="80" onclick="setImage(5)" height="20" />
-					<img id="image-1" src="6b.bmp" border="2" width="80" onclick="setImage(6)" height="20" />
-					<img id="image-1" src="7b.bmp" border="2" width="80" onclick="setImage(7)" height="20" />						
-					-->
+
+				<div id="parent0-data" class="view-container">
+					<form id="parent0-form">
+					<!-- editors parent 0 -->
+					</form>
 				</div>
 			</div>
+			<div>
+				<button id="start-search" type="button" onclick="startSearch()">
+				  <span class="icon-bar" style="height: 18px"><i class="icon-play"></i></span>
+				</button>
+				<button id="stop-search" type="button" onclick="stopSearch()">
+				  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
+				</button>							
+			</div>
 		</div>
-		
-		{% endblock %}
-	</body>
+		<div style="display: block">
+			<img id="image-1" src="1b.bmp" border="2" width="80" onclick="setImage(1)" height="20" />
+			<img id="image-2" src="2b.bmp" border="2" width="80" onclick="setImage(2)" height="20" />
+			<!--
+			<img id="image-1" src="3b.bmp" border="2" width="80" onclick="setImage(3)" height="20" />
+			<img id="image-1" src="4b.bmp" border="2" width="80" onclick="setImage(4)" height="20" />
+			<img id="image-1" src="5b.bmp" border="2" width="80" onclick="setImage(5)" height="20" />
+			<img id="image-1" src="6b.bmp" border="2" width="80" onclick="setImage(6)" height="20" />
+			<img id="image-1" src="7b.bmp" border="2" width="80" onclick="setImage(7)" height="20" />						
+			-->
+		</div>
+	</div>
+</div>
 
-	{% block mainscript %}
+{% endblock %}
+
+{% block mainscript %}
 	<script src="jquery-1.11.1.min.js"></script>
 	<script src="bootstrap.min.js"></script>	
 	<script src="server-interface.js"></script>
@@ -207,9 +195,4 @@
 		resetSearch();
 		enableSearch(true);
 	</script>		
-	{% endblock %}
-	
-	{% block footerscript %}
-	{% parent %}
-	{% endblock %}
-</html>
+{% endblock %}

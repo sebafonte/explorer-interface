@@ -1,60 +1,60 @@
-{% extends 'main-layout.html' %}
-<title>{% block title %}Expressions explorer gallery{% endblock %}</title>
+{% extends 'webgl-layout.html' %}
+
+{% block title %}Expressions explorer gallery{% endblock %}
+
 {% block head %}
 {% parent %}
 	<style type="text/css">
-	canvas {
-	padding-left: 20px; padding-top: 20px }
+		canvas {
+		padding-left: 20px; padding-top: 20px }
 	</style>
 {% endblock %}
 
-<body onload="startupDraw()">
-	{% block content %}
-	{% parent %}
-		
-	<div class="container" style="padding-top: 20px">
-		<div>
-			<div id="main-div" style="margin-top: 70px; max-width: 800px; ">
-				<div id="parents-div" class="view-container" style="margin-bottom: 5px">
-					<canvas id="gallery0" width="140" height="140" onclick="menuClickCallbackPrefix(0)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery1" width="140" height="140" onclick="menuClickCallbackPrefix(1)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery2" width="140" height="140" onclick="menuClickCallbackPrefix(2)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery3" width="140" height="140" onclick="menuClickCallbackPrefix(3)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery4" width="140" height="140" onclick="menuClickCallbackPrefix(4)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery5" width="140" height="140" onclick="menuClickCallbackPrefix(5)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery6" width="140" height="140" onclick="menuClickCallbackPrefix(6)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery7" width="140" height="140" onclick="menuClickCallbackPrefix(7)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery8" width="140" height="140" onclick="menuClickCallbackPrefix(8)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery9" width="140" height="140" onclick="menuClickCallbackPrefix(9)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery10" width="140" height="140" onclick="menuClickCallbackPrefix(10)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery11" width="140" height="140" onclick="menuClickCallbackPrefix(11)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
-					<canvas id="gallery12" width="140" height="140" onclick="menuClickCallbackPrefix(12)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery13" width="140" height="140" onclick="menuClickCallbackPrefix(13)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>				
-					<canvas id="gallery14" width="140" height="140" onclick="menuClickCallbackPrefix(14)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-					<canvas id="gallery15" width="140" height="140" onclick="menuClickCallbackPrefix(15)"
-						draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
-				</div>
+{% block content %}
+{% parent %}
+	
+<div class="container" style="padding-top: 20px">
+	<div>
+		<div id="main-div" style="margin-top: 70px; max-width: 800px; ">
+			<div id="parents-div" class="view-container" style="margin-bottom: 5px">
+				<canvas id="gallery0" width="140" height="140" onclick="menuClickCallbackPrefix(0)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery1" width="140" height="140" onclick="menuClickCallbackPrefix(1)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery2" width="140" height="140" onclick="menuClickCallbackPrefix(2)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery3" width="140" height="140" onclick="menuClickCallbackPrefix(3)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery4" width="140" height="140" onclick="menuClickCallbackPrefix(4)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery5" width="140" height="140" onclick="menuClickCallbackPrefix(5)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery6" width="140" height="140" onclick="menuClickCallbackPrefix(6)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery7" width="140" height="140" onclick="menuClickCallbackPrefix(7)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery8" width="140" height="140" onclick="menuClickCallbackPrefix(8)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery9" width="140" height="140" onclick="menuClickCallbackPrefix(9)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery10" width="140" height="140" onclick="menuClickCallbackPrefix(10)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery11" width="140" height="140" onclick="menuClickCallbackPrefix(11)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
+				<canvas id="gallery12" width="140" height="140" onclick="menuClickCallbackPrefix(12)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery13" width="140" height="140" onclick="menuClickCallbackPrefix(13)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>				
+				<canvas id="gallery14" width="140" height="140" onclick="menuClickCallbackPrefix(14)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+				<canvas id="gallery15" width="140" height="140" onclick="menuClickCallbackPrefix(15)"
+					draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
 			</div>
 		</div>
 	</div>
-	
-	{% endblock %}
-</body>
+</div>
+
+{% endblock %}
 
 {% block mainscript %}
 <div id="context_menu" style="border:1px solid black;background-color:#EEEEEE;visibility:hidden;position:absolute; padding-left: 0px;">
@@ -198,7 +198,6 @@
 				});
 		}
 	}
-	
 </script>
 
 <script type="text/javascript">

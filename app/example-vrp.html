@@ -1,83 +1,71 @@
-{% extends 'main-layout.html' %}
+{% extends 'webgl-layout.html' %}
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<meta name="description" content="">
-		<meta name="author" content="">
-		<meta name="keywords" content="lisp vrp vehicle routing webgl">
+{% block head %}
+	<script src="webgl-utils2.js"></script>
+	{% parent %}
+	<style>
+		.editors-default-class {display: table-caption; margin-top: 20px; padding-left: 15px; }
+	</style>
+{% endblock %}
 
-		{% block head %}
-		<script src="webgl-utils2.js"></script>
-		{% parent %}
-		<style>
-			.editors-default-class {display: table-caption; margin-top: 20px; padding-left: 15px; }
-		</style>
-		{% endblock %}
-	</head>
-
-	<body onload="startupDraw()">
-		{% block content %}
-		{% parent %}
-			
-		<div class="container" style="padding-top: 60px">
-			<h3>Vehicle routing problem test example</h3>
-			<p>Using Clark & Wright savings heuristic for initialization of a population and then a generational algorithm. No 2-opt, n-opt activated.</p>
-			<p><b>Press play </b>to start searching. Minimum known solution is 1174, check on <a href="http://neo.lcc.uma.es/vrp/wp-content/data/instances/Augerat/A-VRP.zip"> http://neo.lcc.uma.es/vrp/wp-content/data/instances/Augerat/A-VRP.zip</a>, a-n65-k9.vrp file.</p>
+{% block content %}
+{% parent %}
+	
+<div class="container" style="padding-top: 60px">
+	<h3>Vehicle routing problem test example</h3>
+	<p>Using Clark & Wright savings heuristic for initialization of a population and then a generational algorithm. No 2-opt, n-opt activated.</p>
+	<p><b>Press play </b>to start searching. Minimum known solution is 1174, check on <a href="http://neo.lcc.uma.es/vrp/wp-content/data/instances/Augerat/A-VRP.zip"> http://neo.lcc.uma.es/vrp/wp-content/data/instances/Augerat/A-VRP.zip</a>, a-n65-k9.vrp file.</p>
+	<div>
+		<div id="main-div" style="max-width: 720px; border: 1px solid lightgray">
 			<div>
-				<div id="main-div" style="max-width: 720px; border: 1px solid lightgray">
+				<div style="display: flex; border: 1px solid black; ">
 					<div>
-						<div style="display: flex; border: 1px solid black; ">
-							<div>
-								<canvas style="border: 1px solid black; padding-top: 50px;" id="parent0" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-							</div>
+						<canvas style="border: 1px solid black; padding-top: 50px;" id="parent0" width="270" height="270" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					</div>
 
-							<div id="parent0-data" class="view-container">
-								<form id="parent0-form">
-								<!-- editors parent 0 -->
-								</form>
-								
-								<div style="display: flex; height: 30px; padding-left: 15px;">	
-									<p style="width: 245px">algorithm name</p>
-									<select id="select-algorithm" class="selectpicker" data-style="btn-primary" style="width: 180px">
-										<option>clark-wright-ga</option>
-										<option>pure-ga</option>
-									</select>
-								</div>
-								<div style="display: flex; height: 30px; padding-left: 15px;">
-									<p style="width: 245px">planifier name</p>
-									<select id="select-scheduler" class="selectpicker" data-style="btn-primary" style="width: 180px">
-										<option>global-running-image-planifier</option>
-										<option>global-remote-planifier</option>
-									</select>
-								</div>
-								<div style="display: flex; height: 30px; padding-left: 15px;">
-									<p style="width: 245px">evaluations /sec</p>
-									<p><input style="max-width: 180px" id="editor-parent0-evaluations-per-second" value="" required=""></p>
-								</div>
-							</div>
+					<div id="parent0-data" class="view-container">
+						<form id="parent0-form">
+						<!-- editors parent 0 -->
+						</form>
+						
+						<div style="display: flex; height: 30px; padding-left: 15px;">	
+							<p style="width: 245px">algorithm name</p>
+							<select id="select-algorithm" class="selectpicker" data-style="btn-primary" style="width: 180px">
+								<option>clark-wright-ga</option>
+								<option>pure-ga</option>
+							</select>
 						</div>
-						<div style="display: flex">
-						<div>
-							<button id="start-search" type="button" onclick="startSearch()">
-							  <span class="icon-bar" style="height: 18px"><i class="icon-play"></i></span>
-							</button>
-							<button id="stop-search" type="button" onclick="stopSearch()">
-							  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
-							</button>							
-							</div>
+						<div style="display: flex; height: 30px; padding-left: 15px;">
+							<p style="width: 245px">planifier name</p>
+							<select id="select-scheduler" class="selectpicker" data-style="btn-primary" style="width: 180px">
+								<option>global-running-image-planifier</option>
+								<option>global-remote-planifier</option>
+							</select>
 						</div>
+						<div style="display: flex; height: 30px; padding-left: 15px;">
+							<p style="width: 245px">evaluations /sec</p>
+							<p><input style="max-width: 180px" id="editor-parent0-evaluations-per-second" value="" required=""></p>
+						</div>
+					</div>
+				</div>
+				<div style="display: flex">
+				<div>
+					<button id="start-search" type="button" onclick="startSearch()">
+					  <span class="icon-bar" style="height: 18px"><i class="icon-play"></i></span>
+					</button>
+					<button id="stop-search" type="button" onclick="stopSearch()">
+					  <span class="icon-bar" style="height: 18px"><i class="icon-stop"></i></span>
+					</button>							
 					</div>
 				</div>
 			</div>
 		</div>
-		
-		{% endblock %}
-	</body>
+	</div>
+</div>
+
+{% endblock %}
 	
-	{% block mainscript %}
+{% block mainscript %}
 	<script src="jquery-1.11.1.min.js"></script>
 	<script src="bootstrap.min.js"></script>
 	<script src="server-interface.js"></script>
@@ -415,9 +403,4 @@
 		resetSearch();
 		enableSearch(true);
 	</script>		
-	{% endblock %}
-	
-	{% block footerscript %}
-	{% parent %}
-	{% endblock %}
-</html>
+{% endblock %}

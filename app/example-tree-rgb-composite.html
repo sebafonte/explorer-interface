@@ -1,109 +1,96 @@
-{% extends 'main-layout.html' %}
+{% extends 'webgl-layout.html' %}
 
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="RGB vectors composition example.">
-    <meta name="author" content="">
-	<meta name="keywords" content="lisp, rgb, texture generation, webgl">
-	
-	{% block head %}
-	{% parent %}
-		<style>
-			.label {width: 60px }
-		</style>
-	{% endblock %}	
-  </head>
+{% block head %}
+{% parent %}
+	<style>
+		.label {width: 60px }
+	</style>
+{% endblock %}	
 
-	<body onload="startupDraw()">
-		{% block content %}
-		{% parent %}
-			
-		<div class="container" style="padding-top: 60px; width: 950px">
-			<div id="main-div" style="border-left: 1px solid lightgray; display: flex">
-				<div style="width: 620px">
-					<div id="container-pdiv" class="view-container" style="margin-bottom: 5px; display">
-						<div>
-							<canvas id="parent0" width="100" height="100" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-							<canvas id="parent1" width="100" height="100" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-							<canvas id="parent2" width="100" height="100" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						</div>
-						<div>
-							<canvas id="sub0" width="50" height="50" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-							<canvas id="sub1" width="50" height="50" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-							<canvas id="sub2" width="50" height="50" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						</div>
+{% block content %}
+{% parent %}
+	<div class="container" style="padding-top: 60px; width: 950px">
+		<div id="main-div" style="border-left: 1px solid lightgray; display: flex">
+			<div style="width: 620px">
+				<div id="container-pdiv" class="view-container" style="margin-bottom: 5px; display">
+					<div>
+						<canvas id="parent0" width="100" height="100" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="parent1" width="100" height="100" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="parent2" width="100" height="100" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 					</div>
-					<input type="submit" value="Operate" onclick="operate()" style="width: 100%; background-color: #5cb85c"/>
-					<div id="container-cdiv" class="view-container" style="margin-top: 10px">
-						<canvas id="child0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child4" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child5" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child6" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child7" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
-						<canvas id="child8" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
-						<canvas id="child9" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>				
+					<div>
+						<canvas id="sub0" width="50" height="50" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="sub1" width="50" height="50" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+						<canvas id="sub2" width="50" height="50" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
 					</div>
 				</div>
-				<div id="comments-div" class="view-container" style="border: 1px solid lightgray;">
-					<form>
-						<div style="width: 245px">
-							<div style="margin-top: 20px; padding-left: 15px">
-								<div style="display: block">
-									<div>
-										<div class="label">
-										Object
-										</div>	
-										<select id="languages-select" onchange="changeLanguageClass()" value="rgb-color-images-vector-composite" disabled>
-											<option value="rgb-color-images-vector-composite">rgb-color-images-vector-composite</option>
-										</select>
-									<div>
-										<div class="label">Objective</div>	
-										<select id="fitness-select" disabled>
-											<option value="Function xy">None</option>
-											<option value="Function x">Colorfull</option>
-										</select>
-									</div>
-									<div>
-										<div class="label">Max time</div>	
-										<input type="text" value="1" disabled/>
-									</div>
-									<div>
-										<div class="label">Max size</div>	
-										<input id="input-max-size" type="text" value="30"/>
-									</div>
-									<div>
-										<div class="label">Mutations</div>	
-										<input id="input-mutations" type="text" value="1"/>
-									</div>									
-									<div>
-										<input type="button" value="Directed crossover from gallery" onclick="directedCrossoverFromGallery()" style="width: 95%; background-color: #5cb85c;"/>
-									</div>
-									<br />
-									<div>
-										<div class="label">Mode</div>	
-										<select id="fitness-select" value="operation">
-											<option value="operation">Operation</option>
-											<option value="inspect">Inspect</option>
-											<option value="search">Search</option>
-										</select>
-									</div>
-								</div>			
-							</div>
-						</div>
-					</form>
+				<input type="submit" value="Operate" onclick="operate()" style="width: 100%; background-color: #5cb85c"/>
+				<div id="container-cdiv" class="view-container" style="margin-top: 10px">
+					<canvas id="child0" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child1" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child2" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child3" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child4" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child5" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child6" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child7" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>		
+					<canvas id="child8" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>
+					<canvas id="child9" width="150" height="150" draggable="true" ondragstart="drag(event)" ondragover="allowDrop(event)" ondrop="drop(event)"></canvas>				
 				</div>
 			</div>
+			<div id="comments-div" class="view-container" style="border: 1px solid lightgray;">
+				<form>
+					<div style="width: 245px">
+						<div style="margin-top: 20px; padding-left: 15px">
+							<div style="display: block">
+								<div>
+									<div class="label">
+									Object
+									</div>	
+									<select id="languages-select" onchange="changeLanguageClass()" value="rgb-color-images-vector-composite" disabled>
+										<option value="rgb-color-images-vector-composite">rgb-color-images-vector-composite</option>
+									</select>
+								<div>
+									<div class="label">Objective</div>	
+									<select id="fitness-select" disabled>
+										<option value="Function xy">None</option>
+										<option value="Function x">Colorfull</option>
+									</select>
+								</div>
+								<div>
+									<div class="label">Max time</div>	
+									<input type="text" value="1" disabled/>
+								</div>
+								<div>
+									<div class="label">Max size</div>	
+									<input id="input-max-size" type="text" value="30"/>
+								</div>
+								<div>
+									<div class="label">Mutations</div>	
+									<input id="input-mutations" type="text" value="1"/>
+								</div>									
+								<div>
+									<input type="button" value="Directed crossover from gallery" onclick="directedCrossoverFromGallery()" style="width: 95%; background-color: #5cb85c;"/>
+								</div>
+								<br />
+								<div>
+									<div class="label">Mode</div>	
+									<select id="fitness-select" value="operation">
+										<option value="operation">Operation</option>
+										<option value="inspect">Inspect</option>
+										<option value="search">Search</option>
+									</select>
+								</div>
+							</div>			
+						</div>
+					</div>
+				</form>
+			</div>
 		</div>
-		{% endblock %}
-	</body>
+	</div>
+{% endblock %}
 
-	{% block mainscript %}
+{% block mainscript %}
 	<script src="jquery-1.11.1.min.js"></script>
 	<script src="bootstrap.min.js"></script>
 
@@ -346,9 +333,4 @@
 		<div><input type="button" value="Animate" onclick="menuCallbackPrefix(globalSelectedIndex, 4)" style="width: 100px"/ disabled></div>
 		<div><input type="button" value="Animate auto" onclick="menuCallbackPrefix(globalSelectedIndex, 5)" style="width: 100px"/ disabled></div>
 	</div>
-	{% endblock %}
-	
-	{% block footerscript %}
-	{% parent %}
-	{% endblock %}
-</html>
+{% endblock %}

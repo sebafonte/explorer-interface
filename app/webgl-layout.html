@@ -1,0 +1,25 @@
+{% extends 'main-layout.html' %}
+
+{% block head %}
+{% parent %}
+	<script src="glMatrix-0.9.5.min.js"></script>		
+	<script src="webgl-utils.min.js"></script>
+	<script src="webgl-entities.min.js"></script>
+{% endblock %}
+
+{% block body %}
+	<body onload="startupDraw()">
+{% endblock %}
+	
+{% block content %}
+{% endblock %}
+
+{% block mainscript %}
+	<script src="jquery-1.11.1.min.js"></script>
+	<script src="bootstrap.min.js"></script>
+
+	<script>
+	function startupDraw () {}
+	</script>
+{% endblock %}
+

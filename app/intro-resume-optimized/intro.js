@@ -546,7 +546,7 @@ Intro.prototype.initializeScene11 = function (glContext, textCanvas) {
 		"sin(time * 4.0 + 4.0 * 3.14159 * x) * 0.01",
 		times,
 		elements,
-		1.0,
+		2.8,
 		1.8,
 		list);
 
